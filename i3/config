@@ -98,4 +98,4 @@ bindsym $mod+r mode "resize"
 bar {
         status_command i3blocks
 }
-exec setxkbmap -option caps:swapescape
+exec setxkbmap -option caps:swapescape -layout 'us(altgr-intl)'
