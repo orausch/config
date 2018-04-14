@@ -8,4 +8,5 @@ Copy `i3lock.service` into `/etc/systemd/system/`
 run `systemctl enable i3lock.service`
 
 ## dmenu wifi
-https://github.com/firecat53/networkmanager-dmenu
+install https://github.com/firecat53/networkmanager-dmenu to /usr/bin/
+install dmenu .desktop file
