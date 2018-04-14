@@ -6,3 +6,6 @@ Personal i3 configuration
 ## i3-lock automatic
 Copy `i3lock.service` into `/etc/systemd/system/`
 run `systemctl enable i3lock.service`
+
+## dmenu wifi
+https://github.com/firecat53/networkmanager-dmenu
