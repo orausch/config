@@ -33,3 +33,6 @@ relog.
 
 ## volume
 cp `other/volume-script` to `/usr/bin/`
+
+## spotify in i3bar
+Install https://github.com/acrisci/playerctl/releases
