@@ -25,19 +25,19 @@ separator_block_width=15
 markup=none
 
 [volume]
-label=VOL
+label=VOL:
 instance=Master
 interval=5
 signal=10
 
 [memory]
 color=#aaaaaa
-label=MEM
+label=MEM:
 interval=30
 
 [cpu_usage]
 color=#aaaaaa
-label=CPU
+label=CPU:
 interval=10
 
 [ssid]
@@ -45,12 +45,12 @@ label=SSID
 interval=10
 
 [wifi]
-label=NET
+label=NET:
 instance=wlp2s0
 interval=10
 
 [battery]
-label=BAT
+label=BAT:
 #label=⚡
 #instance=1
 interval=30
