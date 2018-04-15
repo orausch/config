@@ -1,0 +1,16 @@
+#!/bin/bash
+case $1 in
+	"mute")
+		amixer -q -D default sset Master toggle ;; 
+	"up")
+		amixer -q -D default sset Master 5%+ unmute ;;
+	"down")
+		amixer -q -D default sset Master 5%- unmute ;;
+	*)
+	      	echo "error"
+		exit 1
+		;;
+	
+esac
+
+pkill i3blocks -SIGRTMIN+10
