@@ -14,7 +14,6 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+q kill
 bindsym Mod1+space exec --no-startup-id i3-dmenu-desktop
 
-
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -61,7 +60,7 @@ bindsym $mod+6 workspace 6
 bindsym $mod+7 workspace 7
 bindsym $mod+8 workspace 8
 bindsym $mod+9 workspace 9
-bindsym $mod+0 workspace 10
+bindsym $mod+0 workspace music
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace 1
@@ -73,7 +72,7 @@ bindsym $mod+Shift+6 move container to workspace 6
 bindsym $mod+Shift+7 move container to workspace 7
 bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
-bindsym $mod+Shift+0 move container to workspace 10
+bindsym $mod+Shift+0 move container to workspace music
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -88,6 +87,11 @@ mode "resize" {
         bindsym Up resize shrink height 10 px or 10 ppt
         bindsym Right resize grow width 10 px or 10 ppt
 
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
+
         # back to normal: Enter or Escape
         bindsym Return mode "default"
         bindsym Escape mode "default"
@@ -99,3 +103,8 @@ bar {
         status_command i3blocks
 }
 exec setxkbmap -option caps:swapescape -layout 'us(altgr-intl)'
+bindsym Print workspace music
+bindsym $mod+Shift+Print move container to workspace music
+bindsym $mod+bracketleft workspace prev_on_output
+bindsym $mod+bracketright workspace next_on_output
+workspace_auto_back_and_forth yes
