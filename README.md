@@ -1,5 +1,6 @@
 # i3-config
-Personal i3 configuration
+Personal i3 configuration  
+Install: `i3 i3blocks`
 
 # other things
 
