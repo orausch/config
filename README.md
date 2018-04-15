@@ -13,3 +13,12 @@ install dmenu .desktop file
 
 ## vimium
 https://chrome.google.com/webstore/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb?hl=en
+
+## backlight 
+try `xbacklight`. If it doesn't work:
+
+clone : `https://github.com/Ventto/lux`
+`sudo make install`
+`sudo usermod -aG video oliver`
+run lux with sudo once.
+relog.
