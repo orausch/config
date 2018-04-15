@@ -3,8 +3,14 @@ Personal i3 configuration
 
 # other things
 
+## remove grub timeout
+edit `/etc/default/grub` and replace `GRUB_TIMEOUT=0`
+
+## make home and end work in terminal
+`cp /etc/inputrc ~/.inputrc`
+
 ## i3-lock automatic
-Copy `i3lock.service` into `/etc/systemd/system/`
+Copy `other/i3lock.service` into `/etc/systemd/system/`
 run `systemctl enable i3lock.service`
 
 ## dmenu wifi
@@ -17,8 +23,11 @@ https://chrome.google.com/webstore/detail/vimium/dbepggeogbaibhgnhhndojpepiihcme
 ## backlight 
 try `xbacklight`. If it doesn't work:
 
-clone : `https://github.com/Ventto/lux`
+clone: `https://github.com/Ventto/lux`
 `sudo make install`
 `sudo usermod -aG video oliver`
-run lux with sudo once.
+run `sudo lux` once.
 relog.
+
+## volume
+cp `other/volume-script` to `/usr/bin/`
