@@ -8,6 +8,7 @@ edit `/etc/default/grub` and replace `GRUB_TIMEOUT=0`
 
 ## make home and end work in terminal
 `cp /etc/inputrc ~/.inputrc`
+(if not present try `.inputrc` in `other/`)
 
 ## i3-lock automatic
 Copy `other/i3lock.service` into `/etc/systemd/system/`
