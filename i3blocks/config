@@ -41,7 +41,7 @@ label=CPU:
 interval=10
 
 [ssid]
-label=SSID
+label=SSID:
 interval=10
 
 [wifi]
@@ -62,6 +62,6 @@ signal=10
 
 # Date Time
 [time]
-color=#ff0000
+color=#ffffff
 command=date '+%Y-%m-%d %H:%M:%S'
 interval=5

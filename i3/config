@@ -39,10 +39,10 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # split in horizontal orientation
-bindsym $mod+o split h
+bindsym $mod+o split v
 
 # split in vertical orientation
-bindsym $mod+p split v
+bindsym $mod+p split h
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -102,8 +102,10 @@ bindsym $mod+r mode "resize"
 bar {
         status_command i3blocks
 }
-exec setxkbmap -option caps:swapescape -layout 'us(altgr-intl)'
+exec setxkbmap -option caps:escape -layout 'us(altgr-intl)'
 bindsym Print workspace music
+bindsym Scroll_Lock exec playerctl play-pause
+bindsym Pause exec playerctl next
 bindsym $mod+Shift+Print move container to workspace music
 bindsym $mod+bracketleft workspace prev_on_output
 bindsym $mod+bracketright workspace next_on_output
@@ -118,3 +120,8 @@ bindsym XF86MonBrightnessDown exec lux -s 10%
 bindsym XF86AudioRaiseVolume exec --no-startup-id volume-script up
 bindsym XF86AudioLowerVolume exec --no-startup-id volume-script down
 bindsym XF86AudioMute exec --no-startup-id volume-script mute
+for_window [class="^.*"] border pixel 1
+gaps inner 10
+gaps outer 0 
+smart_gaps on
+smart_borders on
