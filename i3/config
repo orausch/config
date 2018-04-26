@@ -102,14 +102,21 @@ bindsym $mod+r mode "resize"
 bar {
         status_command i3blocks
 }
+
+exec redshift
+
+# keyboard
 exec xset r rate 200 30
 exec setxkbmap -option caps:escape -layout 'us(altgr-intl)'
+
+# i3 mappings
 bindsym Print workspace music
 bindsym Scroll_Lock exec playerctl play-pause
 bindsym Pause exec playerctl next
 bindsym $mod+Shift+Print move container to workspace music
 bindsym $mod+bracketleft workspace prev_on_output
 bindsym $mod+bracketright workspace next_on_output
+
 workspace_auto_back_and_forth yes
 
 for_window [class="Spotify"] move to workspace music
@@ -117,13 +124,12 @@ for_window [class="Spotify"] move to workspace music
 # hardware buttons
 bindsym XF86MonBrightnessUp exec lux -a 10%
 bindsym XF86MonBrightnessDown exec lux -s 10%
-
 bindsym XF86AudioRaiseVolume exec --no-startup-id volume-script up
 bindsym XF86AudioLowerVolume exec --no-startup-id volume-script down
 bindsym XF86AudioMute exec --no-startup-id volume-script mute
+
 for_window [class="^.*"] border pixel 1
 gaps inner 10
 gaps outer 0 
 smart_gaps on
 smart_borders on
-exec redshift
