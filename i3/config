@@ -102,6 +102,7 @@ bindsym $mod+r mode "resize"
 bar {
         status_command i3blocks
 }
+exec xset r rate 200 30
 exec setxkbmap -option caps:escape -layout 'us(altgr-intl)'
 bindsym Print workspace music
 bindsym Scroll_Lock exec playerctl play-pause
