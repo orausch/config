@@ -7,3 +7,5 @@ Plug 'vim-scripts/wombat256.vim'
 Plug 'vim-scripts/cSyntaxAfter'
 call plug#end()
 autocmd! FileType c,cpp,java,php call CSyntaxAfter() 
+
+set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
