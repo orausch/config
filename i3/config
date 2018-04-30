@@ -23,9 +23,7 @@ bindsym $mod+l focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
+bindsym $mod+Down focus down bindsym $mod+Up focus up bindsym $mod+Right focus right
 
 # move focused window
 bindsym $mod+Shift+h move left
@@ -104,6 +102,9 @@ bar {
         status_command i3blocks
 }
 
+exec redshift
+exec emacs
+exec nm-applet
 # keyboard
 exec xset r rate 200 30
 exec setxkbmap -option caps:escape -layout 'us(altgr-intl)'

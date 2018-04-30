@@ -40,14 +40,14 @@ color=#aaaaaa
 label=CPU:
 interval=10
 
-[ssid]
-label=SSID:
-interval=10
+#[ssid]
+#label=SSID:
+#interval=10
 
-[wifi]
-label=NET:
-instance=wlp2s0
-interval=10
+#[wifi]
+#label=NET:
+#instance=wlp2s0
+#interval=10
 
 [battery]
 label=BAT:
