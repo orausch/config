@@ -63,5 +63,5 @@ signal=10
 # Date Time
 [time]
 color=#ffffff
-command=date '+%Y-%m-%d %H:%M:%S'
+command=bash -c 'date "+%Y-%m-%d %H:%M:%S"; if [ -n "$BLOCK_BUTTON" ]; then orage -t > /dev/null; fi'
 interval=5

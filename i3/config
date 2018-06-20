@@ -2,14 +2,16 @@ set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:monospace 8
+font pango:monospace 8 
 #font pango:Roboto 11
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec xterm -fa "Dejavu sans mono:pixelsize=15"
+#bindsym $mod+Return exec xterm -fa "Dejavu sans mono:pixelsize=15"
+bindsym $mod+Return exec xfce4-terminal
+bindsym $mod+e exec thunar
 
 # kill focused window
 bindsym $mod+q kill
@@ -37,11 +39,8 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
-# split in horizontal orientation
-bindsym $mod+o split v
-
-# split in vertical orientation
-bindsym $mod+p split h
+# toggle layout
+bindsym $mod+t layout toggle tabbed splith splitv
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -103,7 +102,6 @@ bar {
 }
 
 exec redshift
-exec emacs
 exec nm-applet
 # keyboard
 exec xset r rate 200 30
@@ -117,7 +115,7 @@ bindsym $mod+Shift+Print move container to workspace music
 bindsym $mod+bracketleft workspace prev_on_output
 bindsym $mod+bracketright workspace next_on_output
 
-workspace_auto_back_and_forth yes
+#workspace_auto_back_and_forth yes
 
 for_window [class="Spotify"] move to workspace music
 
@@ -135,3 +133,7 @@ gaps inner 10
 gaps outer 0 
 smart_gaps on
 smart_borders on
+exec hsetroot -add "#1fa2ff" -add "#12d8fa" -add "#a6ffcb" -gradient 0
+
+for_window [class="test"] floating enable
+focus_follows_mouse yes
