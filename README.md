@@ -37,7 +37,7 @@ cp `other/volume-script` to `/usr/bin/`
 ## spotify in i3bar
 Install https://github.com/acrisci/playerctl/releases
 
-#firefox
+# firefox
 - set to light theme (not default)
 - change fonts to roboto and noto serif
 - disable autohide by going to `about:config` and double clicking `browser.fullscreen.autohide`
