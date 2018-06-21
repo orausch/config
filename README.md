@@ -11,9 +11,9 @@ edit `/etc/default/grub` and replace `GRUB_TIMEOUT=0`
 `cp /etc/inputrc ~/.inputrc`
 (if not present try `.inputrc` in `other/`)
 
-## i3-lock automatic
-Copy `other/i3lock.service` into `/etc/systemd/system/`  
-run `systemctl enable i3lock.service`  
+## lock automatic
+Copy `other/slock.service` into `/etc/systemd/system/`  
+run `systemctl enable slock.service`  
 
 ## dmenu wifi
 install https://github.com/firecat53/networkmanager-dmenu to `/usr/bin/`  
@@ -33,6 +33,13 @@ relog.
 
 ## volume
 cp `other/volume-script` to `/usr/bin/`
+
+### other approach
+clone `https://github.com/fernandotcl/pa-applet` and `cd`
+`./autogen.sh`
+`./configure --prefix=/usr/`
+`rg Werror` and remove the `-Werror` tag
+`sudo make install`
 
 ## spotify in i3bar
 Install https://github.com/acrisci/playerctl/releases
