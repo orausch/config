@@ -1,16 +1,16 @@
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-fugitive'
 Plug 'danilo-augusto/vim-afterglow'
-Plug 'bfrg/vim-cpp-modern'
-Plug 'vim-scripts/wombat256.vim'
-Plug 'vim-scripts/cSyntaxAfter'
+" Plug 'vim-scripts/cSyntaxAfter'
+Plug 'sheerun/vim-polyglot'
 Plug 'majutsushi/tagbar'
+Plug 'sheerun/vim-polyglot'
 Plug '~/.fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'vhdirk/vim-cmake'
 call plug#end()
 
-autocmd! FileType h,c,cpp,java,php call CSyntaxAfter() 
+"autocmd! FileType h,c,cpp,java,php call CSyntaxAfter() 
 
 set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
 
@@ -29,3 +29,4 @@ set tabstop=4
 set shiftwidth=4
 
 command Format %pyfile /usr/share/vim/addons/syntax/clang-format.py
+noremap <Space> @q

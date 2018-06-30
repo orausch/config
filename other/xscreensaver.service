@@ -4,10 +4,8 @@ Before=sleep.target
 
 [Service]
 User=oliver
-#Type=forking
-Environment=DISPLAY=:0
-#ExecStart=/usr/bin/i3lock -c 5c6e8a
-ExecStart=/usr/bin/slock
+Type=oneshot
+ExecStart=/usr/bin/xscreensaver-command -lock
 
 [Install]
 WantedBy=suspend.target

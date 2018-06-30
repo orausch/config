@@ -12,8 +12,8 @@ edit `/etc/default/grub` and replace `GRUB_TIMEOUT=0`
 (if not present try `.inputrc` in `other/`)
 
 ## lock automatic
-Copy `other/slock.service` into `/etc/systemd/system/`  
-run `systemctl enable slock.service`  
+Copy `other/xscreensaver.service` into `/etc/systemd/system/`  
+run `systemctl enable xscreensaver.service`  
 
 ## dmenu wifi
 install https://github.com/firecat53/networkmanager-dmenu to `/usr/bin/`  
