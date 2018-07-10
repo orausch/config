@@ -52,3 +52,5 @@ Install https://github.com/acrisci/playerctl/releases
 - vim vixen
 - ublock origin
 
+# awesomewm
+clone `lain` into `.config/awesome/`

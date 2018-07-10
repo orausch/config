@@ -8,7 +8,6 @@ Plug '~/.fzf'
 Plug 'timonv/vim-cargo'
 Plug 'junegunn/fzf.vim'
 Plug 'vhdirk/vim-cmake'
-Plug 'tpope/vim-dispatch'
 call plug#end()
 
 "autocmd! FileType h,c,cpp,java,php call CSyntaxAfter() 
