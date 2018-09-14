@@ -11,8 +11,6 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
--- Load Debian menu entries
-require("debian.menu")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -45,7 +43,7 @@ beautiful.init("/home/oliver/.config/awesome/zenburn/theme.lua")
 gears.wallpaper.set(beautiful.bg_normal)
 	
 -- This is used later as the default terminal and editor to run.
-terminal = "x-terminal-emulator"
+terminal = "xfce4-terminal"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -61,20 +59,6 @@ awful.layout.layouts = {
     awful.layout.suit.tile,
     lain.layout.centerwork,
     awful.layout.suit.floating,
-    --awful.layout.suit.tile.left,
-    --awful.layout.suit.tile.bottom,
-    --awful.layout.suit.tile.top,
-    --awful.layout.suit.fair,
-    --awful.layout.suit.fair.horizontal,
-    --awful.layout.suit.spiral,
-    --awful.layout.suit.spiral.dwindle,
-    --awful.layout.suit.max,
-    --awful.layout.suit.max.fullscreen,
-    --awful.layout.suit.magnifier,
-    --awful.layout.suit.corner.nw,
-    -- awful.layout.suit.corner.ne,
-    -- awful.layout.suit.corner.sw,
-    -- awful.layout.suit.corner.se,
 }
 -- }}}
 
@@ -104,16 +88,12 @@ myawesomemenu = {
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                    { "Debian", debian.menu.Debian_menu.Debian },
                                     { "open terminal", terminal }
                                   }
                         })
 
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
-
--- Keyboard map indicator and switcher
-mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
@@ -164,8 +144,7 @@ awful.screen.connect_for_each_screen(function(s)
     set_wallpaper(s)
 
     -- Each screen has its own tag table.
-    awful.tag({"1"}, s, awful.layout.layouts[2])
-    awful.tag({"2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
+    awful.tag({"1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
 	
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -195,7 +174,6 @@ awful.screen.connect_for_each_screen(function(s)
             s.mypromptbox,
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-            mykeyboardlayout,
             wibox.widget.systray(),
             mytextclock,
 			volume,
@@ -254,6 +232,10 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey, "Shift"   }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
+    awful.key({ modkey, "Shift"}, "f", function () awful.spawn("dbus-launch Thunar") end,
+              {description = "open file manager", group = "launcher"}),
+    awful.key({ modkey}, "v", function () awful.spawn("gvim") end,
+              {description = "open gvim", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
@@ -292,7 +274,7 @@ globalkeys = awful.util.table.join(
     awful.key({ "Mod1" },            "space",     function () awful.spawn(
 			string.format("j4-dmenu-desktop --dmenu=\"dmenu -i -nb '%s' -nf '%s' -sf '%s' -sb '%s'\"", 
 				beautiful.bg_normal, beautiful.fg_normal, beautiful.fg_focus, beautiful.bg_focus)
-		) end,
+		, false) end,
               {description = "run prompt", group = "launcher"}),
 
     awful.key({ modkey }, "x",
@@ -448,8 +430,6 @@ awful.rules.rules = {
     -- Set Firefox to always map on the tag named "2" on screen 1.
 	{ rule = { class = "Firefox" },
 	properties = { screen = 1, tag = "2" } },
-	{ rule = { class = "nvim-qt" },
-	properties = { screen = 1, tag = "1" } },
 }
 -- }}}
 
@@ -528,14 +508,20 @@ autorunApps =
 { 
    "xset r rate 200 30",
    "setxkbmap -option caps:escape -layout 'us(altgr-intl)'",
-   "xfce4-power-manager",
+--   "xfce4-power-manager",
    "pa-applet",
    "nm-applet",
    "light-locker",
    "redshift",
+   "xfce4-power-manager",
 }
 if autorun then
-   for app = 1, #autorunApps do
-       awful.util.spawn(autorunApps[app])
-   end
+	for app = 1, #autorunApps do
+		awful.util.spawn(autorunApps[app], false)
+	end
 end
+awful.spawn("urxvt -e maxima -name CALCULATOR", {
+    floating  = true,
+    tag       = mouse.screen.selected_tag,
+    placement = awful.placement.bottom_right,
+})
