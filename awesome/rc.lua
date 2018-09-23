@@ -40,6 +40,8 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/oliver/.config/awesome/zenburn/theme.lua")
+beautiful.font = "Roboto 11"
+--beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 gears.wallpaper.set(beautiful.bg_normal)
 	
 -- This is used later as the default terminal and editor to run.
@@ -272,7 +274,7 @@ globalkeys = awful.util.table.join(
 
     -- Prompt
     awful.key({ "Mod1" },            "space",     function () awful.spawn(
-			string.format("j4-dmenu-desktop --dmenu=\"dmenu -i -nb '%s' -nf '%s' -sf '%s' -sb '%s'\"", 
+			string.format("j4-dmenu-desktop --dmenu=\"dmenu -i -fn 'RobotoMono' -nb '%s' -nf '%s' -sf '%s' -sb '%s'\"", 
 				beautiful.bg_normal, beautiful.fg_normal, beautiful.fg_focus, beautiful.bg_focus)
 		, false) end,
               {description = "run prompt", group = "launcher"}),
@@ -509,11 +511,11 @@ autorunApps =
    "xset r rate 200 30",
    "setxkbmap -option caps:escape -layout 'us(altgr-intl)'",
 --   "xfce4-power-manager",
-   "pa-applet",
-   "nm-applet",
-   "light-locker",
-   "redshift",
+--   "pa-applet",
+--   "nm-applet",
+--   "redshift",
    "xfce4-power-manager",
+   "/home/oliver/.config/awesome/autorun.sh"
 }
 if autorun then
 	for app = 1, #autorunApps do
