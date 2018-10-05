@@ -12,6 +12,11 @@ Plug 'jremmen/vim-ripgrep'
 Plug 'nvie/vim-flake8'
 Plug 'Valloric/YouCompleteMe'
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'tpope/vim-surround'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'sjl/badwolf'
+Plug 'mhinz/vim-signify'
 call plug#end()
 " Important fugitive mappings in :Gstatus
 " cc commit
@@ -47,9 +52,9 @@ if (has("termguicolors"))
 endif
 
 syntax enable
-set number
 
-colorscheme PaperColor
+colorscheme badwolf
+let g:airline_theme='badwolf'
 hi LineNr guibg=black
 
 
@@ -75,6 +80,8 @@ set guifont=Roboto\ Mono\ 11
 set wrap
 set textwidth=79
 set colorcolumn=79
+au BufRead,BufNewFile *.tex setlocal textwidth=120
+au BufRead,BufNewFile *.tex setlocal colorcolumn=120
 
 " SEARCH
 set hlsearch
@@ -93,3 +100,28 @@ set scrolloff=5
 " seem to happen.
 autocmd QuickFixCmdPost [^l]* nested cwindow
 autocmd QuickFixCmdPost    l* nested lwindow
+
+set belloff=all
+
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
+let g:airline#extensions#tagbar#enabled = 0
+
+highlight SignifySignAdd    	gui=bold guifg=green cterm=bold ctermfg=green
+highlight SignifySignDelete    	gui=bold guifg=red cterm=bold ctermfg=red
+highlight SignifySignChange    	gui=bold guifg=orange cterm=bold ctermfg=yellow
+let g:airline_section_x=''
