@@ -18,6 +18,8 @@ Plug 'rakr/vim-one'
 Plug 'itchyny/lightline.vim'
 Plug 'vim-scripts/EditPlus'
 Plug 'endel/vim-github-colorscheme'
+Plug 'nelstrom/vim-mac-classic-theme'
+
 call plug#end()
 set laststatus=2
 
@@ -49,7 +51,7 @@ endif
 
 syntax enable
 
-colo github
+colorscheme mac_classic
 set background=light
 
 
