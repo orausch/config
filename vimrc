@@ -1,6 +1,5 @@
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-fugitive'
-Plug 'danilo-augusto/vim-afterglow'
 Plug 'sheerun/vim-polyglot'
 Plug 'majutsushi/tagbar'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -11,19 +10,17 @@ Plug 'vimwiki/vimwiki'
 Plug 'jremmen/vim-ripgrep'
 Plug 'nvie/vim-flake8'
 Plug 'Valloric/YouCompleteMe'
-Plug 'NLKNguyen/papercolor-theme'
 Plug 'tpope/vim-surround'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'sjl/badwolf'
+Plug 'agude/vim-eldar'
 Plug 'mhinz/vim-signify'
+Plug 'jsit/disco.vim'
+Plug 'rakr/vim-one'
+Plug 'itchyny/lightline.vim'
+Plug 'vim-scripts/EditPlus'
+Plug 'endel/vim-github-colorscheme'
 call plug#end()
-" Important fugitive mappings in :Gstatus
-" cc commit
-" D diff
-" O edit in new tab
+set laststatus=2
 
-"idks
 if has("autocmd")
 	filetype indent plugin on
 endif
@@ -43,7 +40,6 @@ nnoremap <f4> :YcmCompleter GoTo<CR>
 let g:ycm_goto_buffer_command = 'same_buffer'
 let g:ycm_autoclose_preview_window_after_completion = 1
 
-set background=dark
 set tabstop=4
 set shiftwidth=4
 set splitbelow
@@ -53,9 +49,8 @@ endif
 
 syntax enable
 
-colorscheme badwolf
-let g:airline_theme='badwolf'
-hi LineNr guibg=black
+colo github
+set background=light
 
 
 " copy to system clipboard by default
@@ -118,10 +113,14 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
-let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
-let g:airline#extensions#tagbar#enabled = 0
 
-highlight SignifySignAdd    	gui=bold guifg=green cterm=bold ctermfg=green
-highlight SignifySignDelete    	gui=bold guifg=red cterm=bold ctermfg=red
-highlight SignifySignChange    	gui=bold guifg=orange cterm=bold ctermfg=yellow
-let g:airline_section_x=''
+
+highlight SignifySignAdd    	gui=bold guifg=green guibg=NONE cterm=bold ctermfg=green
+highlight SignifySignDelete    	gui=bold guifg=red guibg=NONE cterm=bold ctermfg=red
+highlight SignifySignChange    	gui=bold guifg=orange guibg=NONE cterm=bold ctermfg=yellow
+
+
+hi SignColumn guibg=white
+hi IncSearch guifg=Darkblue guibg=white
+hi Search guifg=black guibg=white
+hi LineNr guibg=black
