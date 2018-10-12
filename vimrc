@@ -19,7 +19,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'vim-scripts/EditPlus'
 Plug 'endel/vim-github-colorscheme'
 Plug 'nelstrom/vim-mac-classic-theme'
-
+Plug 'skywind3000/quickmenu.vim'
 call plug#end()
 set laststatus=2
 
@@ -65,13 +65,14 @@ let g:vimtex_view_general_viewer = 'zathura'
 
 " GUI
 set mouse=a
-set mousemodel=popup_setpos
 let g:vimwiki_use_mouse = 1
 set guioptions -=m
 set guioptions -=T
 set guioptions-=L
 set guioptions-=r
+set mousemodel=popup_setpos
 set guifont=Roboto\ Mono\ 11
+set guifont=DejaVu\ Sans\ Mono\ Book\ 13
 
 " WRAPPING
 set wrap
@@ -137,7 +138,7 @@ highlight TabLineFill guifg=LightGrey
 
 " Signify plugin sign colors
 highlight SignifySignAdd    gui=bold guibg=#F5F5F5 guifg=#00BC41
-highlight SignifySignChange gui=bold guibg=#F5F5F5 guifg=brown
+highlight SignifySignChange gui=bold guibg=#F5F5F5 guifg=darkorange
 highlight SignifySignDelete gui=bold guibg=#F5F5F5 guifg=red
 highlight SignColumn guibg=#F5F5F5 gui=NONE
 
@@ -158,3 +159,17 @@ highlight EndOfBuffer guifg=bg
 
 " ColorColumn
 highlight ColorColumn guibg=#F5F5F5
+
+call g:quickmenu#reset()
+noremap <silent><F12> :call quickmenu#toggle(0)<cr>
+call g:quickmenu#append('# Misc', '')
+call g:quickmenu#append('vimrc', 'tabe ~/.config/vimrc')
+call g:quickmenu#append('# Projects', '')
+call g:quickmenu#append('scikit-learn', 'source ~/.vim/sessions/scikit')
+call g:quickmenu#append('systems-ex', 'source ~/.vim/sessions/systems')
+
+call g:quickmenu#append('# Zusammenfassungen', '')
+call g:quickmenu#append('analysis', 'source ~/.vim/sessions/analysis | VimtexCompile')
+call g:quickmenu#append('systems', 'source ~/.vim/sessions/systems-zf | VimtexCompile')
+
+

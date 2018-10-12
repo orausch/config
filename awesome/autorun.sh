@@ -8,6 +8,5 @@ function run {
 }
 
 run pa-applet
-run nm-applet
 run redshift
 run claws-mail

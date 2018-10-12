@@ -178,7 +178,6 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.fixed.horizontal,
             wibox.widget.systray(),
             mytextclock,
-			volume,
             s.mylayoutbox,
         },
     }
@@ -513,10 +512,7 @@ autorunApps =
 { 
    "xset r rate 200 30",
    "setxkbmap -option caps:escape -layout 'us(altgr-intl)'",
---   "xfce4-power-manager",
---   "pa-applet",
---   "nm-applet",
---   "redshift",
+   "nm-applet",
    "xfce4-power-manager",
    "/home/oliver/.config/awesome/autorun.sh"
 }
