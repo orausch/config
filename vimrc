@@ -20,7 +20,24 @@ Plug 'vim-scripts/EditPlus'
 Plug 'endel/vim-github-colorscheme'
 Plug 'nelstrom/vim-mac-classic-theme'
 Plug 'skywind3000/quickmenu.vim'
+Plug 'SirVer/ultisnips'
+
+Plug 'jreybert/vimagit'
+" Optional:
+Plug 'honza/vim-snippets'
 call plug#end()
+
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsExpandTrigger="<c-j>"
+
+call vimtex#imaps#add_map({
+    \ 'lhs' : 'é',
+    \ 'rhs' : '\item ',
+    \ 'leader' : '',
+    \ 'wrapper' : 'vimtex#imaps#wrap_environment',
+    \ 'context' : ["itemize", "enumerate"],
+    \})
+
 set laststatus=2
 
 if has("autocmd")
@@ -66,20 +83,13 @@ let g:vimtex_view_general_viewer = 'zathura'
 " GUI
 set mouse=a
 let g:vimwiki_use_mouse = 1
-set guioptions -=m
-set guioptions -=T
-set guioptions-=L
-set guioptions-=r
-set mousemodel=popup_setpos
-set guifont=Roboto\ Mono\ 11
-set guifont=DejaVu\ Sans\ Mono\ Book\ 13
 
 " WRAPPING
 set wrap
 set textwidth=79
 set colorcolumn=79
-au BufRead,BufNewFile *.tex setlocal textwidth=120
-au BufRead,BufNewFile *.tex setlocal colorcolumn=120
+au BufRead,BufNewFile *.tex setlocal textwidth=100
+au BufRead,BufNewFile *.tex setlocal colorcolumn=100
 
 " SEARCH
 set hlsearch
@@ -170,6 +180,23 @@ call g:quickmenu#append('systems-ex', 'source ~/.vim/sessions/systems')
 
 call g:quickmenu#append('# Zusammenfassungen', '')
 call g:quickmenu#append('analysis', 'source ~/.vim/sessions/analysis | VimtexCompile')
+call g:quickmenu#append('economics', 'source ~/.vim/sessions/econ | VimtexCompile')
 call g:quickmenu#append('systems', 'source ~/.vim/sessions/systems-zf | VimtexCompile')
+call g:quickmenu#append('ti', 'source ~/.vim/sessions/ti')
 
 
+runtime ftplugin/man.vim
+if has("gui_running")
+    nnoremap K :<C-U>exe "Man" v:count "<C-R><C-W>"<CR>
+endif
+
+if has("gui_running")
+	set go=c "use TUI in gvim
+	set guioptions -=m
+	set guioptions -=T
+	set guioptions-=L
+	set guioptions-=r
+	set mousemodel=popup_setpos
+	set guifont=Roboto\ Mono\ 11
+	set guifont=DejaVu\ Sans\ Mono\ Book\ 13
+endif

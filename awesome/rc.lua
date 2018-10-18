@@ -39,13 +39,13 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/home/oliver/.config/awesome/zenburn/theme.lua")
+beautiful.init("/home/orausch/.config/awesome/zenburn/theme.lua")
 beautiful.font = "Roboto 11"
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 gears.wallpaper.set(beautiful.bg_normal)
 	
 -- This is used later as the default terminal and editor to run.
-terminal = "xfce4-terminal"
+terminal = "terminator"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -141,6 +141,45 @@ screen.connect_signal("property::geometry", set_wallpaper)
 --			widget.set_markup("Cpu " .. cpu_now.usage)
 --		end
 --	}) 
+--
+--local mybattery = awful.widget.watch(
+--    { awful.util.shell, "-c", "upower -i /org/freedesktop/UPower/devices/battery_BAT | sed -n '/present/,/icon-name/p'" },
+--    30,
+--    settings = function(widget, stdout)
+--        local bat_now = {
+--            present      = "N/A",
+--            state        = "N/A",
+--            warninglevel = "N/A",
+--            energy       = "N/A",
+--            energyfull   = "N/A",
+--            energyrate   = "N/A",
+--            voltage      = "N/A",
+--            percentage   = "N/A",
+--            capacity     = "N/A",
+--            icon         = "N/A"
+--        }
+--
+--        for k, v in string.gmatch(stdout, '([%a]+[%a|-]+):%s*([%a|%d]+[,|%a|%d]-)') do
+--            if     k == "present"       then bat_now.present      = v
+--            elseif k == "state"         then bat_now.state        = v
+--            elseif k == "warning-level" then bat_now.warninglevel = v
+--            elseif k == "energy"        then bat_now.energy       = string.gsub(v, ",", ".") -- Wh
+--            elseif k == "energy-full"   then bat_now.energyfull   = string.gsub(v, ",", ".") -- Wh
+--            elseif k == "energy-rate"   then bat_now.energyrate   = string.gsub(v, ",", ".") -- W
+--            elseif k == "voltage"       then bat_now.voltage      = string.gsub(v, ",", ".") -- V
+--            elseif k == "percentage"    then bat_now.percentage   = tonumber(v)              -- %
+--            elseif k == "capacity"      then bat_now.capacity     = string.gsub(v, ",", ".") -- %
+--            elseif k == "icon-name"     then bat_now.icon         = v
+--            end
+--        end
+--
+--        -- customize here
+--        widget:set_text("Bat: " .. bat_now.percentage .. " " .. bat_now.state)
+--    end
+--)
+
+local battery_widget = require("awesome-wm-widgets.battery-widget.battery")
+local volume_widget = require("awesome-wm-widgets.volume-widget.volume")
 awful.screen.connect_for_each_screen(function(s)
     -- Wallpaper
     set_wallpaper(s)
@@ -163,7 +202,7 @@ awful.screen.connect_for_each_screen(function(s)
 
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s })
+    s.mywibox = awful.wibar({ position = "top", screen = s, height=28 })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -177,6 +216,8 @@ awful.screen.connect_for_each_screen(function(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             wibox.widget.systray(),
+			battery_widget,
+			volume_widget,
             mytextclock,
             s.mylayoutbox,
         },
@@ -230,10 +271,15 @@ globalkeys = awful.util.table.join(
         end,
         {description = "go back", group = "client"}),
 
+	awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 2%+", false) end),
+	awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Master 2%-", false) end),
+	awful.key({ }, "XF86AudioMute", function () awful.util.spawn("amixer set Master toggle", false) end),
+	awful.key({ }, "XF86MonBrightnessUp", function () awful.util.spawn("xbacklight -inc 10", false) end),
+	awful.key({ }, "XF86MonBrightnessDown", function () awful.util.spawn("xbacklight -dec 10", false) end),
     -- Standard program
     awful.key({ modkey, "Shift"   }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
-    awful.key({ modkey, "Shift"}, "f", function () awful.spawn("dbus-launch Thunar") end,
+    awful.key({ modkey, "Shift"}, "f", function () awful.spawn("pcmanfm") end,
               {description = "open file manager", group = "launcher"}),
     awful.key({ modkey}, "v", function () awful.spawn("gvim") end,
               {description = "open gvim", group = "launcher"}),
@@ -370,6 +416,7 @@ for i = 1, 9 do
                   end,
                   {description = "toggle focused client on tag #" .. i, group = "tag"})
     )
+
 end
 
 clientbuttons = awful.util.table.join(
@@ -513,8 +560,9 @@ autorunApps =
    "xset r rate 200 30",
    "setxkbmap -option caps:escape -layout 'us(altgr-intl)'",
    "nm-applet",
-   "xfce4-power-manager",
-   "/home/oliver/.config/awesome/autorun.sh"
+   --"pnmixer",
+   "/home/oliver/.config/awesome/autorun.sh",
+	"xss-lock -- xscreensaver-command -lock"
 }
 if autorun then
 	for app = 1, #autorunApps do

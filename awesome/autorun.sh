@@ -7,6 +7,7 @@ function run {
 	fi
 }
 
-run pa-applet
+#run pa-applet
 run redshift
 run claws-mail
+run battray

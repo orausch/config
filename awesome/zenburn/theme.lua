@@ -9,8 +9,9 @@ local theme = {}
 theme.font      = "sans 8"
 
 -- {{{ Colors
-theme.fg_normal  = "#DCDCCC"
-theme.fg_focus   = "#F0DFAF"
+--theme.fg_normal  = "#DCDCCC"
+theme.fg_normal  = "#FFFFFF"
+theme.fg_focus   = "#FFFFFF"
 theme.fg_urgent  = "#CC9393"
 theme.bg_normal  = "#3F3F3F"
 theme.bg_focus   = "#1E2320"
@@ -21,7 +22,7 @@ theme.bg_systray = theme.bg_normal
 -- {{{ Borders
 theme.useless_gap   = 0 
 theme.border_width  = 2
-theme.border_normal = "#3F3F3F"
+theme.border_normal = "#F3F3F3"
 theme.border_focus  = "#F0DFAF"
 theme.border_marked = "#CC9393"
 -- }}}
