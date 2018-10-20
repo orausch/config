@@ -30,13 +30,6 @@ call plug#end()
 let g:UltiSnipsJumpForwardTrigger="<c-j>"
 let g:UltiSnipsExpandTrigger="<c-j>"
 
-call vimtex#imaps#add_map({
-    \ 'lhs' : 'é',
-    \ 'rhs' : '\item ',
-    \ 'leader' : '',
-    \ 'wrapper' : 'vimtex#imaps#wrap_environment',
-    \ 'context' : ["itemize", "enumerate"],
-    \})
 
 set laststatus=2
 
@@ -49,6 +42,7 @@ set nocompatible
 " MAPS
 nnoremap <F9> :Gstatus<CR>
 nnoremap <F8> :TagbarToggle<CR>
+nnoremap <F10> :VimtexTocOpen<CR>
 nnoremap <c-p> :Files<CR>
 nnoremap <c-l> :Tags<CR>
 nnoremap <Space><Space> @q
@@ -76,9 +70,18 @@ set background=light
 set clipboard=unnamedplus
 
 
+"vimtex
 let g:polyglot_disabled = ['latex', 'python']
 
 let g:vimtex_view_general_viewer = 'zathura'
+
+let g:vimtex_quickfix_latexlog = {
+			\ 'overfull' : 0,
+			\ 'underfull' : 0,
+			\ 'packages' : {
+			\   'default' : 0,
+			\ },
+			\}
 
 " GUI
 set mouse=a
@@ -90,6 +93,7 @@ set textwidth=79
 set colorcolumn=79
 au BufRead,BufNewFile *.tex setlocal textwidth=100
 au BufRead,BufNewFile *.tex setlocal colorcolumn=100
+
 
 " SEARCH
 set hlsearch
@@ -106,8 +110,8 @@ set scrolloff=5
 " Note: Normally, :cwindow jumps to the quickfix window if the command opens it
 " (but not if it's already open). However, as part of the autocmd, this doesn't
 " seem to happen.
-autocmd QuickFixCmdPost [^l]* nested cwindow
-autocmd QuickFixCmdPost    l* nested lwindow
+"autocmd QuickFixCmdPost [^l]* nested cwindow
+"autocmd QuickFixCmdPost    l* nested lwindow
 
 set belloff=all
 
@@ -134,7 +138,7 @@ highlight SignifySignChange    	gui=bold guifg=orange guibg=NONE cterm=bold cter
 
 
 hi SignColumn guibg=white
-hi IncSearch guifg=Darkblue guibg=white
+"hi IncSearch guifg=Darkblue guibg=white
 hi Search guifg=black guibg=white
 hi LineNr guibg=black
 
@@ -200,3 +204,4 @@ if has("gui_running")
 	set guifont=Roboto\ Mono\ 11
 	set guifont=DejaVu\ Sans\ Mono\ Book\ 13
 endif
+
