@@ -39,9 +39,10 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/home/orausch/.config/awesome/zenburn/theme.lua")
-beautiful.font = "Roboto 11"
+beautiful.init("/home/orausch/.config/awesome/default/theme.lua")
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+beautiful.font = "Roboto 12"
+beautiful.useless_gap = 2
 gears.wallpaper.set(beautiful.bg_normal)
 	
 -- This is used later as the default terminal and editor to run.
@@ -177,9 +178,35 @@ screen.connect_signal("property::geometry", set_wallpaper)
 --        widget:set_text("Bat: " .. bat_now.percentage .. " " .. bat_now.state)
 --    end
 --)
+--
+--
 
+pill_color     = "#555555"
+
+beautiful.bg_systray = pill_color
+
+--beautiful.taglist_shape = function(cr,w,h)
+--        gears.shape.rounded_rect(cr,w,h,3)
+--    end
 local battery_widget = require("awesome-wm-widgets.battery-widget.battery")
 local volume_widget = require("awesome-wm-widgets.volume-widget.volume")
+local topleftwidgets = wibox.widget {
+	battery_widget,
+	volume_widget,
+    wibox.widget.systray(),
+    mytextclock,
+	layout = wibox.layout.fixed.horizontal
+}
+
+
+local topleftbg = wibox.container.background(topleftwidgets, pill_color,
+	function(cr,w,h)
+        gears.shape.rounded_rect(cr,w,h,3)
+    end
+)
+
+
+
 awful.screen.connect_for_each_screen(function(s)
     -- Wallpaper
     set_wallpaper(s)
@@ -187,19 +214,21 @@ awful.screen.connect_for_each_screen(function(s)
     -- Each screen has its own tag table.
     awful.tag({"1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
 	
-    -- Create a promptbox for each screen
-    s.mypromptbox = awful.widget.prompt()
-    -- Create an imagebox widget which will contains an icon indicating which layout we're using.
-    -- We need one layoutbox per screen.
-    s.mylayoutbox = awful.widget.layoutbox(s)
-    s.mylayoutbox:buttons(awful.util.table.join(
-                           awful.button({ }, 1, function () awful.layout.inc( 1) end),
-                           awful.button({ }, 3, function () awful.layout.inc(-1) end),
-                           awful.button({ }, 4, function () awful.layout.inc( 1) end),
-                           awful.button({ }, 5, function () awful.layout.inc(-1) end)))
     -- Create a taglist widget
-    s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons)
+	s.mytaglist = wibox.container.background (
+		wibox.container.margin(
+			awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons),
+			5,
+			5,
+			0,
+			0
+			),
 
+		pill_color,
+		function(cr,w,h)
+			gears.shape.rounded_rect(cr,w,h,3)
+		end
+		)
 
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s, height=28 })
@@ -209,17 +238,13 @@ awful.screen.connect_for_each_screen(function(s)
         layout = wibox.layout.align.horizontal,
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            mylauncher,
+            --mylauncher,
             s.mytaglist,
         },
-            s.mypromptbox,
+		nil,
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-            wibox.widget.systray(),
-			battery_widget,
-			volume_widget,
-            mytextclock,
-            s.mylayoutbox,
+			topleftbg,
         },
     }
 end)
@@ -441,6 +466,7 @@ awful.rules.rules = {
                      buttons = clientbuttons,
                      screen = awful.screen.preferred,
                      placement = awful.placement.no_overlap+awful.placement.no_offscreen,
+ 					 -- size_hints_honor = false remove gaps from windows
      }
     },
 
@@ -574,3 +600,8 @@ awful.spawn("urxvt -e maxima -name CALCULATOR", {
     tag       = mouse.screen.selected_tag,
     placement = awful.placement.bottom_right,
 })
+client.connect_signal("manage", function (c)
+    c.shape = function(cr,w,h)
+        gears.shape.rounded_rect(cr,w,h,5)
+    end
+end)

@@ -139,7 +139,6 @@ highlight SignifySignChange    	gui=bold guifg=orange guibg=NONE cterm=bold cter
 
 hi SignColumn guibg=white
 "hi IncSearch guifg=Darkblue guibg=white
-hi Search guifg=black guibg=white
 hi LineNr guibg=black
 
 " Mac Classic colorscheme customization
