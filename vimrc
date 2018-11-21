@@ -21,8 +21,10 @@ Plug 'endel/vim-github-colorscheme'
 Plug 'nelstrom/vim-mac-classic-theme'
 Plug 'skywind3000/quickmenu.vim'
 Plug 'SirVer/ultisnips'
+Plug 'https://github.com/lambdalisue/gina.vim'
+Plug 'NLKNguyen/papercolor-theme'
 
-Plug 'jreybert/vimagit'
+Plug 'tpope/vim-commentary'
 " Optional:
 Plug 'honza/vim-snippets'
 call plug#end()
@@ -204,3 +206,21 @@ if has("gui_running")
 	set guifont=DejaVu\ Sans\ Mono\ Book\ 13
 endif
 
+function GStatusTabDiff()
+  if has('multi_byte_encoding')
+    let colon = '\%(:\|\%uff1a\)'
+  else
+    let colon = ':'
+  endif
+  let filename = matchstr(matchstr(getline(line('.')),'^#\t\zs.\{-\}\ze\%( ([^()[:digit:]]\+)\)\=$'), colon.' *\zs.*')
+  tabedit %
+  execute ':Gedit ' . filename
+  Gvdiff
+endfunction
+command GStatusTabDiff call GStatusTabDiff()
+autocmd FileType gitcommit noremap <buffer> dt :GStatusTabDiff<CR>
+
+let g:vimwiki_list = [{'path': '~/vimwiki/',
+			\ 'template_path': '~/vimwiki_html/templates/',
+			\ 'template_default': 'main',
+			\ 'template_ext': '.html'}]

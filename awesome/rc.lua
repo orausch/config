@@ -41,7 +41,7 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/orausch/.config/awesome/default/theme.lua")
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
-beautiful.font = "Roboto 12"
+beautiful.font = "Roboto Bold 12"
 beautiful.useless_gap = 2
 gears.wallpaper.set(beautiful.bg_normal)
 	
@@ -83,7 +83,7 @@ end
 -- {{{ Menu
 -- Create a launcher widget and a main menu
 myawesomemenu = {
-   { "hotkeys", function() return false, hotkeys_popup.show_help end},
+   { "hotkeys", function() return false, hotkeys_popup.show2help end},
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
@@ -181,13 +181,13 @@ screen.connect_signal("property::geometry", set_wallpaper)
 --
 --
 
-pill_color     = "#555555"
+-- pill_color     = "#555555"
 
-beautiful.bg_systray = pill_color
+-- beautiful.bg_systray = pill_color
 
---beautiful.taglist_shape = function(cr,w,h)
---        gears.shape.rounded_rect(cr,w,h,3)
---    end
+beautiful.taglist_shape = function(cr,w,h)
+        gears.shape.rounded_rect(cr,w,h,5)
+    end
 local battery_widget = require("awesome-wm-widgets.battery-widget.battery")
 local volume_widget = require("awesome-wm-widgets.volume-widget.volume")
 local topleftwidgets = wibox.widget {
@@ -215,20 +215,28 @@ awful.screen.connect_for_each_screen(function(s)
     awful.tag({"1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
 	
     -- Create a taglist widget
-	s.mytaglist = wibox.container.background (
-		wibox.container.margin(
+	-- s.mytaglist = wibox.container.background (
+	-- 	wibox.container.margin(
+	-- 		awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons),
+	-- 		5,
+	-- 		5,
+	-- 		0,
+	-- 		0
+	-- 		),
+
+	-- 	pill_color,
+	-- 	function(cr,w,h)
+	-- 		gears.shape.rounded_rect(cr,w,h, 3)
+	-- 	end
+	-- 	)
+	s.mytaglist = wibox.container.margin(
 			awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons),
 			5,
 			5,
 			0,
 			0
-			),
+			)
 
-		pill_color,
-		function(cr,w,h)
-			gears.shape.rounded_rect(cr,w,h,3)
-		end
-		)
 
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s, height=28 })
@@ -244,7 +252,7 @@ awful.screen.connect_for_each_screen(function(s)
 		nil,
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-			topleftbg,
+			topleftwidgets,
         },
     }
 end)
@@ -310,8 +318,6 @@ globalkeys = awful.util.table.join(
               {description = "open gvim", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, "Shift"   }, "q", awesome.quit,
-              {description = "quit awesome", group = "awesome"}),
 
     awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
               {description = "increase master width factor", group = "layout"}),
@@ -595,11 +601,6 @@ if autorun then
 		awful.util.spawn(autorunApps[app], false)
 	end
 end
-awful.spawn("urxvt -e maxima -name CALCULATOR", {
-    floating  = true,
-    tag       = mouse.screen.selected_tag,
-    placement = awful.placement.bottom_right,
-})
 client.connect_signal("manage", function (c)
     c.shape = function(cr,w,h)
         gears.shape.rounded_rect(cr,w,h,5)
