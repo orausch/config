@@ -20,7 +20,7 @@
 # signal
 # urgent
 
-command=/usr/share/i3blocks/$BLOCK_NAME
+command=/usr/libexec/i3blocks/$BLOCK_NAME
 separator_block_width=15
 markup=none
 
@@ -63,5 +63,5 @@ signal=10
 # Date Time
 [time]
 color=#ffffff
-command=bash -c 'date "+%Y-%m-%d %H:%M:%S"; if [ -n "$BLOCK_BUTTON" ]; then orage -t > /dev/null; fi'
+command=bash -c 'date "+%Y-%m-%d %H:%M"; if [ -n "$BLOCK_BUTTON" ]; then orage -t > /dev/null; fi'
 interval=5
