@@ -29,6 +29,8 @@ Plug 'tpope/vim-commentary'
 Plug 'honza/vim-snippets'
 call plug#end()
 
+set t_Co=256
+
 let g:UltiSnipsJumpForwardTrigger="<c-j>"
 let g:UltiSnipsExpandTrigger="<c-j>"
 

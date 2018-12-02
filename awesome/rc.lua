@@ -41,12 +41,12 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/orausch/.config/awesome/default/theme.lua")
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
-beautiful.font = "Roboto Bold 12"
+beautiful.font = "Monospace 12"
 beautiful.useless_gap = 2
 gears.wallpaper.set(beautiful.bg_normal)
 	
 -- This is used later as the default terminal and editor to run.
-terminal = "terminator"
+terminal = "urxvt256c"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -61,7 +61,7 @@ modkey = "Mod4"
 awful.layout.layouts = {
     awful.layout.suit.tile,
     lain.layout.centerwork,
-    awful.layout.suit.floating,
+	awful.layout.suit.fair
 }
 -- }}}
 
@@ -99,8 +99,6 @@ mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
 
 -- {{{ Wibar
--- Create a textclock widget
-mytextclock = wibox.widget.textclock()
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = awful.util.table.join(
@@ -136,74 +134,91 @@ end
 
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 screen.connect_signal("property::geometry", set_wallpaper)
---
---local cpu = lain.widget.cpu({
---		settings = function()
---			widget.set_markup("Cpu " .. cpu_now.usage)
---		end
---	}) 
---
---local mybattery = awful.widget.watch(
---    { awful.util.shell, "-c", "upower -i /org/freedesktop/UPower/devices/battery_BAT | sed -n '/present/,/icon-name/p'" },
---    30,
---    settings = function(widget, stdout)
---        local bat_now = {
---            present      = "N/A",
---            state        = "N/A",
---            warninglevel = "N/A",
---            energy       = "N/A",
---            energyfull   = "N/A",
---            energyrate   = "N/A",
---            voltage      = "N/A",
---            percentage   = "N/A",
---            capacity     = "N/A",
---            icon         = "N/A"
---        }
---
---        for k, v in string.gmatch(stdout, '([%a]+[%a|-]+):%s*([%a|%d]+[,|%a|%d]-)') do
---            if     k == "present"       then bat_now.present      = v
---            elseif k == "state"         then bat_now.state        = v
---            elseif k == "warning-level" then bat_now.warninglevel = v
---            elseif k == "energy"        then bat_now.energy       = string.gsub(v, ",", ".") -- Wh
---            elseif k == "energy-full"   then bat_now.energyfull   = string.gsub(v, ",", ".") -- Wh
---            elseif k == "energy-rate"   then bat_now.energyrate   = string.gsub(v, ",", ".") -- W
---            elseif k == "voltage"       then bat_now.voltage      = string.gsub(v, ",", ".") -- V
---            elseif k == "percentage"    then bat_now.percentage   = tonumber(v)              -- %
---            elseif k == "capacity"      then bat_now.capacity     = string.gsub(v, ",", ".") -- %
---            elseif k == "icon-name"     then bat_now.icon         = v
---            end
---        end
---
---        -- customize here
---        widget:set_text("Bat: " .. bat_now.percentage .. " " .. bat_now.state)
---    end
---)
---
---
+local white = beautiful.fg_normal
+local back = beautiful.bg_normal
+local orange = "#ffa500"
+local red = "#ff0000"
 
--- pill_color     = "#555555"
+local markup = lain.util.markup
+local separator = markup.color("#777777", back, " | ")
 
--- beautiful.bg_systray = pill_color
-
-beautiful.taglist_shape = function(cr,w,h)
-        gears.shape.rounded_rect(cr,w,h,5)
+local cpu = lain.widget.cpu {
+    settings = function()
+		markup_string = "CPU: "
+		fg_color = white
+		if cpu_now.usage > 90 then
+			fg_color = red
+		elseif cpu_now.usage > 60 then
+			fg_color = orange
+		end
+        widget:set_markup("CPU: " 
+			.. markup.color(fg_color, back, cpu_now.usage .. "%") 
+			.. separator )
     end
-local battery_widget = require("awesome-wm-widgets.battery-widget.battery")
-local volume_widget = require("awesome-wm-widgets.volume-widget.volume")
-local topleftwidgets = wibox.widget {
-	battery_widget,
-	volume_widget,
-    wibox.widget.systray(),
-    mytextclock,
-	layout = wibox.layout.fixed.horizontal
+}
+
+local mem = lain.widget.mem {
+	settings = function()
+		fg_color = white
+		if mem_now.used > 50000 then
+			fg_color = orange
+		elseif mem_now.used > 10000 then
+			fg_color = red
+		end
+        widget:set_markup("MEM: " 
+			.. markup.color(fg_color, back, mem_now.used .. "MB")
+			.. separator)
+	end
+}
+local volume = lain.widget.pulse {
+	settings = function()
+		vlevel = volume_now.left .. "%"
+        if volume_now.muted == "yes" then
+            vlevel = markup.color("#999999", back, "MUTE")
+        end
+        widget:set_markup("VOL: " .. vlevel  .. separator)
+	end
+
+}
+
+textclock = wibox.widget.textclock("%A %d %B %H:%M ")
+local cal = lain.widget.cal {
+    attach_to = { textclock},
+}
+
+local bat = lain.widget.bat {
+	battery = "BAT0",
+	timeout  = 10,
+	settings = function()
+		fg_color = white
+		if bat_now.perc < 40 then
+			fg_color = orange
+		elseif bat_now.perc < 15 then
+			fg_color = red
+		end
+
+     	widget:set_markup("BAT: " 
+			.. markup.color(fg_color, back, bat_now.perc .. "% ") 
+			.. string.sub(bat_now.status, 1, 1)
+			.. "(" .. bat_now.time .. ")"
+			.. separator)
+ 	end
+}
+local net = lain.widget.net {
+	iface = "wlp2s0",
+	wifi_state = "on",
+	settings = function()
+		if net_now.state == "up" then
+			widget:set_markup("NET: " .. -net_now.devices.wlp2s0.signal .. separator)
+		else
+			widget:set_markup("NET: " .. net_now.state .. separator)
+		end
+ 	end
+
 }
 
 
-local topleftbg = wibox.container.background(topleftwidgets, pill_color,
-	function(cr,w,h)
-        gears.shape.rounded_rect(cr,w,h,3)
-    end
-)
+
 
 
 
@@ -213,33 +228,11 @@ awful.screen.connect_for_each_screen(function(s)
 
     -- Each screen has its own tag table.
     awful.tag({"1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
-	
-    -- Create a taglist widget
-	-- s.mytaglist = wibox.container.background (
-	-- 	wibox.container.margin(
-	-- 		awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons),
-	-- 		5,
-	-- 		5,
-	-- 		0,
-	-- 		0
-	-- 		),
 
-	-- 	pill_color,
-	-- 	function(cr,w,h)
-	-- 		gears.shape.rounded_rect(cr,w,h, 3)
-	-- 	end
-	-- 	)
-	s.mytaglist = wibox.container.margin(
-			awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons),
-			5,
-			5,
-			0,
-			0
-			)
+	s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons)
 
-
-    -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s, height=28 })
+	s.mylayoutbox = awful.widget.layoutbox(s)
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -252,7 +245,13 @@ awful.screen.connect_for_each_screen(function(s)
 		nil,
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-			topleftwidgets,
+			volume.widget,
+			cpu.widget,
+			mem.widget,
+			bat.widget,
+			net.widget,
+			textclock,
+			s.mylayoutbox
         },
     }
 end)
@@ -273,22 +272,19 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
 
-    awful.key({ modkey,           }, "j",
-        function ()
-            awful.client.focus.byidx( 1)
-        end,
-        {description = "focus next by index", group = "client"}
-    ),
-    awful.key({ modkey,           }, "k",
-        function ()
-            awful.client.focus.byidx(-1)
-        end,
-        {description = "focus previous by index", group = "client"}
-    ),
+    awful.key({ modkey,           }, "k", function () awful.client.focus.bydirection("up") end,
+        {description = "focus up", group = "client"}),
+    awful.key({ modkey,           }, "j", function () awful.client.focus.bydirection("down") end,
+        {description = "focus down", group = "client"}),
+    awful.key({ modkey,           }, "h", function () awful.client.focus.bydirection("left") end,
+        {description = "focus left", group = "client"}),
+    awful.key({ modkey,           }, "l", function () awful.client.focus.bydirection("right") end,
+        {description = "focus right", group = "client"}),
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end,
               {description = "show main menu", group = "awesome"}),
 
     -- Layout manipulation
+	--
     awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end,
               {description = "focus the next screen", group = "screen"}),
     awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end,
@@ -304,9 +300,18 @@ globalkeys = awful.util.table.join(
         end,
         {description = "go back", group = "client"}),
 
-	awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 2%+", false) end),
-	awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Master 2%-", false) end),
-	awful.key({ }, "XF86AudioMute", function () awful.util.spawn("amixer set Master toggle", false) end),
+	awful.key({ }, "XF86AudioRaiseVolume", function () 
+		awful.util.spawn("amixer set Master 2%+", false)
+		volume.update()
+	end),
+	awful.key({ }, "XF86AudioLowerVolume", function () 
+		awful.util.spawn("amixer set Master 2%-", false)
+		volume.update() 
+	end),
+	awful.key({ }, "XF86AudioMute", function () 
+		awful.util.spawn("amixer set Master toggle", false) 
+		volume.update() 
+	end),
 	awful.key({ }, "XF86MonBrightnessUp", function () awful.util.spawn("xbacklight -inc 10", false) end),
 	awful.key({ }, "XF86MonBrightnessDown", function () awful.util.spawn("xbacklight -dec 10", false) end),
     -- Standard program
@@ -319,19 +324,19 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
 
-    awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
+    awful.key({ modkey,"Shift"    }, "l",     function () awful.tag.incmwfact( 0.05)          end,
               {description = "increase master width factor", group = "layout"}),
-    awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)          end,
+    awful.key({ modkey,"Shift"    }, "h",     function () awful.tag.incmwfact(-0.05)          end,
               {description = "decrease master width factor", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
+    awful.key({ modkey,           }, ",",     function () awful.tag.incnmaster( 1, nil, true) end,
               {description = "increase the number of master clients", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1, nil, true) end,
+    awful.key({ modkey,           }, ".",     function () awful.tag.incnmaster(-1, nil, true) end,
               {description = "decrease the number of master clients", group = "layout"}),
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1, nil, true)    end,
               {description = "increase the number of columns", group = "layout"}),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
               {description = "decrease the number of columns", group = "layout"}),
-    awful.key({ modkey,           }, "space", function () awful.layout.inc( 1)                end,
+    awful.key({ modkey,           }, "p", function () awful.layout.inc( 1)                end,
               {description = "select next", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
               {description = "select previous", group = "layout"}),
@@ -509,7 +514,7 @@ awful.rules.rules = {
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
 	{ rule = { class = "Firefox" },
-	properties = { screen = 1, tag = "2" } },
+	properties = { screen = 1, tag = "1" } },
 
 	{ rule = { instance = "claws-mail" },
 	properties = { screen = 1, tag = "4" } },
@@ -589,12 +594,13 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 autorun = true
 autorunApps = 
 { 
-   "xset r rate 200 30",
-   "setxkbmap -option caps:escape -layout 'us(altgr-intl)'",
-   "nm-applet",
-   --"pnmixer",
-   "/home/oliver/.config/awesome/autorun.sh",
-	"xss-lock -- xscreensaver-command -lock"
+	"xrdb ~/.Xresources",
+	"xset r rate 200 30",
+	"setxkbmap -option caps:escape -layout 'us(altgr-intl)'",
+	"nm-applet",
+	--"pnmixer",
+	"/home/oliver/.config/awesome/autorun.sh",
+	"xss-lock -- xscreensaver-command -lock",
 }
 if autorun then
 	for app = 1, #autorunApps do

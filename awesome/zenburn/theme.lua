@@ -97,7 +97,7 @@ theme.layout_cornerne   = "/usr/share/awesome/themes/zenburn/layouts/cornerne.pn
 theme.layout_cornersw   = "/usr/share/awesome/themes/zenburn/layouts/cornersw.png"
 theme.layout_cornerse   = "/usr/share/awesome/themes/zenburn/layouts/cornerse.png"
 theme.layout_cornerse   = "/usr/share/awesome/themes/zenburn/layouts/cornerse.png"
-theme.layout_centerwork = "/home/oliver/.config/awesome/lain/icons/layout/zenburn/centerwork.png"
+theme.layout_centerwork = "/home/orausch/.config/awesome/lain/icons/layout/zenburn/centerwork.png"
 -- }}}
 
 -- {{{ Titlebar

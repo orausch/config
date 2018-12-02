@@ -16,7 +16,7 @@ floating_modifier $mod
 
 # start a terminal
 #bindsym $mod+Return exec xterm -fa "Dejavu sans mono:pixelsize=15"
-bindsym $mod+Shift+Return exec terminator
+bindsym $mod+Shift+Return exec urxvt256c
 bindsym $mod+Shift+f exec pcmanfm
 bindsym $mod+v exec gvim
 
