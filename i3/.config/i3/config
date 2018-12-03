@@ -16,7 +16,7 @@ floating_modifier $mod
 
 # start a terminal
 #bindsym $mod+Return exec xterm -fa "Dejavu sans mono:pixelsize=15"
-bindsym $mod+Shift+Return exec urxvt256c
+bindsym $mod+Shift+Return exec mlterm
 bindsym $mod+Shift+f exec pcmanfm
 bindsym $mod+v exec gvim
 
@@ -26,6 +26,7 @@ bindsym Mod1+space exec --no-startup-id i3-dmenu-desktop
 
 # change focus
 bindsym $mod+a focus parent 
+focus_wrapping force
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
@@ -45,8 +46,8 @@ bindsym $mod+Shift+Right move right
 
 # toggle layout
 bindsym $mod+t layout toggle tabbed splitv splith
-bindsym $mod+m split v
-bindsym $mod+n split h
+bindsym $mod+n split v
+bindsym $mod+m split h
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -55,41 +56,39 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+Shift+space floating toggle
 
 # switch to workspace
-bindsym $mod+grave workspace "1:web"
-bindsym $mod+1 workspace "2:1"
-bindsym $mod+2 workspace "3:2"
-bindsym $mod+3 workspace "4:3"
-bindsym $mod+4 workspace "5:4"
-bindsym $mod+5 workspace "6:5"
-bindsym $mod+6 workspace "7:6"
-bindsym $mod+7 workspace "8:7"
-bindsym $mod+8 workspace "9:8"
-bindsym $mod+9 workspace "10:9"
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
 
 # move focused container to workspace
-bindsym $mod+Shift+grave move container to workspace "1:web"
-bindsym $mod+Shift+1 move container to workspace "2:1"
-bindsym $mod+Shift+2 move container to workspace "3:2"
-bindsym $mod+Shift+3 move container to workspace "4:3"
-bindsym $mod+Shift+4 move container to workspace "5:4"
-bindsym $mod+Shift+5 move container to workspace "6:5"
-bindsym $mod+Shift+6 move container to workspace "7:6"
-bindsym $mod+Shift+7 move container to workspace "8:7"
-bindsym $mod+Shift+8 move container to workspace "9:8"
-bindsym $mod+Shift+9 move container to workspace "10:9"
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-#bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 mode "resize" {
-        bindsym h resize grow left 10 px
-        bindsym k resize shrink down 10 px
-        bindsym j resize grow down 10 px
-        bindsym l resize shrink left 10 px
+        bindsym h resize grow left 20 px
+        bindsym k resize shrink down 20 px
+        bindsym j resize grow down 20 px
+        bindsym l resize shrink left 20 px
 
         # back to normal: Enter or Escape
         bindsym Return mode "default"
@@ -102,7 +101,6 @@ bar {
 	tray_padding 0
 	position top 
     status_command i3status
-	strip_workspace_numbers yes
 	colors {
 		focused_workspace #004777 #004777 #FFFFFF
 	}
@@ -132,5 +130,5 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id volume-script up
 bindsym XF86AudioLowerVolume exec --no-startup-id volume-script down
 bindsym XF86AudioMute exec --no-startup-id volume-script mute
 
-assign [class="irefox"] "1:web"
+assign [class="irefox"] 1
 focus_follows_mouse yes

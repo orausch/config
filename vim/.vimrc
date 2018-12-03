@@ -1,31 +1,24 @@
+set t_Co=256
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-fugitive'
 Plug 'sheerun/vim-polyglot'
 Plug 'majutsushi/tagbar'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'vhdirk/vim-cmake'
 Plug 'lervag/vimtex'
 Plug 'vimwiki/vimwiki'
 Plug 'jremmen/vim-ripgrep'
 Plug 'nvie/vim-flake8'
 Plug 'Valloric/YouCompleteMe'
 Plug 'tpope/vim-surround'
-Plug 'agude/vim-eldar'
 Plug 'mhinz/vim-signify'
-Plug 'jsit/disco.vim'
 Plug 'rakr/vim-one'
 Plug 'itchyny/lightline.vim'
-Plug 'vim-scripts/EditPlus'
-Plug 'endel/vim-github-colorscheme'
 Plug 'nelstrom/vim-mac-classic-theme'
 Plug 'skywind3000/quickmenu.vim'
-Plug 'SirVer/ultisnips'
-
-Plug 'jreybert/vimagit'
-" Optional:
-Plug 'honza/vim-snippets'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'tpope/vim-commentary'
 call plug#end()
+
 
 let g:UltiSnipsJumpForwardTrigger="<c-j>"
 let g:UltiSnipsExpandTrigger="<c-j>"
@@ -138,8 +131,7 @@ highlight SignifySignChange    	gui=bold guifg=orange guibg=NONE cterm=bold cter
 
 
 hi SignColumn guibg=white
-hi IncSearch guifg=Darkblue guibg=white
-hi Search guifg=black guibg=white
+"hi IncSearch guifg=Darkblue guibg=white
 hi LineNr guibg=black
 
 " Mac Classic colorscheme customization
@@ -205,3 +197,21 @@ if has("gui_running")
 	set guifont=DejaVu\ Sans\ Mono\ Book\ 13
 endif
 
+function GStatusTabDiff()
+  if has('multi_byte_encoding')
+    let colon = '\%(:\|\%uff1a\)'
+  else
+    let colon = ':'
+  endif
+  let filename = matchstr(matchstr(getline(line('.')),'^#\t\zs.\{-\}\ze\%( ([^()[:digit:]]\+)\)\=$'), colon.' *\zs.*')
+  tabedit %
+  execute ':Gedit ' . filename
+  Gvdiff
+endfunction
+command GStatusTabDiff call GStatusTabDiff()
+autocmd FileType gitcommit noremap <buffer> dt :GStatusTabDiff<CR>
+
+let g:vimwiki_list = [{'path': '~/vimwiki/',
+			\ 'template_path': '~/vimwiki_html/templates/',
+			\ 'template_default': 'main',
+			\ 'template_ext': '.html'}]

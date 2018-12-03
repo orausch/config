@@ -1,0 +1,12 @@
+borderless = true
+use_anti_alias = true
+scrollbar_mode = none
+bel_mode = none
+logsize = 4096
+fg_color=#BBBBBB
+bg_color=#121212
+cursor_bg_color=#BBBBBB
+cursor_fg_color=#FFFFFF
+bd_color=#FFFFFF
+it_color=#000000
+ul_color=#FFD5B5
