@@ -46,7 +46,7 @@ beautiful.useless_gap = 2
 gears.wallpaper.set(beautiful.bg_normal)
 	
 -- This is used later as the default terminal and editor to run.
-terminal = "mate-terminal"
+terminal = "uxterm"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -134,6 +134,8 @@ end
 
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 screen.connect_signal("property::geometry", set_wallpaper)
+
+-- WIDGETS --
 local white = beautiful.fg_normal
 local back = beautiful.bg_normal
 local orange = "#ffa500"
@@ -157,6 +159,28 @@ local cpu = lain.widget.cpu {
     end
 }
 
+local summary = nil
+function show_tooltip()
+    local font = 'monospace 10'
+    local text_color = '#FFFFFF'
+    local fd = io.popen(os.getenv("HOME") .. "/.config/awesome/mem.sh summary")
+    local str = fd:read("*all")
+    local content = string.format('<span font="%s" foreground="%s">%s</span>', font, text_color, str)
+    summary = naughty.notify({
+--        title = "Memory Usage",
+        text = content,
+        timeout = 0,
+        hover_timeout = 0.5,
+        width = 60*8
+    })
+end
+
+function hide_tooltip()
+    if summary ~= nil then
+        naughty.destroy(summary)
+    end
+end
+
 local mem = lain.widget.mem {
 	settings = function()
 		fg_color = white
@@ -168,8 +192,12 @@ local mem = lain.widget.mem {
         widget:set_markup("MEM: " 
 			.. markup.color(fg_color, back, mem_now.used .. "MB")
 			.. separator)
+
+		widget:connect_signal("mouse::enter", show_tooltip)
+		widget:connect_signal("mouse::leave", hide_tooltip)
 	end
 }
+
 local volume = lain.widget.pulse {
 	settings = function()
 		vlevel = volume_now.left .. "%"
@@ -184,6 +212,7 @@ local volume = lain.widget.pulse {
 textclock = wibox.widget.textclock("%A %d %B %H:%M ")
 local cal = lain.widget.cal {
     attach_to = { textclock},
+	icons=""
 }
 
 local bat = lain.widget.bat {
@@ -204,18 +233,18 @@ local bat = lain.widget.bat {
 			.. separator)
  	end
 }
-local net = lain.widget.net {
-	iface = "wlp2s0",
-	wifi_state = "on",
-	settings = function()
-		if net_now.state == "up" then
-			widget:set_markup("NET: " .. -net_now.devices.wlp2s0.signal .. separator)
-		else
-			widget:set_markup("NET: " .. net_now.state .. separator)
-		end
- 	end
+-- local net = lain.widget.net {
+-- 	iface = "wlp2s0",
+-- 	wifi_state = "on",
+-- 	settings = function()
+-- 		if net_now.state == "up" then
+-- 			widget:set_markup("NET: " .. -net_now.devices.wlp2s0.signal .. separator)
+-- 		else
+-- 			widget:set_markup("NET: " .. net_now.state .. separator)
+-- 		end
+--  	end
 
-}
+-- }
 
 
 
@@ -249,7 +278,7 @@ awful.screen.connect_for_each_screen(function(s)
 			cpu.widget,
 			mem.widget,
 			bat.widget,
-			net.widget,
+			-- net.widget,
 			textclock,
 			wibox.widget.systray()
         },
@@ -354,7 +383,7 @@ globalkeys = awful.util.table.join(
               {description = "restore minimized", group = "client"}),
 
     -- Prompt
-    awful.key({ "Mod1" },            "space",     function () awful.spawn(
+    awful.key({ modkey },            "space",     function () awful.spawn(
 			string.format("j4-dmenu-desktop --dmenu=\"dmenu -i  -nb '%s' -nf '%s' -sf '%s' -sb '%s'\"", 
 				beautiful.bg_normal, beautiful.fg_normal, beautiful.fg_focus, beautiful.bg_focus)
 		, false) end,
@@ -518,6 +547,9 @@ awful.rules.rules = {
 
 	{ rule = { instance = "claws-mail" },
 	properties = { screen = 1, tag = "4" } },
+
+	{ rule = { instance = "geary" },
+	properties = { screen = 1, tag = "4" } },
 }
 -- }}}
 
@@ -596,10 +628,11 @@ autorunApps =
 { 
 	"xrdb ~/.Xresources",
 	"xset r rate 200 30",
-	"setxkbmap -option caps:escape -layout 'us(altgr-intl)'",
+	"setxkbmap -option caps:escape -option altwin:swap_lalt_lwin -layout 'us(altgr-intl)'",
 	"nm-applet",
+	"xscreensaver",
 	--"pnmixer",
-	"/home/oliver/.config/awesome/autorun.sh",
+	--"/home/oliver/.config/awesome/autorun.sh",
 	"xss-lock -- xscreensaver-command -lock",
 }
 if autorun then

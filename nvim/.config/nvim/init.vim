@@ -4,27 +4,31 @@ Plug 'tpope/vim-fugitive'
 Plug 'sheerun/vim-polyglot'
 Plug 'majutsushi/tagbar'
 Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'lervag/vimtex'
+
 Plug 'vimwiki/vimwiki'
 Plug 'jremmen/vim-ripgrep'
 Plug 'nvie/vim-flake8'
 Plug 'Valloric/YouCompleteMe'
 Plug 'tpope/vim-surround'
 Plug 'mhinz/vim-signify'
-Plug 'rakr/vim-one'
-Plug 'nelstrom/vim-mac-classic-theme'
 Plug 'skywind3000/quickmenu.vim'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'tpope/vim-commentary'
+
+"colors
+Plug 'nelstrom/vim-mac-classic-theme'
+Plug 'danilo-augusto/vim-afterglow'
 call plug#end()
 
 
 let g:UltiSnipsJumpForwardTrigger="<c-j>"
 let g:UltiSnipsExpandTrigger="<c-j>"
 
-
 set laststatus=2
 
+colorscheme afterglow
 if has("autocmd")
 	filetype indent plugin on
 endif
@@ -49,17 +53,14 @@ set tabstop=4
 set shiftwidth=4
 set splitbelow
 if (has("termguicolors"))
-	set termguicolors
 endif
 
 syntax enable
 
-colorscheme mac_classic
-set background=light
 
 
 " copy to system clipboard by default
-set clipboard=unnamedplus
+set clipboard=unnamed
 
 
 "vimtex
@@ -80,7 +81,7 @@ let g:vimwiki_use_mouse = 1
 set mouse=a
 
 " WRAPPING
-set wrap
+"set wrap
 set textwidth=79
 set colorcolumn=79
 au BufRead,BufNewFile *.tex setlocal textwidth=100
@@ -124,46 +125,46 @@ let g:fzf_colors =
 
 
 
-highlight SignifySignAdd    	gui=bold guifg=green guibg=NONE cterm=bold ctermfg=green
-highlight SignifySignDelete    	gui=bold guifg=red guibg=NONE cterm=bold ctermfg=red
-highlight SignifySignChange    	gui=bold guifg=orange guibg=NONE cterm=bold ctermfg=yellow
+"highlight SignifySignAdd    	gui=bold guifg=green guibg=NONE cterm=bold ctermfg=green
+"highlight SignifySignDelete    	gui=bold guifg=red guibg=NONE cterm=bold ctermfg=red
+"highlight SignifySignChange    	gui=bold guifg=orange guibg=NONE cterm=bold ctermfg=yellow
+"
 
+"hi SignColumn guibg=white
+""hi IncSearch guifg=Darkblue guibg=white
+"hi LineNr guibg=black
 
-hi SignColumn guibg=white
-"hi IncSearch guifg=Darkblue guibg=white
-hi LineNr guibg=black
-
-" Mac Classic colorscheme customization
-highlight CursorLineNR guibg=#F0F6FF
-highlight FoldColumn guibg=white
-highlight LineNr guibg=white
-highlight SignColumn guibg=white
-highlight VertSplit guibg=white guifg=#CFCFCF
-highlight TabLineFill guifg=LightGrey
-
-" Signify plugin sign colors
-highlight SignifySignAdd    gui=bold guibg=#F5F5F5 guifg=#00BC41
-highlight SignifySignChange gui=bold guibg=#F5F5F5 guifg=darkorange
-highlight SignifySignDelete gui=bold guibg=#F5F5F5 guifg=red
-highlight SignColumn guibg=#F5F5F5 gui=NONE
-
-" Fix Error visibility when in cursor line
-highlight Error guibg=#FFDDDD guifg=red gui=bold
-
-" Highlight tabs and trailing spaces with red:		     
-highlight SpecialKey guifg=red
-
-" Diff
-highlight DiffAdd guibg=#DDFFDD
-highlight DiffChange guibg=#FFFFDD
-highlight DiffDelete guibg=#FFDDDD
-highlight DiffText guibg=#FFFFAA
-
-" Hide tilde from empty lines after file contents
-highlight EndOfBuffer guifg=bg
-
-" ColorColumn
-highlight ColorColumn guibg=#F5F5F5
+"" Mac Classic colorscheme customization
+"highlight CursorLineNR guibg=#F0F6FF
+"highlight FoldColumn guibg=white
+"highlight LineNr guibg=white
+"highlight SignColumn guibg=white
+"highlight VertSplit guibg=white guifg=#CFCFCF
+"highlight TabLineFill guifg=LightGrey
+"
+"" Signify plugin sign colors
+"highlight SignifySignAdd    gui=bold guibg=#F5F5F5 guifg=#00BC41
+"highlight SignifySignChange gui=bold guibg=#F5F5F5 guifg=darkorange
+"highlight SignifySignDelete gui=bold guibg=#F5F5F5 guifg=red
+"highlight SignColumn guibg=#F5F5F5 gui=NONE
+"
+"" Fix Error visibility when in cursor line
+"highlight Error guibg=#FFDDDD guifg=red gui=bold
+"
+"" Highlight tabs and trailing spaces with red:		     
+"highlight SpecialKey guifg=red
+"
+"" Diff
+"highlight DiffAdd guibg=#DDFFDD
+"highlight DiffChange guibg=#FFFFDD
+"highlight DiffDelete guibg=#FFDDDD
+"highlight DiffText guibg=#FFFFAA
+"
+"" Hide tilde from empty lines after file contents
+"highlight EndOfBuffer guifg=bg
+"
+"" ColorColumn
+"highlight ColorColumn guibg=#F5F5F5
 
 call g:quickmenu#reset()
 noremap <silent><F12> :call quickmenu#toggle(0)<cr>
@@ -211,4 +212,3 @@ command GStatusTabDiff call GStatusTabDiff()
 autocmd FileType gitcommit noremap <buffer> dt :GStatusTabDiff<CR>
 
 let g:vimwiki_list = [{'path': '~/Documents/vimwiki/'}]
-
