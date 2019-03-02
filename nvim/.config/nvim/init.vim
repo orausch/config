@@ -16,6 +16,7 @@ Plug 'mhinz/vim-signify'
 Plug 'skywind3000/quickmenu.vim'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'tpope/vim-commentary'
+Plug 'alfredodeza/pytest.vim'
 
 "colors
 Plug 'nelstrom/vim-mac-classic-theme'
@@ -27,20 +28,25 @@ let g:UltiSnipsJumpForwardTrigger="<c-j>"
 let g:UltiSnipsExpandTrigger="<c-j>"
 
 set laststatus=2
+colorscheme PaperColor
+set background=dark
 
-colorscheme afterglow
 if has("autocmd")
 	filetype indent plugin on
 endif
 set noshowcmd noruler
 set nocompatible
-
 " MAPS
-nnoremap <F9> :Gstatus<CR>
-nnoremap <F8> :TagbarToggle<CR>
-nnoremap <F10> :VimtexTocOpen<CR>
+nnoremap <silent><Leader>tf <Esc>:Pytest file<CR>
+nnoremap <silent><Leader>tc <Esc>:Pytest class<CR>
+nnoremap <silent><Leader>tm <Esc>:Pytest function<CR>
+nnoremap <silent><Leader>tb <Esc>:TagbarToggle<CR>
+
+nnoremap <silent><Leader>g :Gstatus<CR>
+nnoremap <F10> :VimtexTocToggle<CR>
 nnoremap <c-p> :Files<CR>
 nnoremap <c-l> :Tags<CR>
+nnoremap <c-k> :BTags<CR>
 nnoremap <Space><Space> @q
 
 nnoremap <C-c> :ccl<CR>:pc<CR>
@@ -130,10 +136,11 @@ let g:fzf_colors =
 "highlight SignifySignChange    	gui=bold guifg=orange guibg=NONE cterm=bold ctermfg=yellow
 "
 
-"hi SignColumn guibg=white
+hi SignColumn ctermbg=black
 ""hi IncSearch guifg=Darkblue guibg=white
 "hi LineNr guibg=black
 
+"colorscheme mac_classic
 "" Mac Classic colorscheme customization
 "highlight CursorLineNR guibg=#F0F6FF
 "highlight FoldColumn guibg=white
@@ -169,8 +176,9 @@ let g:fzf_colors =
 call g:quickmenu#reset()
 noremap <silent><F12> :call quickmenu#toggle(0)<cr>
 call g:quickmenu#append('# Misc', '')
-call g:quickmenu#append('vimrc', 'tabe ~/.config/vimrc')
+call g:quickmenu#append('vimrc', 'tabe ~/.config/nvim/init.vim')
 call g:quickmenu#append('# Projects', '')
+call g:quickmenu#append('araneum HN', 'cd ~/araneum/hidden-networks/')
 call g:quickmenu#append('scikit-learn', 'source ~/.vim/sessions/scikit')
 call g:quickmenu#append('systems-ex', 'source ~/.vim/sessions/systems')
 
@@ -212,3 +220,7 @@ command GStatusTabDiff call GStatusTabDiff()
 autocmd FileType gitcommit noremap <buffer> dt :GStatusTabDiff<CR>
 
 let g:vimwiki_list = [{'path': '~/Documents/vimwiki/'}]
+
+set number
+set smartcase
+set statusline+=%F

@@ -41,8 +41,9 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/orausch/.config/awesome/default/theme.lua")
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
-beautiful.font = "Monospace 12"
-beautiful.useless_gap = 2
+--beautiful.font = "Monospace 12"
+beautiful.font = "Terminus Bold 13"
+beautiful.useless_gap = 0
 gears.wallpaper.set(beautiful.bg_normal)
 	
 -- This is used later as the default terminal and editor to run.
@@ -136,6 +137,8 @@ end
 screen.connect_signal("property::geometry", set_wallpaper)
 
 -- WIDGETS --
+
+--
 local white = beautiful.fg_normal
 local back = beautiful.bg_normal
 local orange = "#ffa500"
@@ -143,6 +146,32 @@ local red = "#ff0000"
 
 local markup = lain.util.markup
 local separator = markup.color("#777777", back, " | ")
+local mpris = awful.widget.watch(
+    { awful.util.shell, "-c", "playerctl status && playerctl metadata" },
+    2,
+    function(widget, stdout)
+        state = string.match(stdout, "Playing") or
+                           string.match(stdout, "Paused")  or ""
+
+		if state == "Playing" then
+			state = " PLAYING: "
+		elseif state == "Paused" then
+			state = " PAUSED: "
+		end
+		state = state
+		title = stdout:match("title%s+([^\n]*)") or ""
+		artist = stdout:match("artist%s+([^\n]*)") or ""
+        -- customize here
+        widget:set_markup((markup.color("#7777FF", back, state) .. artist .. " - " .. title) or "")
+    end
+)
+mpris:connect_signal("button::press", function(_,_,_,button)
+	if (button == 2)     then awful.spawn("playerctl previous", false)
+	elseif (button == 3) then awful.spawn("playerctl next", false)
+	elseif (button == 1) then awful.spawn("playerctl play-pause", false)
+	end
+	end
+)
 
 local cpu = lain.widget.cpu {
     settings = function()
@@ -161,7 +190,7 @@ local cpu = lain.widget.cpu {
 
 local summary = nil
 function show_tooltip()
-    local font = 'monospace 10'
+    local font = 'Terminus 10'
     local text_color = '#FFFFFF'
     local fd = io.popen(os.getenv("HOME") .. "/.config/awesome/mem.sh summary")
     local str = fd:read("*all")
@@ -212,7 +241,7 @@ local volume = lain.widget.pulse {
 textclock = wibox.widget.textclock("%A %d %B %H:%M ")
 local cal = lain.widget.cal {
     attach_to = { textclock},
-	icons=""
+	icons="",
 }
 
 local bat = lain.widget.bat {
@@ -256,7 +285,11 @@ awful.screen.connect_for_each_screen(function(s)
     set_wallpaper(s)
 
     -- Each screen has its own tag table.
-    awful.tag({"1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
+    awful.tag({"1", "2", "3", "4", "5", "6", "7", "8"}, s, awful.layout.layouts[1])
+    awful.tag.add("9", {
+			screen = s,
+			layout = awful.layout.layouts[3]
+		})
 
 	s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons)
 
@@ -270,6 +303,7 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.fixed.horizontal,
             --mylauncher,
             s.mytaglist,
+			mpris
         },
 		nil,
         { -- Right widgets
@@ -301,13 +335,13 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
 
-    awful.key({ modkey,           }, "k", function () awful.client.focus.bydirection("up") end,
+    awful.key({ modkey,           }, "k", function () awful.client.focus.global_bydirection("up") end,
         {description = "focus up", group = "client"}),
-    awful.key({ modkey,           }, "j", function () awful.client.focus.bydirection("down") end,
+    awful.key({ modkey,           }, "j", function () awful.client.focus.global_bydirection("down") end,
         {description = "focus down", group = "client"}),
-    awful.key({ modkey,           }, "h", function () awful.client.focus.bydirection("left") end,
+    awful.key({ modkey,           }, "h", function () awful.client.focus.global_bydirection("left") end,
         {description = "focus left", group = "client"}),
-    awful.key({ modkey,           }, "l", function () awful.client.focus.bydirection("right") end,
+    awful.key({ modkey,           }, "l", function () awful.client.focus.global_bydirection("right") end,
         {description = "focus right", group = "client"}),
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end,
               {description = "show main menu", group = "awesome"}),
@@ -350,6 +384,8 @@ globalkeys = awful.util.table.join(
               {description = "open file manager", group = "launcher"}),
     awful.key({ modkey}, "v", function () awful.spawn("nvim-qt") end,
               {description = "open gvim", group = "launcher"}),
+    awful.key({ modkey, "Control"}, "l", function () awful.spawn("i3lock-fancy -p -t \"\"") end,
+              {description = "lock screen", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
 
@@ -384,7 +420,7 @@ globalkeys = awful.util.table.join(
 
     -- Prompt
     awful.key({ modkey },            "space",     function () awful.spawn(
-			string.format("j4-dmenu-desktop --dmenu=\"dmenu -i  -nb '%s' -nf '%s' -sf '%s' -sb '%s'\"", 
+			string.format("j4-dmenu-desktop --no-generic --dmenu=\"dmenu -i  -nb '%s' -nf '%s' -sf '%s' -sb '%s'\"", 
 				beautiful.bg_normal, beautiful.fg_normal, beautiful.fg_focus, beautiful.bg_focus)
 		, false) end,
               {description = "run prompt", group = "launcher"}),
@@ -506,35 +542,41 @@ awful.rules.rules = {
                      buttons = clientbuttons,
                      screen = awful.screen.preferred,
                      placement = awful.placement.no_overlap+awful.placement.no_offscreen,
- 					 -- size_hints_honor = false remove gaps from windows
+ 					 size_hints_honor = false --remove gaps from windows
      }
     },
 
     -- Floating clients.
-    { rule_any = {
-        instance = {
-          "DTA",  -- Firefox addon DownThemAll.
-          "copyq",  -- Includes session name in class.
-        },
-        class = {
-          "Arandr",
-          "Gpick",
-          "Kruler",
-          "MessageWin",  -- kalarm.
-          "Sxiv",
-          "Wpa_gui",
-          "pinentry",
-          "veromix",
-          "xtightvncviewer"},
+    -- { rule_any = {
+    --     instance = {
+    --       "DTA",  -- Firefox addon DownThemAll.
+    --       "copyq",  -- Includes session name in class.
+    --     },
+    --     class = {
+    --       "Arandr",
+    --       "Gpick",
+    --       "Kruler",
+    --       "MessageWin",  -- kalarm.
+    --       "Sxiv",
+    --       "Wpa_gui",
+    --       "pinentry",
+    --       "veromix",
+    --       "xtightvncviewer"},
 
-        name = {
-          "Event Tester",  -- xev.
-        },
-        role = {
-          "AlarmWindow",  -- Thunderbird's calendar.
-          "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
-        }
-      }, properties = { floating = true }},
+    --     name = {
+    --       "Event Tester",  -- xev.
+    --     },
+    --     role = {
+    --       "AlarmWindow",  -- Thunderbird's calendar.
+    --       "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
+    --     }
+    --   }, properties = { floating = true }},
+
+    -- { rule_any = {
+    --     class = {
+    --       "libreoffice",
+    --       },
+    --   }, properties = { floating = false }},
 
     -- Add titlebars to normal clients and dialogs
 --    { rule_any = {type = { "normal", "dialog" }
@@ -627,21 +669,21 @@ autorun = true
 autorunApps = 
 { 
 	"xrdb ~/.Xresources",
-	"xset r rate 200 30",
+	"xset r rate 200 35",
 	"setxkbmap -option caps:escape -option altwin:swap_lalt_lwin -layout 'us(altgr-intl)'",
 	"nm-applet",
-	"xscreensaver",
+	-- "xscreensaver",
 	--"pnmixer",
 	--"/home/oliver/.config/awesome/autorun.sh",
-	"xss-lock -- xscreensaver-command -lock",
+	-- "xss-lock -- xscreensaver-command -lock",
 }
 if autorun then
 	for app = 1, #autorunApps do
 		awful.util.spawn(autorunApps[app], false)
 	end
 end
-client.connect_signal("manage", function (c)
-    c.shape = function(cr,w,h)
-        gears.shape.rounded_rect(cr,w,h,5)
-    end
-end)
+-- client.connect_signal("manage", function (c)
+--     c.shape = function(cr,w,h)
+--         gears.shape.rounded_rect(cr,w,h,5)
+--     end
+-- end)
