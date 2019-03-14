@@ -10,7 +10,7 @@ Plug 'lervag/vimtex'
 Plug 'vimwiki/vimwiki'
 Plug 'jremmen/vim-ripgrep'
 Plug 'nvie/vim-flake8'
-Plug 'Valloric/YouCompleteMe'
+"Plug 'Valloric/YouCompleteMe'
 Plug 'tpope/vim-surround'
 Plug 'mhinz/vim-signify'
 Plug 'skywind3000/quickmenu.vim'
@@ -18,18 +18,37 @@ Plug 'NLKNguyen/papercolor-theme'
 Plug 'tpope/vim-commentary'
 Plug 'alfredodeza/pytest.vim'
 
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
+Plug 'ncm2/ncm2-jedi'
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-path'
+Plug 'numirias/semshi'
+
 "colors
 Plug 'nelstrom/vim-mac-classic-theme'
 Plug 'danilo-augusto/vim-afterglow'
 call plug#end()
 
-
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsExpandTrigger="<c-j>"
+autocmd BufEnter * call ncm2#enable_for_buffer()
+set completeopt=noinsert,menuone,noselect
 
 set laststatus=2
 colorscheme PaperColor
 set background=dark
+
+nmap <silent> <leader>r :Semshi rename<CR>
+nmap <silent> <Tab> :Semshi goto name next<CR>
+nmap <silent> <S-Tab> :Semshi goto name prev<CR>
+
+nmap <silent> <leader>c :Semshi goto class next<CR>
+nmap <silent> <leader>C :Semshi goto class prev<CR>
+
+nmap <silent> <leader>f :Semshi goto function next<CR>
+nmap <silent> <leader>F :Semshi goto function prev<CR>
+
+nmap <silent> <leader>ee :Semshi error<CR>
+nmap <silent> <leader>ge :Semshi goto error<CR>
 
 if has("autocmd")
 	filetype indent plugin on
@@ -50,10 +69,8 @@ nnoremap <c-k> :BTags<CR>
 nnoremap <Space><Space> @q
 
 nnoremap <C-c> :ccl<CR>:pc<CR>
-nnoremap <f3> :YcmCompleter GetDoc<CR>
+nnoremap K :YcmCompleter GetDoc<CR>
 nnoremap <f4> :YcmCompleter GoTo<CR>
-let g:ycm_goto_buffer_command = 'same_buffer'
-let g:ycm_autoclose_preview_window_after_completion = 1
 
 set tabstop=4
 set shiftwidth=4
@@ -66,7 +83,7 @@ syntax enable
 
 
 " copy to system clipboard by default
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 
 "vimtex
@@ -189,11 +206,6 @@ call g:quickmenu#append('systems', 'source ~/.vim/sessions/systems-zf | VimtexCo
 call g:quickmenu#append('ti', 'source ~/.vim/sessions/ti')
 
 
-runtime ftplugin/man.vim
-if has("gui_running")
-    nnoremap K :<C-U>exe "Man" v:count "<C-R><C-W>"<CR>
-endif
-
 if has("gui_running")
 	set go=c "use TUI in gvim
 	set guioptions -=m
@@ -204,20 +216,6 @@ if has("gui_running")
 	set guifont=Roboto\ Mono\ 11
 	set guifont=DejaVu\ Sans\ Mono\ Book\ 13
 endif
-
-function GStatusTabDiff()
-  if has('multi_byte_encoding')
-    let colon = '\%(:\|\%uff1a\)'
-  else
-    let colon = ':'
-  endif
-  let filename = matchstr(matchstr(getline(line('.')),'^#\t\zs.\{-\}\ze\%( ([^()[:digit:]]\+)\)\=$'), colon.' *\zs.*')
-  tabedit %
-  execute ':Gedit ' . filename
-  Gvdiff
-endfunction
-command GStatusTabDiff call GStatusTabDiff()
-autocmd FileType gitcommit noremap <buffer> dt :GStatusTabDiff<CR>
 
 let g:vimwiki_list = [{'path': '~/Documents/vimwiki/'}]
 
