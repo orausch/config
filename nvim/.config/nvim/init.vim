@@ -18,11 +18,6 @@ Plug 'NLKNguyen/papercolor-theme'
 Plug 'tpope/vim-commentary'
 Plug 'alfredodeza/pytest.vim'
 
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
-Plug 'ncm2/ncm2-jedi'
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-path'
 Plug 'numirias/semshi'
 
 "colors
@@ -30,7 +25,6 @@ Plug 'nelstrom/vim-mac-classic-theme'
 Plug 'danilo-augusto/vim-afterglow'
 call plug#end()
 
-autocmd BufEnter * call ncm2#enable_for_buffer()
 set completeopt=noinsert,menuone,noselect
 
 set laststatus=2
@@ -222,3 +216,7 @@ let g:vimwiki_list = [{'path': '~/Documents/vimwiki/'}]
 set number
 set smartcase
 set statusline+=%F
+
+set tabstop=4
+set expandtab
+set shiftwidth=4

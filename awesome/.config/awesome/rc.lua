@@ -1,6 +1,7 @@
 -- Standard awesome library
 local gears = require("gears")
 local lain = require("lain")
+local revelation = require("revelation")
 local awful = require("awful")
 require("awful.autofocus")
 -- Widget and layout library
@@ -40,14 +41,16 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/orausch/.config/awesome/default/theme.lua")
+revelation.init()
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 --beautiful.font = "Monospace 12"
 beautiful.font = "Terminus Bold 13"
 beautiful.useless_gap = 0
+beautiful.maximized_hide_border = true
 gears.wallpaper.set(beautiful.bg_normal)
-	
+
 -- This is used later as the default terminal and editor to run.
-terminal = "uxterm"
+terminal = "xterm"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -146,7 +149,7 @@ local red = "#ff0000"
 
 local markup = lain.util.markup
 local separator = markup.color("#777777", back, " | ")
-local mpris = awful.widget.watch(
+local mpris, mpris_timer = awful.widget.watch(
     { awful.util.shell, "-c", "playerctl status && playerctl metadata" },
     2,
     function(widget, stdout)
@@ -166,9 +169,16 @@ local mpris = awful.widget.watch(
     end
 )
 mpris:connect_signal("button::press", function(_,_,_,button)
-	if (button == 2)     then awful.spawn("playerctl previous", false)
-	elseif (button == 3) then awful.spawn("playerctl next", false)
-	elseif (button == 1) then awful.spawn("playerctl play-pause", false)
+	if (button == 2)     then
+        awful.spawn.with_line_callback("playerctl previous",
+            { exit = function() mpris_timer:emit_signal("timeout") end})
+
+	elseif (button == 3) then 
+        awful.spawn.with_line_callback("playerctl next",
+            { exit = function() mpris_timer:emit_signal("timeout") end})
+	elseif (button == 1) then 
+        awful.spawn.with_line_callback("playerctl play-pause",
+            { exit = function() mpris_timer:emit_signal("timeout") end})
 	end
 	end
 )
@@ -237,6 +247,7 @@ local volume = lain.widget.pulse {
 	end
 
 }
+
 
 textclock = wibox.widget.textclock("%A %d %B %H:%M ")
 local cal = lain.widget.cal {
@@ -330,6 +341,8 @@ root.buttons(awful.util.table.join(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
+    awful.key({ modkey,           }, "e",      revelation,
+              {description="expose", group="awesome"}),
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
@@ -372,7 +385,7 @@ globalkeys = awful.util.table.join(
 		volume.update() 
 	end),
 	awful.key({ }, "XF86AudioMute", function () 
-		awful.util.spawn("pactl set-sink-mute 0 toggle", false) 
+		awful.util.spawn("amixer set Master toggle", false) 
 		volume.update() 
 	end),
 	awful.key({ }, "XF86MonBrightnessUp", function () awful.util.spawn("xbacklight -inc 10", false) end),
@@ -423,18 +436,7 @@ globalkeys = awful.util.table.join(
 			string.format("j4-dmenu-desktop --no-generic --dmenu=\"dmenu -i  -nb '%s' -nf '%s' -sf '%s' -sb '%s'\"", 
 				beautiful.bg_normal, beautiful.fg_normal, beautiful.fg_focus, beautiful.bg_focus)
 		, false) end,
-              {description = "run prompt", group = "launcher"}),
-
-    awful.key({ modkey }, "x",
-              function ()
-                  awful.prompt.run {
-                    prompt       = "Run Lua code: ",
-                    textbox      = awful.screen.focused().mypromptbox.widget,
-                    exe_callback = awful.util.eval,
-                    history_path = awful.util.get_cache_dir() .. "/history_eval"
-                  }
-              end,
-              {description = "lua execute prompt", group = "awesome"})
+              {description = "run prompt", group = "launcher"})
 )
 
 clientkeys = awful.util.table.join(
@@ -454,13 +456,13 @@ clientkeys = awful.util.table.join(
               {description = "move to screen", group = "client"}),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
               {description = "toggle keep on top", group = "client"}),
-    awful.key({ modkey,           }, "n",
-        function (c)
-            -- The client currently has the input focus, so it cannot be
-            -- minimized, since minimized clients can't have the focus.
-            c.minimized = true
-        end ,
-        {description = "minimize", group = "client"}),
+    -- awful.key({ modkey,           }, "n",
+    --     function (c)
+    --         -- The client currently has the input focus, so it cannot be
+    --         -- minimized, since minimized clients can't have the focus.
+    --         c.minimized = true
+    --     end ,
+    --     {description = "minimize", group = "client"}),
     awful.key({ modkey,           }, "m",
         function (c)
             c.maximized = not c.maximized
@@ -545,6 +547,12 @@ awful.rules.rules = {
  					 size_hints_honor = false --remove gaps from windows
      }
     },
+	-- floating windows always stay on top
+    { rule = { floating = true },
+      properties = { ontop = true
+     }
+    },
+
 
     -- Floating clients.
     -- { rule_any = {
@@ -572,11 +580,8 @@ awful.rules.rules = {
     --     }
     --   }, properties = { floating = true }},
 
-    -- { rule_any = {
-    --     class = {
-    --       "libreoffice",
-    --       },
-    --   }, properties = { floating = false }},
+	   { rule = { class = "Firefox" },
+	   properties = { opacity = 1, maximized = false, floating = false } },
 
     -- Add titlebars to normal clients and dialogs
 --    { rule_any = {type = { "normal", "dialog" }
@@ -584,8 +589,8 @@ awful.rules.rules = {
 --    },
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
-	{ rule = { class = "Firefox" },
-	properties = { screen = 1, tag = "1" } },
+	-- { rule = { class = "Firefox" },
+	-- properties = { screen = 1, tag = "1" } },
 
 	{ rule = { instance = "claws-mail" },
 	properties = { screen = 1, tag = "4" } },
