@@ -4,7 +4,7 @@ local lain = require("lain")
 local revelation = require("revelation")
 local awful = require("awful")
 require("awful.autofocus")
--- Widget and layout library
+-- Widget and layout library 
 local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
@@ -150,7 +150,7 @@ local red = "#ff0000"
 local markup = lain.util.markup
 local separator = markup.color("#777777", back, " | ")
 local mpris, mpris_timer = awful.widget.watch(
-    { awful.util.shell, "-c", "playerctl status && playerctl metadata" },
+    { awful.util.shell, "-c", "playerctl status; playerctl metadata" },
     2,
     function(widget, stdout)
         state = string.match(stdout, "Playing") or
@@ -391,12 +391,14 @@ globalkeys = awful.util.table.join(
 	awful.key({ }, "XF86MonBrightnessUp", function () awful.util.spawn("xbacklight -inc 10", false) end),
 	awful.key({ }, "XF86MonBrightnessDown", function () awful.util.spawn("xbacklight -dec 10", false) end),
     -- Standard program
-    awful.key({ modkey, "Shift"   }, "Return", function () awful.spawn(terminal) end,
+    awful.key({ modkey, "Shift"}, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, "Shift"}, "f", function () awful.spawn("caja") end,
               {description = "open file manager", group = "launcher"}),
-    awful.key({ modkey}, "v", function () awful.spawn("nvim-qt") end,
-              {description = "open gvim", group = "launcher"}),
+    awful.key({ modkey}, "y", function () awful.spawn("xterm -e octave") end,
+              {description = "open octave", group = "launcher"}),
+    awful.key({ modkey}, "a", function () awful.spawn("xterm -T aerc -e aerc") end,
+              {description = "open aerc", group = "launcher"}),
     awful.key({ modkey, "Control"}, "l", function () awful.spawn("i3lock-fancy -p -t \"\"") end,
               {description = "lock screen", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
@@ -592,7 +594,7 @@ awful.rules.rules = {
 	-- { rule = { class = "Firefox" },
 	-- properties = { screen = 1, tag = "1" } },
 
-	{ rule = { instance = "claws-mail" },
+	{ rule = { name = "aerc" },
 	properties = { screen = 1, tag = "4" } },
 
 	{ rule = { instance = "geary" },
