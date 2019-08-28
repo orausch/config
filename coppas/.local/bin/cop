@@ -1,0 +1,14 @@
+#!/bin/sh
+
+filename=$(pwd)/$1
+if   [ -d "${filename}" ]
+then 
+    echo "Copied $filename (dir)"
+elif [ -f "${filename}" ]
+then 
+    echo "Copied $filename (file)"
+else 
+    echo "ERROR: ${filename} is not a file or directory";
+    exit 1
+fi
+echo $filename | xclip -selection secondary -i

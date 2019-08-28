@@ -1,0 +1,4 @@
+#!/bin/sh
+filename=$(xclip -selection secondary -o)
+cp -i -r $filename . && echo "Pasted $(basename $filename)"
+
