@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: localhost-sql-block
+# key: sql
+# --
+#+BEGIN_SRC sql :database postgres :dbpassword pwd :dbuser postgres :engine postgresql :dbhost localhost
+$0
+#+END_SRC

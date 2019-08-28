@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: ob-python-src
+# uuid: ob-python-src
+# key: py
+# condition: t
+# --
+
+#+BEGIN_SRC python
+$0
+#+END_SRC
