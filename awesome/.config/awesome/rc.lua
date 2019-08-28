@@ -556,31 +556,27 @@ awful.rules.rules = {
     },
 
 
-    -- Floating clients.
-    -- { rule_any = {
-    --     instance = {
-    --       "DTA",  -- Firefox addon DownThemAll.
-    --       "copyq",  -- Includes session name in class.
-    --     },
-    --     class = {
-    --       "Arandr",
-    --       "Gpick",
-    --       "Kruler",
-    --       "MessageWin",  -- kalarm.
-    --       "Sxiv",
-    --       "Wpa_gui",
-    --       "pinentry",
-    --       "veromix",
-    --       "xtightvncviewer"},
+    --Floating clients.
+    { rule_any = {
+        class = {
+          "blueman-manager",            
+          "Gpick",
+          "Kruler",
+          "MessageWin",  -- kalarm.
+          "Sxiv",
+          "Wpa_gui",
+          "pinentry",
+          "veromix",
+          "xtightvncviewer"},
 
-    --     name = {
-    --       "Event Tester",  -- xev.
-    --     },
-    --     role = {
-    --       "AlarmWindow",  -- Thunderbird's calendar.
-    --       "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
-    --     }
-    --   }, properties = { floating = true }},
+        name = {
+          "Event Tester",  -- xev.
+        },
+        role = {
+          "AlarmWindow",  -- Thunderbird's calendar.
+          "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
+        }
+      }, properties = { floating = true }},
 
 	   { rule = { class = "Firefox" },
 	   properties = { opacity = 1, maximized = false, floating = false } },
