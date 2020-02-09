@@ -2,96 +2,99 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
+
+(server-start)
 (package-initialize)
 (require 'package)
-;; (elpy-enable)
 (add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/"))
-
-(global-set-key (kbd "C-c c") 'org-capture)
-(global-set-key (kbd "C-c a") 'org-agenda)
-
-(setq org-agenda-custom-commands 
-      '(("o" "At the office" tags-todo "@office"
-         ((org-agenda-overriding-header "Office")
-          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
-
-(defun my-org-agenda-skip-all-siblings-but-three ()
-  "Skip all but the three non-done entries."
-  (let (should-skip-entry)
-    (unless (org-current-is-todo)
-      (setq should-skip-entry t))
-    (save-excursion
-      (while (and (not should-skip-entry) (org-goto-sibling t))
-        (when (org-current-is-todo)
-          (setq should-skip-entry t))))
-    (when should-skip-entry
-      (or (outline-next-heading)
-          (goto-char (point-max))))))
-		  
-(defun org-current-is-todo ()
-  (string= "TODO" (org-get-todo-state)))
+	     '("melpa-stable" . "https://stable.melpa.org/packages/"))
 
 (setq url-proxy-services
       '(("no_proxy" . "^\\(localhost\\|10.*\\)")
         ("http" . "www-proxy-ams.nl.oracle.com:80")
         ("https" . "www-proxy-ams.nl.oracle.com:80")))
-(require 'evil-org)
-(add-hook 'org-mode-hook 'evil-org-mode)
-(evil-org-set-key-theme '(navigation insert textobjects additional calendar))
-(require 'evil-org-agenda)
+
+(use-package evil
+  :ensure t
+  :config
+  (evil-mode))
+
+(use-package org
+  :init
+  (defun my-org-agenda-skip-all-siblings-but-three ()
+    "Skip all but the three non-done entries."
+    (let (should-skip-entry)
+      (unless (org-current-is-todo)
+	(setq should-skip-entry t))
+      (save-excursion
+	(while (and (not should-skip-entry) (org-goto-sibling t))
+	  (when (org-current-is-todo)
+	    (setq should-skip-entry t))))
+      (when should-skip-entry
+	(or (outline-next-heading)
+	    (goto-char (point-max))))))
+  (defun org-current-is-todo ()
+    (string= "TODO" (org-get-todo-state)))
+  :config
+  (global-set-key (kbd "C-c c") 'org-capture)
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (setq org-agenda-custom-commands 
+	'(("o" "At the office" tags-todo "@office"
+	   ((org-agenda-overriding-header "Office")
+	    (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
+  (require 'org-protocol)
+  (add-hook 'org-clock-goto-hook 'org-narrow-to-subtree)
+  (add-hook 'org-insert-heading-hook 'evil-insert-state)
+  (global-set-key (kbd "<f12>") 'org-clock-goto)
+  (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)"))))
 
 
-(evil-org-agenda-set-keys)
+(use-package evil-org
+  :ensure t
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+	    (lambda ()
+	      (evil-org-set-key-theme)))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 
-(add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
-;;; ORG STUFF
-;(require 'org)
-;(defun +org/move-item-or-subtree (direction)
-;  "Move the current item or subtree up or down, depending on direction."
-;  (interactive)
-;  (cl-letf ((item-fun (if (eq direction 'up) 'org-move-item-up 'org-move-item-down))
-;            (subtree-fun (if (eq direction 'up) 'org-move-subtree-up 'org-move-subtree-down)))
-;    (if (org-at-item-p)
-;        (funcall item-fun)
-;      (if (org-at-heading-p)
-;          (funcall subtree-fun)
-;        (error "Not an item or heading")))))
-;(define-key org-mode-map (kbd "M-j") (lambda () (interactive) (+org/move-item-or-subtree 'down)))
-;(define-key org-mode-map (kbd "M-k") (lambda () (interactive) (+org/move-item-or-subtree 'up)))
-;(define-key org-mode-map (kbd "M-h") 'org-promote-subtree)
-;(define-key org-mode-map (kbd "M-l") 'org-demote-subtree) 
 
-;; ORG PROTOCOL
-(server-start)
-(require 'org-protocol)
-
-(with-eval-after-load 'company
+(use-package company
+  :ensure t
+  :config
   (define-key company-active-map (kbd "M-n") nil)
   (define-key company-active-map (kbd "M-p") nil)
   (define-key company-active-map (kbd "C-n") #'company-select-next)
   (define-key company-active-map (kbd "C-p") #'company-select-previous))
+ 
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode))
 
+(use-package magit
+  :ensure t
+  :config
+  (global-set-key (kbd "<f11>") 'magit-status))
 
-  
+(use-package evil-magit
+  :ensure t)
+
+(use-package ivy
+  :ensure t
+  :config
+  (ivy-mode))
+
 
 ;; Opening Files
 (global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/org/tasks.org")))
 (global-set-key (kbd "<f3>") (lambda() (interactive) (find-file "~/org/inbox.org")))
-(add-hook 'org-clock-goto-hook 'org-narrow-to-subtree)
-(add-hook 'org-insert-heading-hook 'evil-insert-state)
-
-(require 'magit)
-(require 'evil-magit)
-(global-set-key (kbd "<f11>") 'magit-status)
-(global-set-key (kbd "<f12>") 'org-clock-goto)
 
 (auto-fill-mode 1)
 (setq fill-column 120)
-(require 'evil)
-(evil-mode 1)
-(require 'ivy)
-(ivy-mode 1)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -119,7 +122,7 @@
  '(org-refile-targets (quote (("~/org/tasks.org" :maxlevel . 1))))
  '(package-selected-packages
    (quote
-    (lua-mode rainbow-delimiters markdown-mode elpy evil-magit magit evil-org all-the-icons-ivy counsel yasnippet-snippets org htmlize find-file-in-project evil)))
+    (evil-org use-package evil-commentary lua-mode rainbow-delimiters markdown-mode elpy evil-magit magit all-the-icons-ivy counsel yasnippet-snippets org htmlize find-file-in-project evil)))
  '(python-shell-interpreter "/home/orausch/.local/opt/miniconda3/bin/python")
  '(tool-bar-mode nil))
 (custom-set-faces
@@ -143,4 +146,3 @@
 	   (local-set-key [16] (quote comint-previous-input))
 	   (local-set-key [18] (quote comint-history-isearch-backward))))
 
-(setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))

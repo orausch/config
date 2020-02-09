@@ -1,45 +1,53 @@
-# i3-config
-Personal i3 configuration  
-Install: `i3 i3blocks`
+# Linux config
+Use stow to install the config files. For example
 
-# other things
+	stow awesome
 
 ## remove grub timeout
 edit `/etc/default/grub` and replace `GRUB_TIMEOUT=0`
 
 ## make home and end work in terminal
-`cp /etc/inputrc ~/.inputrc`
+
+	cp /etc/inputrc ~/.inputrc
+
 (if not present try `.inputrc` in `other/`)
 
 ## lock automatic
-Copy `other/xscreensaver.service` into `/etc/systemd/system/`  
-run `systemctl enable xscreensaver.service`  
+
+	cp other/xscreensaver.service /etc/systemd/system/
+	systemctl enable xscreensaver.service
 
 ## dmenu wifi
-install https://github.com/firecat53/networkmanager-dmenu to `/usr/bin/`  
+install https://github.com/firecat53/networkmanager-dmenu to `/usr/bin/`
 install dmenu `.desktop` file
 
 ## vimium
 https://chrome.google.com/webstore/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb?hl=en
 
 ## backlight 
-try `xbacklight`. If it doesn't work:  
+try `xbacklight`. If it doesn't work:
   
-clone: `https://github.com/Ventto/lux`  
-`sudo make install`  
-`sudo usermod -aG video oliver`  
-run `sudo lux` once.  
-relog.  
+	git clone https://github.com/Ventto/lux
+	sudo make install
+	sudo usermod -aG video oliver
+	sudo lux
+
+Then relog.
 
 ## volume
-cp `other/volume-script` to `/usr/bin/`
+
+	cp other/volume-script /usr/bin/
 
 ### other approach
-clone `https://github.com/fernandotcl/pa-applet` and `cd`
-`./autogen.sh`
-`./configure --prefix=/usr/`
+
+	git clone https://github.com/fernandotcl/pa-applet && cd pa-applet
+	./autogen.sh
+	./configure --prefix=/usr/
+
+then 
 `rg Werror` and remove the `-Werror` tag
-`sudo make install`
+
+	sudo make install
 
 ## spotify in i3bar
 Install https://github.com/acrisci/playerctl/releases
@@ -53,4 +61,5 @@ Install https://github.com/acrisci/playerctl/releases
 - ublock origin
 
 # awesomewm
-clone `lain` into `.config/awesome/`
+clone `lain` into `.config/awesome/`.
+Tested version: `33c0e0c2360a04fcc6f51bccb0ad2a7a9e9c07b3`
