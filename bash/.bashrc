@@ -134,3 +134,5 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+export PYTHONPATH=$PYTHONPATH:/home/orausch/repos/dace
+export MKLROOT=/home/orausch/.local/opt/miniconda3/envs/onnx/

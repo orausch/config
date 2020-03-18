@@ -74,6 +74,7 @@ modkey = "Mod4"
 awful.layout.layouts = {
 	awful.layout.suit.tile.right,
 	awful.layout.suit.tile.bottom,
+	lain.layout.centerwork,
 }
 
 local function client_menu_toggle_fn()
@@ -614,7 +615,7 @@ globalkeys = awful.util.table.join(
               {description = "restore minimized", group = "client"}),
 
     -- Prompt
-    awful.key({ modkey },            "s",     function () awful.spawn("j4-dmenu-desktop --dmenu \'rofi -dmenu -i -p \"run:\"'", false) end,
+    awful.key({ modkey },            "s",     function () awful.spawn("j4-dmenu-desktop --dmenu \'rofi -dmenu -i -p \"run\"'", false) end,
               {description = "run prompt", group = "launcher"}),
     awful.key({ modkey },            "d",     function () awful.spawn(
 			"pass-rofi", false) end,
@@ -656,6 +657,15 @@ clientkeys = awful.util.table.join(
 globalkeys = awful.util.table.join(
     globalkeys,
     -- View tag only.
+    awful.key(
+	{ modkey, "Control" }, "F10",
+	function ()
+	    if emacs_tag then
+		awful.tag.viewtoggle(emacs_tag)
+	    end
+	end,
+	{description = "toggle emacs tag", group = "tag"}
+    ),
     awful.key(
 	{ modkey }, "F10",
 	function ()
@@ -795,7 +805,7 @@ awful.rules.rules = {
 	properties = { floating = true }
     },
 
-    { rule = { class = "Thunderbird" },
+    { rule = { class = "thunderbird" },
       properties = { tag = mail_tag } },
 
     { rule = { class = "Spotify" },
@@ -804,11 +814,11 @@ awful.rules.rules = {
     { rule = { name = "Run - pgx" },
       properties = { screen = smallest_screen, tag = "1" } },
 
-    { rule = { class = "Slack" },
+    { rule = { class = "Mattermost" },
       properties = { tag = mail_tag } },
 
-    { rule = { class = "Emacs" },
-      properties = { tag = emacs_tag } },
+    -- { rule = { class = "Emacs" },
+    --   properties = { tag = emacs_tag } },
 }
 
 -- Signal function to execute when a new client appears.
@@ -891,7 +901,7 @@ autorunApps =
 	"mate-volume-control-status-icon",
 	"slack",
 	"thunderbird",
-	"emacsclient -c -a \"emacs\"",
+	-- "emacsclient -c -a \"emacs\"",
 	-- "xscreensaver",
 	--"pnmixer",
 	--"/home/oliver/.config/awesome/autorun.sh",
