@@ -1,56 +1,51 @@
 -- Standard awesome library
-gears = require("gears")
-lain = require("lain")
-revelation = require("revelation")
-awful = require("awful")
+local gears = require("gears")
+local lain = require("lain")
+local awful = require("awful")
 require("awful.autofocus")
 -- Widget and layout library 
-wibox = require("wibox")
+local wibox = require("wibox")
 -- Theme handling library
-beautiful = require("beautiful")
+local beautiful = require("beautiful")
 -- Notification library
-naughty = require("naughty")
-hotkeys_popup = require("awful.hotkeys_popup").widget
+local naughty = require("naughty")
+local menubar = require("menubar")
+local hotkeys_popup = require("awful.hotkeys_popup")
+-- Enable hotkeys help widget for VIM and other apps
+-- when client with a matching name is opened:
+require("awful.hotkeys_popup.keys")
 
 naughty.config.defaults['icon_size'] = 64
+-- Load Debian menu entries
+local debian = require("debian.menu")
+local has_fdo, freedesktop = pcall(require, "freedesktop")
+
 
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
 if awesome.startup_errors then
-    naughty.notify(
-	{
-	    preset = naughty.config.presets.critical,
-	    title = "Oops, there were errors during startup!",
-	    text = awesome.startup_errors
-	}
-    )
+    naughty.notify({ preset = naughty.config.presets.critical,
+                     title = "Oops, there were errors during startup!",
+                     text = awesome.startup_errors })
 end
 
 -- Handle runtime errors after startup
 do
     local in_error = false
-    awesome.connect_signal(
-	"debug::error",
-	function (err)
-	    -- Make sure we don't go into an endless error loop
-	    if in_error then return end
-	    in_error = true
+    awesome.connect_signal("debug::error", function (err)
+        -- Make sure we don't go into an endless error loop
+        if in_error then return end
+        in_error = true
 
-	    naughty.notify(
-		{
-		    preset = naughty.config.presets.critical,
-		    title = "Oops, an error happened!",
-		    text = tostring(err)
-		}
-	    )
-	    in_error = false
-	end
-    )
+        naughty.notify({ preset = naughty.config.presets.critical,
+                         title = "Oops, an error happened!",
+                         text = tostring(err) })
+        in_error = false
+    end)
 end
 
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/orausch/.config/awesome/default/theme.lua")
-revelation.init()
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 --beautiful.font = "Ubuntu Mono Regular 15"
 beautiful.font = "Terminus Bold 13"
@@ -74,123 +69,91 @@ modkey = "Mod4"
 awful.layout.layouts = {
 	awful.layout.suit.tile.right,
 	awful.layout.suit.tile.bottom,
-	lain.layout.centerwork,
+	--lain.layout.centerwork,
 }
 
-local function client_menu_toggle_fn()
-    local instance = nil
-
-    return function ()
-	if instance and instance.wibox.visible then
-	    instance:hide()
-	    instance = nil
-	else
-	    instance = awful.menu.clients({ theme = { width = 250 } })
-	end
-    end
-end
-
+-- {{{ Menu
 -- Create a launcher widget and a main menu
 myawesomemenu = {
-    {
-	"hotkeys",
-	function()
-	    return false,
-	    hotkeys_popup.show2help
-	end
-    },
-    {
-	"manual",
-	terminal .. " -e man awesome"
-    },
-    {
-	"edit config",
-	editor_cmd .. " " .. awesome.conffile
-    },
-    {
-	"restart",
-	awesome.restart
-    },
-    {
-	"quit",
-	function()
-	    awesome.quit()
-	end
-    }
+   { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
+   { "manual", terminal .. " -e man awesome" },
+   { "edit config", editor_cmd .. " " .. awesome.conffile },
+   { "restart", awesome.restart },
+   { "quit", function() awesome.quit() end },
 }
 
-mymainmenu = awful.menu(
-    {
-	items = {
-	    {
-		"awesome",
-		myawesomemenu,
-		beautiful.awesome_icon
-	    },
-	    {
-		"open terminal",
-		terminal
-	    }
-	}
-    }
-)
+local menu_awesome = { "awesome", myawesomemenu, beautiful.awesome_icon }
+local menu_terminal = { "open terminal", terminal }
 
-mylauncher = awful.widget.launcher(
-    {
-	image = beautiful.awesome_icon,
-	menu = mymainmenu
-    }
-)
+if has_fdo then
+    mymainmenu = freedesktop.menu.build({
+        before = { menu_awesome },
+        after =  { menu_terminal }
+    })
+else
+    mymainmenu = awful.menu({
+        items = {
+                  menu_awesome,
+                  { "Debian", debian.menu.Debian_menu.Debian },
+                  menu_terminal,
+                }
+    })
+end
 
+
+mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
+                                     menu = mymainmenu })
+
+-- Menubar configuration
+menubar.utils.terminal = terminal -- Set the terminal for applications that require it
+-- }}}
+
+-- Keyboard map indicator and switcher
+mykeyboardlayout = awful.widget.keyboardlayout()
+
+-- {{{ Wibar
+-- Create a textclock widget
+mytextclock = wibox.widget.textclock()
 
 -- Create a wibox for each screen and add it
-local taglist_buttons = awful.util.table.join(
-    awful.button(
-	{ }, 1,
-	function(t)
-	    t:view_only()
-	end
-    ),
-    awful.button(
-	{ modkey },
-	1,
-	function(t)
-	    if client.focus then
-		client.focus:move_to_tag(t)
-	    end
-	end
-    ),
-    awful.button(
-	{ },
-	3,
-	awful.tag.viewtoggle
-    ),
-    awful.button(
-	{ modkey },
-	3,
-	function(t)
-	    if client.focus then
-		client.focus:toggle_tag(t)
-	    end
-	end
-    ),
-    awful.button(
-	{ },
-	4,
-	function(t)
-	    awful.tag.viewnext(t.screen)
-	end
-    ),
-    awful.button(
-	{ },
-	5,
-	function(t)
-	    awful.tag.viewprev(t.screen)
-	end
-    )
-)
+local taglist_buttons = gears.table.join(
+                    awful.button({ }, 1, function(t) t:view_only() end),
+                    awful.button({ modkey }, 1, function(t)
+                                              if client.focus then
+                                                  client.focus:move_to_tag(t)
+                                              end
+                                          end),
+                    awful.button({ }, 3, awful.tag.viewtoggle),
+                    awful.button({ modkey }, 3, function(t)
+                                              if client.focus then
+                                                  client.focus:toggle_tag(t)
+                                              end
+                                          end),
+                    awful.button({ }, 4, function(t) awful.tag.viewnext(t.screen) end),
+                    awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen) end)
+                )
 
-
+local tasklist_buttons = gears.table.join(
+                     awful.button({ }, 1, function (c)
+                                              if c == client.focus then
+                                                  c.minimized = true
+                                              else
+                                                  c:emit_signal(
+                                                      "request::activate",
+                                                      "tasklist",
+                                                      {raise = true}
+                                                  )
+                                              end
+                                          end),
+                     awful.button({ }, 3, function()
+                                              awful.menu.client_list({ theme = { width = 250 } })
+                                          end),
+                     awful.button({ }, 4, function ()
+                                              awful.client.focus.byidx(1)
+                                          end),
+                     awful.button({ }, 5, function ()
+                                              awful.client.focus.byidx(-1)
+                                          end))
 
 local function set_wallpaper(s)
     -- Wallpaper
@@ -240,58 +203,58 @@ local mpris, mpris_timer = awful.widget.watch(
 function trim1(s)
    return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
-
-local current_task = awful.widget.watch(
-    { awful.util.shell, "-c", "emacsclient -e \" (if (and (boundp 'org-clock-current-task) org-clock-current-task) (substring-no-properties (org-clock-get-clock-string)))\" | tr -d \"\\\"\" | awk '{$1=$1};1'" },
-    10,
-    function(widget, stdout)
-	stdout = trim1(stdout)
-	if stdout == "nil" then
-	    stdout = markup.color("#777777", back, "none")
-	end
-	-- customize here
-	widget:set_markup("TASK: " .. trim1(stdout) .. separator)
-    end
-)
-
-local vpn_name = awful.widget.watch(
-    { awful.util.shell, "-c", "nmcli connection show --active" },
-    10,
-    function(widget, stdout)
-	vpnname = markup.color("#777777", back, "none")
-	if string.match(stdout, "full") then
-	    vpnname = "moat-full"
-	elseif string.match(stdout, "moat") then
-	    vpnname = markup.color(back, "#4D9DE0","moat")
-	elseif string.match(stdout, "oracle") then
-	    vpnname = markup.color( back , "#D1350F","oracle")
-	end
-	-- customize here
-	widget:set_markup("VPN: " .. vpnname .. separator)
-    end
-)
-mpris:connect_signal(
-    "button::press",
-    function(_,_,_,button)
-	if (button == 2) then
-	    awful.spawn.with_line_callback(
-		"playerctl previous",
-		{ exit = function() mpris_timer:emit_signal("timeout") end}
-	    )
-	elseif (button == 3) then 
-	    awful.spawn.with_line_callback(
-		"playerctl next",
-		{ exit = function() mpris_timer:emit_signal("timeout") end}
-	    )
-	elseif (button == 1) then 
-	    awful.spawn.with_line_callback(
-		"playerctl play-pause",
-		{ exit = function() mpris_timer:emit_signal("timeout") end}
-	    )
-	end
-    end
-)
-
+--
+--local current_task = awful.widget.watch(
+--    { awful.util.shell, "-c", "emacsclient -e \" (if (and (boundp 'org-clock-current-task) org-clock-current-task) (substring-no-properties (org-clock-get-clock-string)))\" | tr -d \"\\\"\" | awk '{$1=$1};1'" },
+--    10,
+--    function(widget, stdout)
+--	stdout = trim1(stdout)
+--	if stdout == "nil" then
+--	    stdout = markup.color("#777777", back, "none")
+--	end
+--	-- customize here
+--	widget:set_markup("TASK: " .. trim1(stdout) .. separator)
+--    end
+--)
+--
+--local vpn_name = awful.widget.watch(
+--    { awful.util.shell, "-c", "nmcli connection show --active" },
+--    10,
+--    function(widget, stdout)
+--	vpnname = markup.color("#777777", back, "none")
+--	if string.match(stdout, "full") then
+--	    vpnname = "moat-full"
+--	elseif string.match(stdout, "moat") then
+--	    vpnname = markup.color(back, "#4D9DE0","moat")
+--	elseif string.match(stdout, "oracle") then
+--	    vpnname = markup.color( back , "#D1350F","oracle")
+--	end
+--	-- customize here
+--	widget:set_markup("VPN: " .. vpnname .. separator)
+--    end
+--)
+--mpris:connect_signal(
+--    "button::press",
+--    function(_,_,_,button)
+--	if (button == 2) then
+--	    awful.spawn.with_line_callback(
+--		"playerctl previous",
+--		{ exit = function() mpris_timer:emit_signal("timeout") end}
+--	    )
+--	elseif (button == 3) then 
+--	    awful.spawn.with_line_callback(
+--		"playerctl next",
+--		{ exit = function() mpris_timer:emit_signal("timeout") end}
+--	    )
+--	elseif (button == 1) then 
+--	    awful.spawn.with_line_callback(
+--		"playerctl play-pause",
+--		{ exit = function() mpris_timer:emit_signal("timeout") end}
+--	    )
+--	end
+--    end
+--)
+--
 local cpu = lain.widget.cpu {
     settings = function()
 	markup_string = "CPU: "
@@ -308,7 +271,7 @@ local cpu = lain.widget.cpu {
 	)
     end
 }
-
+--
 local summary = nil
 function show_tooltip()
     local font = 'Terminus 10'
@@ -349,25 +312,25 @@ local mem = lain.widget.mem {
 	    widget:connect_signal("mouse::leave", hide_tooltip)
 	end
 }
-
-local volume = lain.widget.pulse {
-    settings =
-	function()
-	    vlevel = volume_now.left .. "%"
-	    if volume_now.muted == "yes" then
-		vlevel = markup.color("#999999", back, "MUTE")
-	    end
-	    widget:set_markup("VOL: " .. vlevel  .. separator)
-	end
-}
-
-
-textclock = wibox.widget.textclock("%A %d %B %H:%M ")
-local cal = lain.widget.cal {
-    attach_to = { textclock},
-    icons="",
-}
-
+--
+--local volume = lain.widget.pulse {
+--    settings =
+--	function()
+--	    vlevel = volume_now.left .. "%"
+--	    if volume_now.muted == "yes" then
+--		vlevel = markup.color("#999999", back, "MUTE")
+--	    end
+--	    widget:set_markup("VOL: " .. vlevel  .. separator)
+--	end
+--}
+--
+--
+--textclock = wibox.widget.textclock("%A %d %B %H:%M ")
+--local cal = lain.widget.cal {
+--    attach_to = { textclock},
+--    icons="",
+--}
+--
 local bat = lain.widget.bat {
     battery = "BAT0",
     timeout  = 10,
@@ -437,10 +400,10 @@ awful.screen.connect_for_each_screen(
 		{
 		    layout = wibox.layout.fixed.horizontal,
 		    cpu.widget,
-		    mem.widget,
+		    --mem.widget,
 		    bat.widget,
 		    -- net.widget,
-		    textclock,
+		    mytextclock,
 		    --			wibox.widget.systray(),
 		    s.mylayoutbox,
 		},
@@ -489,12 +452,12 @@ largest_screen.mywibox:setup (
 	nil,
 	{
 	    layout = wibox.layout.fixed.horizontal,
-	    current_task,
-	    vpn_name,
+	    --current_task,
+	    --vpn_name,
 	    cpu.widget,
 	    mem.widget,
 	    bat.widget,
-	    textclock,
+	    mytextclock,
 	    wibox.widget.systray(),
 	    largest_screen.mylayoutbox,
 	},
@@ -505,8 +468,8 @@ largest_screen.mywibox:setup (
 
 
 
--- mouse bindings
-root.buttons(awful.util.table.join(
+-- {{{ Mouse bindings
+root.buttons(gears.table.join(
     awful.button({ }, 3, function () mymainmenu:toggle() end),
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
@@ -514,12 +477,6 @@ root.buttons(awful.util.table.join(
 
 -- Key bindings
 globalkeys = awful.util.table.join(
-    awful.key(
-	{ modkey,           },
-	"e",
-	revelation,
-	{description="expose", group="awesome"}
-    ),
     awful.key(
 	{ modkey,           },"F1", 	hotkeys_popup.show_help,
 	{description="show help", group="awesome"}
@@ -625,7 +582,7 @@ globalkeys = awful.util.table.join(
               {description = "gvim", group = "launcher"})
 )
 
-clientkeys = awful.util.table.join(
+clientkeys = gears.table.join(
     awful.key({ modkey,           }, "f",
         function (c)
             c.fullscreen = not c.fullscreen
@@ -654,7 +611,7 @@ clientkeys = awful.util.table.join(
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
 
-globalkeys = awful.util.table.join(
+globalkeys = gears.table.join(
     globalkeys,
     -- View tag only.
     awful.key(
@@ -699,12 +656,12 @@ globalkeys = awful.util.table.join(
 )
 
 for i = 1, 9 do
-    globalkeys = awful.util.table.join(globalkeys,
-	-- View tag only.
-	awful.key({ modkey }, "#" .. i + 9,
-		  function ()
-			local screen = awful.screen.focused()
-			local tag = screen.tags[i]
+    globalkeys = gears.table.join(globalkeys,
+        -- View tag only.
+        awful.key({ modkey }, "#" .. i + 9,
+                  function ()
+                        local screen = awful.screen.focused()
+                        local tag = screen.tags[i]
                         if tag then
                            tag:view_only()
                         end
@@ -746,63 +703,71 @@ for i = 1, 9 do
 
 end
 
-clientbuttons = awful.util.table.join(
-    awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
-    awful.button({ modkey }, 1, awful.mouse.client.move),
-    awful.button({ modkey }, 3, awful.mouse.client.resize))
+clientbuttons = gears.table.join(
+    awful.button({ }, 1, function (c)
+        c:emit_signal("request::activate", "mouse_click", {raise = true})
+    end),
+    awful.button({ modkey }, 1, function (c)
+        c:emit_signal("request::activate", "mouse_click", {raise = true})
+        awful.mouse.client.move(c)
+    end),
+    awful.button({ modkey }, 3, function (c)
+        c:emit_signal("request::activate", "mouse_click", {raise = true})
+        awful.mouse.client.resize(c)
+    end)
+)
 
 root.keys(globalkeys)
 
 -- Rules to apply to new clients (through the "manage" signal).
 awful.rules.rules = {
     -- All clients will match this rule.
-    {
-	rule = { },
-	properties = {
-	    border_width = beautiful.border_width,
-	    border_color = beautiful.border_normal,
-	    focus = awful.client.focus.filter,
-	    raise = true,
-	    keys = clientkeys,
-	    buttons = clientbuttons,
-	    screen = awful.screen.preferred,
-	    placement = awful.placement.no_overlap+awful.placement.no_offscreen,
-	    size_hints_honor = false --remove gaps from windows
-	}
-    },
-    -- floating windows always stay on top
-    {
-	rule = { floating = true },
-	properties = { ontop = true}
+    { rule = { },
+      properties = { border_width = beautiful.border_width,
+                     border_color = beautiful.border_normal,
+                     focus = awful.client.focus.filter,
+                     raise = true,
+                     keys = clientkeys,
+                     buttons = clientbuttons,
+                     screen = awful.screen.preferred,
+                     placement = awful.placement.no_overlap+awful.placement.no_offscreen
+     }
     },
 
+    -- Floating clients.
+    { rule_any = {
+        instance = {
+          "DTA",  -- Firefox addon DownThemAll.
+          "copyq",  -- Includes session name in class.
+          "pinentry",
+        },
+        class = {
+          "Arandr",
+          "Blueman-manager",
+          "Gpick",
+          "Kruler",
+          "MessageWin",  -- kalarm.
+          "Sxiv",
+          "Tor Browser", -- Needs a fixed window size to avoid fingerprinting by screen size.
+          "Wpa_gui",
+          "veromix",
+          "xtightvncviewer"},
 
-    --Floating clients.
-    {
-	rule_any = {
-	    class = {
-		"Blueman-manager",            
-		"Gpick",
-		"Kruler",
-		"MessageWin",  -- kalarm.
-		"Sxiv",
-		"Wpa_gui",
-		"pinentry",
-		"veromix",
-		"blueman-manager",
-		"xtightvncviewer"},
+        -- Note that the name property shown in xprop might be set slightly after creation of the client
+        -- and the name shown there might not match defined rules here.
+        name = {
+          "Event Tester",  -- xev.
+        },
+        role = {
+          "AlarmWindow",  -- Thunderbird's calendar.
+          "ConfigManager",  -- Thunderbird's about:config.
+          "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
+        }
+      }, properties = { floating = true }},
 
-	    name = {
-		"Event Tester",  -- xev.
-		"win0",  	   -- Intellij Splash.
-		"Picture-in-Picture", -- Firefox's picture in picture
-	    },
-	    role = {
-		"AlarmWindow",  -- Thunderbird's calendar.
-		"pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
-	    }
-	},
-	properties = { floating = true }
+    -- Add titlebars to normal clients and dialogs
+    { rule_any = {type = { "normal", "dialog" }
+      }, properties = { titlebars_enabled = false }
     },
 
     { rule = { class = "thunderbird" },
@@ -811,23 +776,19 @@ awful.rules.rules = {
     { rule = { class = "Spotify" },
       properties = { tag = music_tag } },
 
-    { rule = { name = "Run - pgx" },
-      properties = { screen = smallest_screen, tag = "1" } },
-
     { rule = { class = "Mattermost" },
       properties = { tag = mail_tag } },
 
-    -- { rule = { class = "Emacs" },
-    --   properties = { tag = emacs_tag } },
 }
 
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function (c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
-     if not awesome.startup then awful.client.setslave(c) end 
-    if awesome.startup and
-      not c.size_hints.user_position
+    -- if not awesome.startup then awful.client.setslave(c) end
+
+    if awesome.startup
+      and not c.size_hints.user_position
       and not c.size_hints.program_position then
         -- Prevent clients from being unreachable after screen count changes.
         awful.placement.no_offscreen(c)
@@ -837,15 +798,13 @@ end)
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
 client.connect_signal("request::titlebars", function(c)
     -- buttons for the titlebar
-    local buttons = awful.util.table.join(
+    local buttons = gears.table.join(
         awful.button({ }, 1, function()
-            client.focus = c
-            c:raise()
+            c:emit_signal("request::activate", "titlebar", {raise = true})
             awful.mouse.client.move(c)
         end),
         awful.button({ }, 3, function()
-            client.focus = c
-            c:raise()
+            c:emit_signal("request::activate", "titlebar", {raise = true})
             awful.mouse.client.resize(c)
         end)
     )
@@ -878,10 +837,7 @@ end)
 
 -- Enable sloppy focus, so that focus follows mouse.
 client.connect_signal("mouse::enter", function(c)
-    if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-        and awful.client.focus.filter(c) then
-        client.focus = c
-    end
+    c:emit_signal("request::activate", "mouse_enter", {raise = false})
 end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
@@ -896,12 +852,11 @@ autorunApps =
 	"xrdb ~/.Xresources",
 	"xset r rate 200 35",
 	"setxkbmap -option caps:escape -option altwin:swap_lalt_lwin -layout 'us(altgr-intl)'",
---	"nm-applet",
---	"blueman-applet",
---	"mate-volume-control-status-icon",
---	"slack",
---	"thunderbird",
---	"redshift-gtk",
+	"nm-applet",
+	"blueman-applet",
+	"mate-volume-control-status-icon",
+	"thunderbird",
+	"redshift-gtk",
 	-- "emacsclient -c -a \"emacs\"",
 	-- "xscreensaver",
 	--"pnmixer",
