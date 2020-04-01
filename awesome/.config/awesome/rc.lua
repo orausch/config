@@ -69,7 +69,6 @@ modkey = "Mod4"
 awful.layout.layouts = {
 	awful.layout.suit.tile.right,
 	awful.layout.suit.tile.bottom,
-	--lain.layout.centerwork,
 }
 
 -- {{{ Menu
@@ -113,8 +112,6 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock()
-
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
                     awful.button({ }, 1, function(t) t:view_only() end),
@@ -182,7 +179,7 @@ local markup = lain.util.markup
 local separator = markup.color("#777777", back, " | ")
 local mpris, mpris_timer = awful.widget.watch(
     { awful.util.shell, "-c", "playerctl status; playerctl metadata" },
-    10,
+    2,
     function(widget, stdout)
 	state = string.match(stdout, "Playing") or
 	    string.match(stdout, "Paused")  or ""
@@ -233,28 +230,28 @@ end
 --	widget:set_markup("VPN: " .. vpnname .. separator)
 --    end
 --)
---mpris:connect_signal(
---    "button::press",
---    function(_,_,_,button)
---	if (button == 2) then
---	    awful.spawn.with_line_callback(
---		"playerctl previous",
---		{ exit = function() mpris_timer:emit_signal("timeout") end}
---	    )
---	elseif (button == 3) then 
---	    awful.spawn.with_line_callback(
---		"playerctl next",
---		{ exit = function() mpris_timer:emit_signal("timeout") end}
---	    )
---	elseif (button == 1) then 
---	    awful.spawn.with_line_callback(
---		"playerctl play-pause",
---		{ exit = function() mpris_timer:emit_signal("timeout") end}
---	    )
---	end
---    end
---)
---
+mpris:connect_signal(
+    "button::press",
+    function(_,_,_,button)
+	if (button == 2) then
+	    awful.spawn.with_line_callback(
+		"playerctl previous",
+		{ exit = function() mpris_timer:emit_signal("timeout") end}
+	    )
+	elseif (button == 3) then 
+	    awful.spawn.with_line_callback(
+		"playerctl next",
+		{ exit = function() mpris_timer:emit_signal("timeout") end}
+	    )
+	elseif (button == 1) then 
+	    awful.spawn.with_line_callback(
+		"playerctl play-pause",
+		{ exit = function() mpris_timer:emit_signal("timeout") end}
+	    )
+	end
+    end
+)
+
 local cpu = lain.widget.cpu {
     settings = function()
 	markup_string = "CPU: "
@@ -325,12 +322,12 @@ local mem = lain.widget.mem {
 --}
 --
 --
---textclock = wibox.widget.textclock("%A %d %B %H:%M ")
---local cal = lain.widget.cal {
---    attach_to = { textclock},
---    icons="",
---}
---
+textclock = wibox.widget.textclock("%A %d %B %H:%M ")
+local cal = lain.widget.cal {
+    attach_to = { textclock},
+    icons="",
+}
+
 local bat = lain.widget.bat {
     battery = "BAT0",
     timeout  = 10,
@@ -403,7 +400,7 @@ awful.screen.connect_for_each_screen(
 		    --mem.widget,
 		    bat.widget,
 		    -- net.widget,
-		    mytextclock,
+		    textclock,
 		    --			wibox.widget.systray(),
 		    s.mylayoutbox,
 		},
@@ -457,7 +454,7 @@ largest_screen.mywibox:setup (
 	    cpu.widget,
 	    mem.widget,
 	    bat.widget,
-	    mytextclock,
+	    textclock,
 	    wibox.widget.systray(),
 	    largest_screen.mylayoutbox,
 	},
@@ -644,6 +641,15 @@ globalkeys = gears.table.join(
 	{description = "view mail tag", group = "tag"}
     ),
     awful.key(
+	{ modkey, "Control" }, "F11",
+	function ()
+	    if mail_tag then
+		awful.tag.viewtoggle(mail_tag)
+	    end
+	end,
+	{description = "toggle mail tag", group = "tag"}
+    ),
+    awful.key(
 	{ modkey }, "F12",
 	function ()
 	    if music_tag then
@@ -785,7 +791,7 @@ awful.rules.rules = {
 client.connect_signal("manage", function (c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
-    -- if not awesome.startup then awful.client.setslave(c) end
+    if not awesome.startup then awful.client.setslave(c) end
 
     if awesome.startup
       and not c.size_hints.user_position
