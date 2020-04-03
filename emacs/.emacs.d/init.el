@@ -38,6 +38,7 @@
 
 (add-hook 'org-mode-hook (lambda ()
                            (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))))
+(add-hook 'org-mode-hook 'flyspell-mode)
 
 (setq org-return-follows-link t)
 ;;(add-hook 'org-insert-heading-hook 'evil-insert-state)
@@ -105,16 +106,30 @@
   evil-magit 
   :after magit)
 
-(use-package 
-  org-journal
-  :after org
-  :init
-  (setq org-journal-dir "~/org/journal")
-  (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
-  (add-to-list 'org-agenda-files org-journal-dir)
-  (add-to-list 'org-agenda-files "~/org/tasks.org") 
-  (setq org-journal-carryover-items "") 
-  (setq org-journal-file-type 'weekly))
+;;(use-package 
+;;  org-journal
+;;  :after org
+;;  :init
+;;  (setq org-journal-dir "~/org/journal")
+;;  (setq org-journal-carryover-items "") 
+;;  (setq org-journal-file-type 'weekly))
+
+(setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
+
+(add-to-list 'org-agenda-files "~/org/journal/")
+(add-to-list 'org-agenda-files "~/org/tasks.org") 
+
+(defun my-refile ()
+  (interactive)
+  (let ((org-refile-targets
+         (mapcar (lambda (target) (append (list target) '(:maxlevel . 1)))
+                 (directory-files "~/org/" 'full ".*org"))))
+    (call-interactively 'org-refile)))
+
+(define-key org-mode-map (kbd "C-c C-w") 'my-refile)
+(define-key org-mode-map (kbd "C-c s")  'insert-screenshot-at-point)
+(define-key org-capture-mode-map (kbd "C-c C-w") 'my-refile)
+
 
 ;;(defun my-translate-C-i (_prompt) 
 ;;  (if (and (= (length (this-single-command-raw-keys)) 1) 
@@ -174,11 +189,13 @@
   :init (add-hook 'company-mode-hook 'company-quickhelp-mode) 
   :config (setq company-quickhelp-delay 0.0))
 
+
 (use-package 
   yapfify 
+  :load-path "/home/orausch/repos/yapfify"
   :after python 
   :bind (:map python-mode-map
-	      ("C-c f" . yapfify-buffer)))
+	      ("C-c f" . yapfify-region-or-buffer)))
 
 (use-package 
   conda 
@@ -299,22 +316,42 @@
 					     (quote comint-history-isearch-backward))))
 
 
+(defun my-get-image-name ()
+    (let ((i 0))
+      (while
+          (file-exists-p
+           (concat
+            "/home/orausch/org/img/"
+            (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))
+            (int-to-string i)
+            ".png"))
+        (setq i (+ i 1)))
+      (concat
+       "/home/orausch/org/img/"
+       (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))
+       (int-to-string i)
+       ".png")
+      ))
+    
+
 (defun insert-screenshot-at-point () 
   "Make a screenshot, save it in the img folder and insert a link to it." 
   (interactive) 
   (shell-command-to-string "scrot -s -o /tmp/screen.png") 
-  (let ((screenshot-name (concat (read-string "Name: ") ".png")))
-    (while (file-exists-p (concat "/home/orausch/org/img/" screenshot-name)) 
-      (setq screenshot-name (concat (read-string "File exists. New Name: ") ".png"))) 
-    (shell-command-to-string (concat "mv /tmp/screen.png " "/home/orausch/org/img/"
-				     screenshot-name)) 
-    (insert (concat "[[~/org/img/" screenshot-name "]]"))))
+  (let (
+        ;;(screenshot-name (concat (read-string "Name: ") ".png"))
+        (screenshot-name (my-get-image-name)))
+    ;;(while (file-exists-p (concat "/home/orausch/org/img/" screenshot-name)) 
+      ;;(setq screenshot-name (concat (read-string "File exists. New Name: ") ".png"))) 
+    (shell-command-to-string (concat "mv /tmp/screen.png " 
+                                     screenshot-name)) 
+    (insert (concat "[[" screenshot-name "]]"))))
 
 (defun render-everything ()
   "Render all latex previews and toggle inline images"
   (interactive)
   (org-latex-preview '(16))
-  (org-redisplay-inline-images))
+  (org-toggle-inline-images))
 
 (add-hook 'org-mode-hook
           (lambda ()
@@ -383,7 +420,6 @@
       "* %? [[%:link][%:description]] 
 Captured On: %U"))))
  '(org-clock-out-when-done (quote ("DONE" "WAITING")))
- '(org-refile-targets (quote (("~/org/tasks.org" :maxlevel . 1))))
  '(org-roam-date-filename-format "journal/%Y-%m-%d")
  '(org-roam-date-title-format "Journal %Y-%m-%d")
  '(org-roam-directory "~/org/")
@@ -391,7 +427,7 @@ Captured On: %U"))))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
  '(package-selected-packages
    (quote
-    (python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yapfify yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs lsp-python-ms highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
+    (python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs lsp-python-ms highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
  '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
  '(rustic-ansi-faces
    ["#1e1e1e" "#D16969" "#579C4C" "#D7BA7D" "#339CDB" "#C586C0" "#85DDFF" "#d4d4d4"])

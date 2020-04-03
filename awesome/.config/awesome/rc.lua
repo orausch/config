@@ -71,6 +71,7 @@ awful.layout.layouts = {
 	awful.layout.suit.tile.bottom,
 }
 
+
 -- {{{ Menu
 -- Create a launcher widget and a main menu
 myawesomemenu = {
