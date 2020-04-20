@@ -415,8 +415,8 @@ else
     smallest_screen_layout = awful.layout.suit.tile.bottom
 end
 
-emacs_tag = awful.tag.add(
-    "ℰ",
+zoom_tag = awful.tag.add(
+    "📞",
     {
         screen = smallest_screen,
         layout = smallest_screen_layout
@@ -615,21 +615,21 @@ globalkeys = gears.table.join(
     awful.key(
 	{ modkey, "Control" }, "F10",
 	function ()
-	    if emacs_tag then
-		awful.tag.viewtoggle(emacs_tag)
+	    if zoom_tag then
+		awful.tag.viewtoggle(zoom_tag)
 	    end
 	end,
-	{description = "toggle emacs tag", group = "tag"}
+	{description = "toggle zoom tag", group = "tag"}
     ),
     awful.key(
 	{ modkey }, "F10",
 	function ()
-	    if emacs_tag then
-		    emacs_tag:view_only()
+	    if zoom_tag then
+		    zoom_tag:view_only()
 	    end
 	    awful.screen.focus(smallest_screen)
 	end,
-	{description = "view emacs tag", group = "tag"}
+	{description = "view zoom tag", group = "tag"}
     ),
     awful.key(
 	{ modkey }, "F11",
@@ -780,10 +780,16 @@ awful.rules.rules = {
     { rule = { class = "thunderbird" },
       properties = { tag = mail_tag } },
 
+    { rule = { class = "zoom" },
+      properties = { tag = zoom_tag } },
+
     { rule = { class = "Spotify" },
       properties = { tag = music_tag } },
 
     { rule = { class = "Mattermost" },
+      properties = { tag = mail_tag } },
+
+    { rule = { class = "Ferdi" },
       properties = { tag = mail_tag } },
 
 }
@@ -863,7 +869,6 @@ autorunApps =
 	"blueman-applet",
 	"mate-volume-control-status-icon",
 	"thunderbird",
-	"redshift-gtk",
 	-- "emacsclient -c -a \"emacs\"",
 	-- "xscreensaver",
 	--"pnmixer",
@@ -889,7 +894,7 @@ client.connect_signal(
 awesome.connect_signal(
     'exit',
     function(args)
-	for i, unwanted_client in ipairs(emacs_tag:clients()) do
+	for i, unwanted_client in ipairs(zoom_tag:clients()) do
 	    unwanted_client:move_to_tag(largest_screen.tags[1])
 	end
 	for i, unwanted_client in ipairs(mail_tag:clients()) do
