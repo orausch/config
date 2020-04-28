@@ -219,6 +219,14 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   evil 
   :config (evil-mode))
 
+;; I hate emacs-state, remove it
+(with-eval-after-load 'evil
+  (define-key evil-motion-state-map (kbd "C-z") nil))
+
+;; suspend-frame is also stupid
+(define-key global-map (kbd "C-z") nil)
+(define-key global-map (kbd "C-x C-z") nil)
+
 (use-package evil-surround
   :ensure t
   :config
@@ -268,7 +276,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
 ;;;* company
-
 (use-package 
   company 
   :defer t 
@@ -349,13 +356,35 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 (setq python-shell-interpreter "ipython" python-shell-interpreter-args "-i --simple-prompt")
 (setenv "PYTHONPATH" "/home/orausch/repos/dace")
 
+(defun my-python-top-level-def ()
+  (interactive)
+  (move-beginning-of-line nil)
+  (while (not (equal (string (char-after (point)))
+                  "d"))
+    (python-nav-backward-defun)
+    (move-beginning-of-line nil)))
+
+(use-package python-pytest
+  :config
+  (defun python-pytest--current-defun ()
+    (save-excursion
+      (my-python-top-level-def)
+      (python-info-current-defun))))
+
 (defun my-pytest-file-debug ()
   (interactive)
   (python-pytest-file (buffer-file-name) '("--pdb")))
 
+(defun my-pytest-function-debug ()
+  (interactive)
+  (python-pytest-function-dwim
+   (buffer-file-name)
+   (python-pytest--current-defun)
+   '("--pdb")))
+
+
 (setenv "DACE_optimizer_interface" "")
 
-(use-package python-pytest)
 
 (use-package highlight-indent-guides
   :hook (python-mode . highlight-indent-guides-mode)
@@ -369,6 +398,33 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 
 ;;;* treemacs
+(use-package neotree
+  :config
+  (add-hook 'neotree-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
+              (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-quick-look)
+              (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+              (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
+              (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
+              (define-key evil-normal-state-local-map (kbd "n") 'neotree-next-line)
+              (define-key evil-normal-state-local-map (kbd "p") 'neotree-previous-line)
+              (define-key evil-normal-state-local-map (kbd "A") 'neotree-stretch-toggle)
+              (define-key evil-normal-state-local-map (kbd "H") 'neotree-hidden-file-toggle))))
+
+(defun neotree-project-dir ()
+  "Open NeoTree using the git root."
+  (interactive)
+  (let ((project-dir (projectile-project-root))
+        (file-name (buffer-file-name)))
+    (neotree-toggle)
+    (if project-dir
+        (if (neo-global--window-exists-p)
+            (progn
+              (neotree-dir project-dir)
+              (neotree-find file-name)))
+      (message "Could not find git project root."))))
+
 (use-package 
   treemacs)
 
@@ -427,6 +483,7 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
  '(jdee-db-spec-breakpoint-face-colors (cons "#171F24" "#777778"))
  '(lua-indent-level 4)
  '(menu-bar-mode nil)
+ '(neo-autorefresh t)
  '(objed-cursor-color "#D16969")
  '(org-adapt-indentation nil)
  '(org-babel-load-languages
@@ -453,18 +510,20 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
       "* TODO %? [[%:link][%:description]] 
 Captured On: %U"))))
  '(org-clock-out-when-done (quote ("DONE" "WAITING")))
+ '(org-fontify-whole-heading-line t)
  '(org-roam-directory "~/org/")
  '(org-roam-graph-exclude-matcher (quote ("journal" "_tag")))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
  '(package-selected-packages
    (quote
-    (general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile highlight-indent-guides dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
+    (neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile highlight-indent-guides dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
  '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
  '(ripgrep-arguments
    (quote
     ("--type-not css" "--type-not html" "-g '!*.sdfg'" "-g '!*.ipynb'" "-g '!TAGS'" "--type-not js")))
  '(rustic-ansi-faces
    ["#1e1e1e" "#D16969" "#579C4C" "#D7BA7D" "#339CDB" "#C586C0" "#85DDFF" "#d4d4d4"])
+ '(safe-local-variable-values (quote ((eval outline-hide-sublevels 4))))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(vc-annotate-background "#1e1e1e")
@@ -521,6 +580,7 @@ Captured On: %U"))))
   "p s" '(projectile-save-project-buffers :which-key "save buffers")
   "p k" '(projectile-kill-buffers :which-key "kill buffers")
   "p p" '(projectile-switch-project :which-key "open project")
+  "p r" '(projectile-ripgrep :which-key "ripgrep")
 
   ;; files
   "f" '(:ignore t :which-key "files")
@@ -534,9 +594,9 @@ Captured On: %U"))))
   "a" 'org-agenda
   "c" 'org-capture
 
-  "l" '(:ignore t :which-key "org links")
-  "l s" 'org-store-link
-  "l i" 'org-insert-link
+  "q" '(:ignore t :which-key "org links")
+  "q s" 'org-store-link
+  "q i" 'org-insert-link
 
   ;; help functions
   "d" '(:ignore t :which-key "describe")
@@ -551,13 +611,23 @@ Captured On: %U"))))
 
   ;; others
   "g" 'magit-status
-  "b" '(treemacs :which-key "files sidebar"))
+  "b" '(neotree-project-dir :which-key "files sidebar"))
 
 (my-leader-def
   :keymaps 'emacs-lisp-mode-map
   :states 'normal
-  "o" 'org-cycle ;; for use in init.el
-  )
+  ;; for use in init.el
+  "o" 'org-cycle)
+
+(my-leader-def
+  :keymaps 'lsp-mode-map
+  :states 'normal
+  
+  "l" '(:ignore t :which-key "lsp")
+  "l l" '(lsp-find-definition :which-key "definition")
+  "l g" '(lsp-find-references :which-key "references")
+  "l r" '(lsp-rename :which-key "rename")
+  "l s" '(lsp-ivy-workspace-symbol :which-key "find symbol"))
 
 (my-leader-def
   :keymaps 'org-mode-map
@@ -569,7 +639,7 @@ Captured On: %U"))))
 (my-leader-def
   :keymaps 'smerge-mode-map
   :states 'normal
-  "k" 'smerge-keep-current)
+  "s" 'smerge-keep-current)
 
 (my-leader-def
   :keymaps 'dap-mode-map
@@ -588,15 +658,16 @@ Captured On: %U"))))
   :keymaps 'python-mode-map
   :states 'normal
 
-  "s" '(lsp-ivy-workspace-symbol :which-key "find symbol")
-
   "k" '(:ignore t :which-key "format code")
   "k y" '(yapfify-region-or-buffer :which-key "yapf")
 
   "t" '(:ignore t :which-key "tests")
-  "t f" '(python-pytest-file :which-key "buffer")
-  "t b" '(python-pytest-function-dwim :which-key "function")
-  "t d" '(my-pytest-file-debug :which-key "debug buffer"))
+  "t b" '(python-pytest-file :which-key "buffer")
+  "t f" '(python-pytest-function-dwim :which-key "function")
+  "t r" '(python-pytest-repeat :which-key "repeat")
+  "t B" '(my-pytest-file-debug :which-key "debug buffer")
+  "t F" '(my-pytest-function-debug :which-key "debug function"))
+
 
 
 ;;;* Disable Speed hacks
