@@ -11,11 +11,14 @@
 (setq compilation-scroll-output t)
 (setq compilation-window-height 20)
 (setq inhibit-compacting-font-caches t)
+
 ;;;* misc emacs stuff
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3") ;; bugfix; remove in emacs 26.3+
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup")) backup-by-copying t version-control t
       delete-old-versions t kept-new-versions 5 kept-old-versions 5)
 (add-to-list 'exec-path "/home/orausch/.local/bin")
+
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 ;;;* use-package
 (package-initialize)
@@ -43,8 +46,8 @@
 (use-package 
   markdown-mode)
 
-
-
+(use-package 
+  gruvbox-theme)
 ;;;* dashboard
 (use-package dashboard
   :ensure t
@@ -90,7 +93,6 @@
 (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
 (add-to-list 'org-agenda-files "~/org/journal/")
-(add-to-list 'org-agenda-files "~/org/tasks.org") 
 
 ;; fix
 ;;(defun my-refile ()
@@ -328,7 +330,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 (use-package 
   lsp-ivy 
-  :after python ;; this makes the keybinding below work somehow
   :commands lsp-ivy-workspace-symbol 
   :config
   (setq lsp-ivy-show-symbol-kind t) 
@@ -338,7 +339,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 ;;;* python
 (use-package 
   yapfify 
-  :load-path "/home/orausch/repos/yapfify"
   :after python)
 
 (use-package python-black
@@ -354,7 +354,7 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   (conda-env-activate "onnx"))
 
 (setq python-shell-interpreter "ipython" python-shell-interpreter-args "-i --simple-prompt")
-(setenv "PYTHONPATH" "/home/orausch/repos/dace")
+(setenv "PYTHONPATH" "/home/orausch/sources/dace/")
 
 (defun my-python-top-level-def ()
   (interactive)
@@ -386,10 +386,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 (setenv "DACE_optimizer_interface" "")
 
 
-(use-package highlight-indent-guides
-  :hook (python-mode . highlight-indent-guides-mode)
-  :config
-  (setq highlight-indent-guides-method 'character))
 (use-package 
   lsp-python-ms 
   :hook (python-mode . (lambda () 
@@ -451,9 +447,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 
 
-(use-package latex-preview-pane
-  :config
-  (latex-preview-pane-enable))
 
 
 ;;;* Customize
@@ -468,22 +461,56 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
  '(ansi-color-names-vector
    ["#1e1e1e" "#D16969" "#579C4C" "#D7BA7D" "#339CDB" "#C586C0" "#85DDFF" "#d4d4d4"])
  '(clang-format-style "google")
- '(custom-enabled-themes (quote (leuven)))
+ '(column-number-mode t)
+ '(compilation-message-face (quote default))
+ '(cua-global-mark-cursor-color "#11948b")
+ '(cua-normal-cursor-color "#596e76")
+ '(cua-overwrite-cursor-color "#a67c00")
+ '(cua-read-only-cursor-color "#778c00")
+ '(custom-enabled-themes (quote (gruvbox-dark-hard)))
  '(custom-safe-themes
    (quote
-    ("777a3a89c0b7436e37f6fa8f350cbbff80bcc1255f0c16ab7c1e82041b06fccd" "a339f231e63aab2a17740e5b3965469e8c0b85eccdfb1f9dbd58a30bdad8562b" "d71aabbbd692b54b6263bfe016607f93553ea214bc1435d17de98894a5c3a086" "a83f05e5e2f2538376ea2bfdf9e3cd8b7f7593b16299238c1134c1529503fa88" "bc836bf29eab22d7e5b4c142d201bcce351806b7c1f94955ccafab8ce5b20208" "fa3bdd59ea708164e7821574822ab82a3c51e262d419df941f26d64d015c90ee" "cb96a06ed8f47b07c014e8637bd0fd0e6c555364171504680ac41930cfe5e11e" "f9cae16fd084c64bf0a9de797ef9caedc9ff4d463dd0288c30a3f89ecf36ca7e" "51956e440cec75ba7e4cff6c79f4f8c884a50b220e78e5e05145386f5b381f7b" "c83c095dd01cde64b631fb0fe5980587deec3834dc55144a6e78ff91ebc80b19" "730a87ed3dc2bf318f3ea3626ce21fb054cd3a1471dcd59c81a4071df02cb601" "7c4cfa4eb784539d6e09ecc118428cd8125d6aa3053d8e8413f31a7293d43169" "6231254e74298a1cf8a5fee7ca64352943de4b495e615c449e9bb27e2ccae709" "0ad7f1c71fd0289f7549f0454c9b12005eddf9b76b7ead32a24d9cb1d16cbcbd" "3e3a1caddeee4a73789ff10ba90b8394f4cd3f3788892577d7ded188e05d78f4" "93ed23c504b202cf96ee591138b0012c295338f38046a1f3c14522d4a64d7308" "9b01a258b57067426cc3c8155330b0381ae0d8dd41d5345b5eddac69f40d409b" "6bacece4cf10ea7dd5eae5bfc1019888f0cb62059ff905f37b33eec145a6a430" "7d708f0168f54b90fc91692811263c995bebb9f68b8b7525d0e2200da9bc903c" "615123f602c56139c8170c153208406bf467804785007cdc11ba73d18c3a248b" "1d50bd38eed63d8de5fcfce37c4bb2f660a02d3dff9cbfd807a309db671ff1af" "d5f8099d98174116cba9912fe2a0c3196a7cd405d12fa6b9375c55fc510988b5" "285efd6352377e0e3b68c71ab12c43d2b72072f64d436584f9159a58c4ff545a" "e074be1c799b509f52870ee596a5977b519f6d269455b84ed998666cf6fc802a" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "845103fcb9b091b0958171653a4413ccfad35552bc39697d448941bcbe5a660d" default)))
+    ("00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "777a3a89c0b7436e37f6fa8f350cbbff80bcc1255f0c16ab7c1e82041b06fccd" "a339f231e63aab2a17740e5b3965469e8c0b85eccdfb1f9dbd58a30bdad8562b" "d71aabbbd692b54b6263bfe016607f93553ea214bc1435d17de98894a5c3a086" "a83f05e5e2f2538376ea2bfdf9e3cd8b7f7593b16299238c1134c1529503fa88" "bc836bf29eab22d7e5b4c142d201bcce351806b7c1f94955ccafab8ce5b20208" "fa3bdd59ea708164e7821574822ab82a3c51e262d419df941f26d64d015c90ee" "cb96a06ed8f47b07c014e8637bd0fd0e6c555364171504680ac41930cfe5e11e" "f9cae16fd084c64bf0a9de797ef9caedc9ff4d463dd0288c30a3f89ecf36ca7e" "51956e440cec75ba7e4cff6c79f4f8c884a50b220e78e5e05145386f5b381f7b" "c83c095dd01cde64b631fb0fe5980587deec3834dc55144a6e78ff91ebc80b19" "730a87ed3dc2bf318f3ea3626ce21fb054cd3a1471dcd59c81a4071df02cb601" "7c4cfa4eb784539d6e09ecc118428cd8125d6aa3053d8e8413f31a7293d43169" "6231254e74298a1cf8a5fee7ca64352943de4b495e615c449e9bb27e2ccae709" "0ad7f1c71fd0289f7549f0454c9b12005eddf9b76b7ead32a24d9cb1d16cbcbd" "3e3a1caddeee4a73789ff10ba90b8394f4cd3f3788892577d7ded188e05d78f4" "93ed23c504b202cf96ee591138b0012c295338f38046a1f3c14522d4a64d7308" "9b01a258b57067426cc3c8155330b0381ae0d8dd41d5345b5eddac69f40d409b" "6bacece4cf10ea7dd5eae5bfc1019888f0cb62059ff905f37b33eec145a6a430" "7d708f0168f54b90fc91692811263c995bebb9f68b8b7525d0e2200da9bc903c" "615123f602c56139c8170c153208406bf467804785007cdc11ba73d18c3a248b" "1d50bd38eed63d8de5fcfce37c4bb2f660a02d3dff9cbfd807a309db671ff1af" "d5f8099d98174116cba9912fe2a0c3196a7cd405d12fa6b9375c55fc510988b5" "285efd6352377e0e3b68c71ab12c43d2b72072f64d436584f9159a58c4ff545a" "e074be1c799b509f52870ee596a5977b519f6d269455b84ed998666cf6fc802a" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "845103fcb9b091b0958171653a4413ccfad35552bc39697d448941bcbe5a660d" default)))
+ '(dap-auto-show-output nil)
+ '(dap-ui-controls-mode t nil (dap-ui))
  '(dired-sidebar-should-follow-file t)
  '(fci-rule-color "#37474F")
  '(fill-column 100)
  '(gdb-show-main t)
+ '(highlight-changes-colors (quote ("#c42475" "#5e65b6")))
+ '(highlight-symbol-colors
+   (quote
+    ("#ec90da49b1e9" "#ccb4e1bdd0ac" "#fb9eca14b38f" "#d89bd3eadcf9" "#de29dee7b293" "#f675cca1ae79" "#d05fdab7e079")))
+ '(highlight-symbol-foreground-color "#5d737a")
+ '(highlight-tail-colors
+   (quote
+    (("#f4eedb" . 0)
+     ("#a8b84b" . 20)
+     ("#66c1b3" . 30)
+     ("#6fa5e7" . 50)
+     ("#d6a549" . 60)
+     ("#ed6e3e" . 70)
+     ("#f46495" . 85)
+     ("#f4eedb" . 100))))
+ '(hl-bg-colors
+   (quote
+    ("#d6a549" "#ed6e3e" "#ff6243" "#f46495" "#837bdf" "#6fa5e7" "#66c1b3" "#a8b84b")))
+ '(hl-fg-colors
+   (quote
+    ("#fffce9" "#fffce9" "#fffce9" "#fffce9" "#fffce9" "#fffce9" "#fffce9" "#fffce9")))
+ '(hl-paren-colors (quote ("#11948b" "#a67c00" "#007ec4" "#5e65b6" "#778c00")))
  '(indent-tabs-mode nil)
  '(initial-buffer-choice t)
  '(jdee-db-active-breakpoint-face-colors (cons "#171F24" "#237AD3"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#171F24" "#579C4C"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#171F24" "#777778"))
+ '(lsp-ui-doc-border "#5d737a")
  '(lua-indent-level 4)
  '(menu-bar-mode nil)
  '(neo-autorefresh t)
+ '(nrepl-message-colors
+   (quote
+    ("#cc1f24" "#bb3e06" "#a67c00" "#4f6600" "#a8b84b" "#005797" "#11948b" "#c42475" "#5e65b6")))
  '(objed-cursor-color "#D16969")
  '(org-adapt-indentation nil)
  '(org-babel-load-languages
@@ -516,8 +543,10 @@ Captured On: %U"))))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
  '(package-selected-packages
    (quote
-    (neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile highlight-indent-guides dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
+    (idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
  '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
+ '(pos-tip-background-color "#f4eedb")
+ '(pos-tip-foreground-color "#5d737a")
  '(ripgrep-arguments
    (quote
     ("--type-not css" "--type-not html" "-g '!*.sdfg'" "-g '!*.ipynb'" "-g '!TAGS'" "--type-not js")))
@@ -525,8 +554,12 @@ Captured On: %U"))))
    ["#1e1e1e" "#D16969" "#579C4C" "#D7BA7D" "#339CDB" "#C586C0" "#85DDFF" "#d4d4d4"])
  '(safe-local-variable-values (quote ((eval outline-hide-sublevels 4))))
  '(show-paren-mode t)
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#778c00" "#f4eedb" 0.2))
+ '(term-default-bg-color "#fffce9")
+ '(term-default-fg-color "#596e76")
  '(tool-bar-mode nil)
  '(vc-annotate-background "#1e1e1e")
+ '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
    (list
     (cons 20 "#579C4C")
@@ -547,7 +580,14 @@ Captured On: %U"))))
     (cons 320 "#8d7374")
     (cons 340 "#37474F")
     (cons 360 "#37474F")))
- '(vc-annotate-very-old-color nil))
+ '(vc-annotate-very-old-color nil)
+ '(weechat-color-list
+   (quote
+    (unspecified "#fffce9" "#f4eedb" "#990001" "#cc1f24" "#4f6600" "#778c00" "#785700" "#a67c00" "#005797" "#007ec4" "#93004d" "#c42475" "#006d68" "#11948b" "#596e76" "#88999b")))
+ '(xterm-color-names
+   ["#f4eedb" "#cc1f24" "#778c00" "#a67c00" "#007ec4" "#c42475" "#11948b" "#002b37"])
+ '(xterm-color-names-bright
+   ["#fffce9" "#bb3e06" "#98a6a6" "#88999b" "#596e76" "#5e65b6" "#5d737a" "#00212b"]))
 
 
 (custom-set-faces
@@ -581,6 +621,11 @@ Captured On: %U"))))
   "p k" '(projectile-kill-buffers :which-key "kill buffers")
   "p p" '(projectile-switch-project :which-key "open project")
   "p r" '(projectile-ripgrep :which-key "ripgrep")
+
+  ;; highlighting
+  "h" '(:ignore t :which-key "highlighting")
+  "h s" '(highlight-symbol-at-point :which-key "highlight symbol")
+  "h h" '((lambda () (interactive) (unhighlight-regexp t)) :which-key "unhighlight all")
 
   ;; files
   "f" '(:ignore t :which-key "files")
@@ -646,11 +691,12 @@ Captured On: %U"))))
   :states 'normal
 
   "d" '(:ignore t :which-key "debug")
+  "d d" '(dap-debug :which-key "debug")
   "d n" '(dap-next :which-key "next (<f5>)")
   "d c" 'dap-continue
-  "d i" 'dap-step-in
+  "d i" '(dap-step-in :which-key "in (<f6>)")
   "d b" 'dap-breakpoint-toggle
-  "d r" 'dap-repl
+  "d r" 'dap-ui-repl
   "d e" 'dap-eval
   "d s" 'dap-switch-stack-frame)
 

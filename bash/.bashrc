@@ -118,7 +118,7 @@ fi
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 . /home/orausch/.dotfiles/z.sh
 export arserver='rauscho@185.178.192.37'
-export PATH=$PATH:/home/orausch/.local/bin:/home/orausch/.emacs.d/bin
+export PATH=$PATH:/home/orausch/.local/bin:/home/orausch/.emacs.d/bin:/home/orausch/.cargo/bin
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -134,5 +134,5 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
-export PYTHONPATH=$PYTHONPATH:/home/orausch/repos/dace
+export PYTHONPATH=$PYTHONPATH:/home/orausch/sources/dace
 export MKLROOT=/home/orausch/.local/opt/miniconda3/envs/onnx/
