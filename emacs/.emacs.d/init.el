@@ -449,6 +449,20 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 
 
+;;;* elfeed
+(use-package elfeed)
+(setq elfeed-feeds
+      '(("https://xkcd.com/atom.xml" comic)
+        ("https://drewdevault.com/feed.xml" blog)
+        ("https://danluu.com/atom.xml" blog)
+        ("http://fabiensanglard.net/rss.xml" blog)
+        ("https://reddit-top-rss.herokuapp.com/?subreddit=space&averagePostsPerDay=5&view=rss" reddit)
+        ("https://reddit-top-rss.herokuapp.com/?subreddit=linux&averagePostsPerDay=5&view=rss" reddit)
+        ("https://reddit-top-rss.herokuapp.com/?subreddit=programming&averagePostsPerDay=10&view=rss" reddit)
+        ("https://reddit-top-rss.herokuapp.com/?subreddit=MachineLearning&averagePostsPerDay=5&view=rss" reddit)
+        ("https://reddit-top-rss.herokuapp.com/?subreddit=math&averagePostsPerDay=5&view=rss" reddit)
+        ("https://reddit-top-rss.herokuapp.com/?subreddit=Formula1&averagePostsPerDay=5&view=rss" reddit)
+        ("https://reddit-top-rss.herokuapp.com/?subreddit=emacs&averagePostsPerDay=1&view=rss" reddit)))
 ;;;* Customize
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -467,10 +481,10 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
  '(cua-normal-cursor-color "#596e76")
  '(cua-overwrite-cursor-color "#a67c00")
  '(cua-read-only-cursor-color "#778c00")
- '(custom-enabled-themes (quote (gruvbox-dark-hard)))
+ '(custom-enabled-themes (quote (tango-plus)))
  '(custom-safe-themes
    (quote
-    ("00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "777a3a89c0b7436e37f6fa8f350cbbff80bcc1255f0c16ab7c1e82041b06fccd" "a339f231e63aab2a17740e5b3965469e8c0b85eccdfb1f9dbd58a30bdad8562b" "d71aabbbd692b54b6263bfe016607f93553ea214bc1435d17de98894a5c3a086" "a83f05e5e2f2538376ea2bfdf9e3cd8b7f7593b16299238c1134c1529503fa88" "bc836bf29eab22d7e5b4c142d201bcce351806b7c1f94955ccafab8ce5b20208" "fa3bdd59ea708164e7821574822ab82a3c51e262d419df941f26d64d015c90ee" "cb96a06ed8f47b07c014e8637bd0fd0e6c555364171504680ac41930cfe5e11e" "f9cae16fd084c64bf0a9de797ef9caedc9ff4d463dd0288c30a3f89ecf36ca7e" "51956e440cec75ba7e4cff6c79f4f8c884a50b220e78e5e05145386f5b381f7b" "c83c095dd01cde64b631fb0fe5980587deec3834dc55144a6e78ff91ebc80b19" "730a87ed3dc2bf318f3ea3626ce21fb054cd3a1471dcd59c81a4071df02cb601" "7c4cfa4eb784539d6e09ecc118428cd8125d6aa3053d8e8413f31a7293d43169" "6231254e74298a1cf8a5fee7ca64352943de4b495e615c449e9bb27e2ccae709" "0ad7f1c71fd0289f7549f0454c9b12005eddf9b76b7ead32a24d9cb1d16cbcbd" "3e3a1caddeee4a73789ff10ba90b8394f4cd3f3788892577d7ded188e05d78f4" "93ed23c504b202cf96ee591138b0012c295338f38046a1f3c14522d4a64d7308" "9b01a258b57067426cc3c8155330b0381ae0d8dd41d5345b5eddac69f40d409b" "6bacece4cf10ea7dd5eae5bfc1019888f0cb62059ff905f37b33eec145a6a430" "7d708f0168f54b90fc91692811263c995bebb9f68b8b7525d0e2200da9bc903c" "615123f602c56139c8170c153208406bf467804785007cdc11ba73d18c3a248b" "1d50bd38eed63d8de5fcfce37c4bb2f660a02d3dff9cbfd807a309db671ff1af" "d5f8099d98174116cba9912fe2a0c3196a7cd405d12fa6b9375c55fc510988b5" "285efd6352377e0e3b68c71ab12c43d2b72072f64d436584f9159a58c4ff545a" "e074be1c799b509f52870ee596a5977b519f6d269455b84ed998666cf6fc802a" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "845103fcb9b091b0958171653a4413ccfad35552bc39697d448941bcbe5a660d" default)))
+    ("2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" "d0e57771a8b61d0166fb2dde379772c6fcaf35d17f68a7f5b9a148357a6219ac" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "777a3a89c0b7436e37f6fa8f350cbbff80bcc1255f0c16ab7c1e82041b06fccd" "a339f231e63aab2a17740e5b3965469e8c0b85eccdfb1f9dbd58a30bdad8562b" "d71aabbbd692b54b6263bfe016607f93553ea214bc1435d17de98894a5c3a086" "a83f05e5e2f2538376ea2bfdf9e3cd8b7f7593b16299238c1134c1529503fa88" "bc836bf29eab22d7e5b4c142d201bcce351806b7c1f94955ccafab8ce5b20208" "fa3bdd59ea708164e7821574822ab82a3c51e262d419df941f26d64d015c90ee" "cb96a06ed8f47b07c014e8637bd0fd0e6c555364171504680ac41930cfe5e11e" "f9cae16fd084c64bf0a9de797ef9caedc9ff4d463dd0288c30a3f89ecf36ca7e" "51956e440cec75ba7e4cff6c79f4f8c884a50b220e78e5e05145386f5b381f7b" "c83c095dd01cde64b631fb0fe5980587deec3834dc55144a6e78ff91ebc80b19" "730a87ed3dc2bf318f3ea3626ce21fb054cd3a1471dcd59c81a4071df02cb601" "7c4cfa4eb784539d6e09ecc118428cd8125d6aa3053d8e8413f31a7293d43169" "6231254e74298a1cf8a5fee7ca64352943de4b495e615c449e9bb27e2ccae709" "0ad7f1c71fd0289f7549f0454c9b12005eddf9b76b7ead32a24d9cb1d16cbcbd" "3e3a1caddeee4a73789ff10ba90b8394f4cd3f3788892577d7ded188e05d78f4" "93ed23c504b202cf96ee591138b0012c295338f38046a1f3c14522d4a64d7308" "9b01a258b57067426cc3c8155330b0381ae0d8dd41d5345b5eddac69f40d409b" "6bacece4cf10ea7dd5eae5bfc1019888f0cb62059ff905f37b33eec145a6a430" "7d708f0168f54b90fc91692811263c995bebb9f68b8b7525d0e2200da9bc903c" "615123f602c56139c8170c153208406bf467804785007cdc11ba73d18c3a248b" "1d50bd38eed63d8de5fcfce37c4bb2f660a02d3dff9cbfd807a309db671ff1af" "d5f8099d98174116cba9912fe2a0c3196a7cd405d12fa6b9375c55fc510988b5" "285efd6352377e0e3b68c71ab12c43d2b72072f64d436584f9159a58c4ff545a" "e074be1c799b509f52870ee596a5977b519f6d269455b84ed998666cf6fc802a" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "845103fcb9b091b0958171653a4413ccfad35552bc39697d448941bcbe5a660d" default)))
  '(dap-auto-show-output nil)
  '(dap-ui-controls-mode t nil (dap-ui))
  '(dired-sidebar-should-follow-file t)
@@ -506,7 +520,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
  '(jdee-db-spec-breakpoint-face-colors (cons "#171F24" "#777778"))
  '(lsp-ui-doc-border "#5d737a")
  '(lua-indent-level 4)
- '(menu-bar-mode nil)
  '(neo-autorefresh t)
  '(nrepl-message-colors
    (quote
@@ -543,7 +556,7 @@ Captured On: %U"))))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
  '(package-selected-packages
    (quote
-    (idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
+    (elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
  '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
  '(pos-tip-background-color "#f4eedb")
  '(pos-tip-foreground-color "#5d737a")
@@ -595,6 +608,7 @@ Captured On: %U"))))
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Ubuntu Mono" :foundry "DAMA" :slant normal :weight normal :height 143 :width normal))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "dark orange"))))
  '(rainbow-delimiters-depth-4-face ((t (:foreground "green4"))))
@@ -612,7 +626,7 @@ Captured On: %U"))))
   :prefix my-leader)
 
 (my-leader-def
-  :keymaps 'normal
+  :states '(normal emacs)
 
   ;; projectile
   "p" '(:ignore t :which-key "projects")
@@ -639,9 +653,11 @@ Captured On: %U"))))
   "a" 'org-agenda
   "c" 'org-capture
 
-  "q" '(:ignore t :which-key "org links")
-  "q s" 'org-store-link
-  "q i" 'org-insert-link
+  "q" '(quit-window :which-key"quit window")
+
+  "p" '(:ignore t :which-key "org links")
+  "p s" 'org-store-link
+  "p i" 'org-insert-link
 
   ;; help functions
   "d" '(:ignore t :which-key "describe")
@@ -714,6 +730,32 @@ Captured On: %U"))))
   "t B" '(my-pytest-file-debug :which-key "debug buffer")
   "t F" '(my-pytest-function-debug :which-key "debug function"))
 
+
+
+(evil-set-initial-state 'elfeed-search-mode 'emacs)
+(evil-set-initial-state 'elfeed-show-mode 'emacs)
+
+(general-define-key
+ :states '(emacs normal)
+ :keymaps 'elfeed-show-mode-map
+ "h" 'left-char
+ "l" 'right-char
+ "j" 'next-line
+ "k" 'previous-line
+ "q" 'quit-window)
+
+(general-define-key
+ :states '(emacs normal)
+ :keymaps 'elfeed-search-mode-map
+ "j" 'next-line
+ "k" 'previous-line)
+
+;; Make evil-mode up/down operate in screen lines instead of logical lines
+(define-key evil-motion-state-map "j" 'evil-next-visual-line)
+(define-key evil-motion-state-map "k" 'evil-previous-visual-line)
+;; Also in visual mode
+(define-key evil-visual-state-map "j" 'evil-next-visual-line)
+(define-key evil-visual-state-map "k" 'evil-previous-visual-line)
 
 
 ;;;* Disable Speed hacks
