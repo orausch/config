@@ -29,7 +29,7 @@
 (setq use-package-always-ensure t)
 ;;;* evil
 (use-package
-    evil
+  evil
   :config (evil-mode))
 
 ;; I hate emacs-state, remove it
@@ -47,7 +47,7 @@
   (global-evil-surround-mode 1))
 
 (use-package
-    evil-org
+  evil-org
   :after org
   :config (add-hook 'org-mode-hook 'evil-org-mode)
   (add-hook 'evil-org-mode-hook (lambda ()
@@ -67,21 +67,21 @@
 
 ;;;* simple packages (projectile whichkey lua-mode markdown-mode)
 (use-package
-    projectile
+  projectile
   :config
   (projectile-mode +1))
 
 (use-package
-    which-key
+  which-key
   :config
   (which-key-mode)
   (which-key-setup-side-window-right))
 
 (use-package
-    lua-mode)
+  lua-mode)
 
 (use-package
-    markdown-mode)
+  markdown-mode)
 
 ;; (use-package
 ;;  gruvbox-theme)
@@ -104,7 +104,7 @@
                                         ;(add-hook 'artist-mode-hook #'artist-mode-toggle-emacs-
 ;;;* ivy
 (use-package
-    ivy
+  ivy
   :config (setq projectile-completion-system 'ivy)
   (ivy-mode 1))
 
@@ -221,7 +221,7 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 ;;;* rainbow-delimiters
 (use-package
-    rainbow-delimiters
+  rainbow-delimiters
   :hook
   (emacs-lisp-mode-hook . rainbow-delimiters-mode)
   (clojure-mode-hook . rainbow-delimiters-mode)
@@ -255,21 +255,21 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 ;;;* magit
 (use-package
-    magit)
+  magit)
 
 (use-package
-    evil-magit
+  evil-magit
   :after magit)
 ;;;* c and c++
 
 
 ;;;* company
 (use-package
-    company
+  company
   :defer t
   :init (add-hook 'after-init-hook 'global-company-mode)
   :config (use-package
-              company-irony
+            company-irony
             :defer t)
   (setq company-idle-delay 0.0
         company-minimum-prefix-length 1
@@ -283,14 +283,14 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   :bind ("C-;" . company-complete-common))
 
 (use-package
-    company-quickhelp
+  company-quickhelp
   :init (add-hook 'company-mode-hook 'company-quickhelp-mode)
   :config (setq company-quickhelp-delay 0.0))
 
 
 ;;;* lsp-mode
 (use-package
-    lsp-mode
+  lsp-mode
   :init (setq lsp-keymap-prefix "C-l")
   :hook ((python-mode . lsp)
          (c++-mode-hook . lsp))
@@ -298,11 +298,11 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 (require 'lsp-clients)
 (use-package
-    lsp-ui
+  lsp-ui
   :commands lsp-ui-mode)
 
 (use-package
-    company-lsp
+  company-lsp
   :commands company-lsp
   :config
   (push 'company-lsp company-backends))
@@ -317,7 +317,7 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   (require 'dap-python))
 
 (use-package
-    lsp-ivy
+  lsp-ivy
   :commands lsp-ivy-workspace-symbol
   :config
   (setq lsp-ivy-show-symbol-kind t)
@@ -326,17 +326,18 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 ;;;* python
 (use-package
-    yapfify
+  yapfify
   :after python)
 
 (use-package python-black
   :after python)
 
 (use-package
-    conda
+  conda
+  :load-path "~/sources/conda.el"
   :commands conda-env-activate
   :config
-  (setq conda-anaconda-home "/home/orausch/.local/opt/miniconda3/base/")
+  (setq conda-anaconda-home "/home/orausch/.local/opt/miniconda3/")
   (setq conda-env-home-directory "/home/orausch/.local/opt/miniconda3/")
   (conda-env-initialize-interactive-shells))
 
@@ -392,10 +393,13 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 
 (use-package
-    lsp-python-ms
+  lsp-python-ms
   :hook (python-mode . (lambda ()
                          (require 'lsp-python-ms)
                          (lsp))))
+
+(use-package jupyter)
+
 
 
 ;;;* treemacs
@@ -427,16 +431,16 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
       (message "Could not find git project root."))))
 
 (use-package
-    treemacs)
+  treemacs)
 
 (use-package
-    treemacs-projectile)
+  treemacs-projectile)
 
 (use-package
-    treemacs-evil)
+  treemacs-evil)
 
 (use-package
-    lsp-treemacs
+  lsp-treemacs
   :commands lsp-treemacs-errors-list)
 
 
@@ -560,7 +564,7 @@ Captured On: %U"))))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
  '(package-selected-packages
    (quote
-    (elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
+    (jupyter emacs-jupyter elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
  '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
  '(pos-tip-background-color "#f4eedb")
  '(pos-tip-foreground-color "#5d737a")
