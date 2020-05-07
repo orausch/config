@@ -47,8 +47,8 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/orausch/.config/awesome/default/theme.lua")
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
---beautiful.font = "Ubuntu Mono Regular 15"
-beautiful.font = "Terminus Bold 13"
+---beautiful.font = "Ubuntu Mono Regular 15"
+beautiful.font = "Terminus (TTF) Bold 15"
 beautiful.useless_gap = 0
 beautiful.maximized_hide_border = true
 gears.wallpaper.set(beautiful.bg_normal)
@@ -589,7 +589,10 @@ clientkeys = gears.table.join(
         {description = "toggle fullscreen", group = "client"}),
     awful.key({ modkey}, "q",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
-    awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
+    awful.key({ modkey, "Control" }, "space",  function(c)
+            awful.client.floating.toggle(c)
+            c.ontop = c.floating
+            end,
               {description = "toggle floating", group = "client"}),
     awful.key({ modkey}, "Return", function (c) c:swap(awful.client.getmaster()) end,
               {description = "move to master", group = "client"}),
@@ -869,6 +872,7 @@ autorunApps =
 	"blueman-applet",
 	"mate-volume-control-status-icon",
 	"thunderbird",
+	"compton",
 	-- "emacsclient -c -a \"emacs\"",
 	-- "xscreensaver",
 	--"pnmixer",
@@ -905,4 +909,3 @@ awesome.connect_signal(
 	end
     end
 )
-

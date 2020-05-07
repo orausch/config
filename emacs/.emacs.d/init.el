@@ -2,12 +2,12 @@
 (setq frame-inhibit-implied-resize t)
 (defvar last-file-name-handler-alist file-name-handler-alist)
 (setq gc-cons-threshold 100000000)
-(setq compilation-finish-functions (lambda (buf str) 
-				     (if (null (string-match ".*exited abnormally.*" str))
-					 ;;no errors, make the compilation window go away in a few seconds
-					 (progn (run-at-time "1 sec" nil 'delete-windows-on
-							     (get-buffer-create "*compilation*")) 
-						(message "No Compilation Errors!")))))
+(setq compilation-finish-functions (lambda (buf str)
+                                     (if (null (string-match ".*exited abnormally.*" str))
+                                         ;;no errors, make the compilation window go away in a few seconds
+                                         (progn (run-at-time "1 sec" nil 'delete-windows-on
+                                                             (get-buffer-create "*compilation*"))
+                                                (message "No Compilation Errors!")))))
 (setq compilation-scroll-output t)
 (setq compilation-window-height 20)
 (setq inhibit-compacting-font-caches t)
@@ -27,27 +27,64 @@
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
+;;;* evil
+(use-package
+    evil
+  :config (evil-mode))
+
+;; I hate emacs-state, remove it
+(with-eval-after-load 'evil
+  (define-key evil-motion-state-map (kbd "C-z") nil)
+  (define-key evil-motion-state-map (kbd "SPC") nil))
+
+;; suspend-frame is also stupid
+(define-key global-map (kbd "C-z") nil)
+(define-key global-map (kbd "C-x C-z") nil)
+
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+
+(use-package
+    evil-org
+  :after org
+  :config (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook (lambda ()
+                                  (evil-org-set-key-theme)))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+
+(with-eval-after-load 'evil-maps
+  (define-key evil-motion-state-map (kbd "C-d") nil)
+  (define-key evil-normal-state-map (kbd "C-n") nil)
+  (define-key evil-normal-state-map (kbd "C-p") nil)
+  (define-key evil-insert-state-map (kbd "C-n") nil)
+  (define-key evil-insert-state-map (kbd "C-p") nil))
+
+;;;* theme
+(load-file "~/.dotfiles/emacs/.emacs.d/minimal-light-theme.el")
 
 ;;;* simple packages (projectile whichkey lua-mode markdown-mode)
-(use-package 
-  projectile 
+(use-package
+    projectile
   :config
   (projectile-mode +1))
 
 (use-package
-  which-key
+    which-key
   :config
   (which-key-mode)
   (which-key-setup-side-window-right))
 
-(use-package 
-  lua-mode)
+(use-package
+    lua-mode)
 
-(use-package 
-  markdown-mode)
+(use-package
+    markdown-mode)
 
-(use-package 
-  gruvbox-theme)
+;; (use-package
+;;  gruvbox-theme)
 ;;;* dashboard
 (use-package dashboard
   :ensure t
@@ -64,12 +101,11 @@
       (evil-emacs-state)
     (evil-exit-emacs-state)))
 
-(add-hook 'artist-mode-hook #'artist-mode-toggle-emacs-state)
-
+                                        ;(add-hook 'artist-mode-hook #'artist-mode-toggle-emacs-
 ;;;* ivy
-(use-package 
-  ivy 
-  :config (setq projectile-completion-system 'ivy) 
+(use-package
+    ivy
+  :config (setq projectile-completion-system 'ivy)
   (ivy-mode 1))
 
 ;;;* benchmark-init
@@ -106,30 +142,30 @@
 ;;(define-key org-capture-mode-map (kbd "C-c C-w") 'my-refile)
 
 (defun my-get-image-name ()
-    (let ((i 0))
-      (while
-          (file-exists-p
-           (concat
-            "/home/orausch/org/img/"
-            (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))
-            (int-to-string i)
-            ".png"))
-        (setq i (+ i 1)))
-      (concat
-       "/home/orausch/org/img/"
-       (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))
-       (int-to-string i)
-       ".png")
-      ))
-    
+  (let ((i 0))
+    (while
+        (file-exists-p
+         (concat
+          "/home/orausch/org/img/"
+          (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))
+          (int-to-string i)
+          ".png"))
+      (setq i (+ i 1)))
+    (concat
+     "/home/orausch/org/img/"
+     (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))
+     (int-to-string i)
+     ".png")
+    ))
 
-(defun insert-screenshot-at-point () 
-  "Make a screenshot, save it in the img folder and insert a link to it." 
-  (interactive) 
-  (shell-command-to-string "scrot -s -o /tmp/screen.png") 
+
+(defun insert-screenshot-at-point ()
+  "Make a screenshot, save it in the img folder and insert a link to it."
+  (interactive)
+  (shell-command-to-string "scrot -s -o /tmp/screen.png")
   (let ((screenshot-name (my-get-image-name)))
-    (shell-command-to-string (concat "mv /tmp/screen.png " 
-                                     screenshot-name)) 
+    (shell-command-to-string (concat "mv /tmp/screen.png "
+                                     screenshot-name))
     (insert (concat "[[" screenshot-name "]]"))))
 
 (defun render-everything ()
@@ -157,10 +193,9 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
            (:exports . "results")))))
 
 ;;;* org-roam
-(require 'org-roam-protocol)
 
 (use-package org-roam
-  :hook 
+  :hook
   (after-init . org-roam-mode)
   :custom
   (org-roam-directory "~/org/")
@@ -172,6 +207,7 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
            :immediate-finish t
            :file-name "journal/%<%Y-%m-%d>"
            :head "#+TITLE: Journal %<%Y-%m-%d>"))))
+(require 'org-roam-protocol)
 
 ;; not sure if this is required anymore
 (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
@@ -184,12 +220,12 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
    (evil-cleverparens-mode . smartparens-mode)))
 
 ;;;* rainbow-delimiters
-(use-package 
-  rainbow-delimiters 
+(use-package
+    rainbow-delimiters
   :hook
-  (emacs-lisp-mode-hook . rainbow-delimiters-mode) 
-  (clojure-mode-hook . rainbow-delimiters-mode) 
-  (cider-repl-mode-hook . rainbow-delimiters-mode) 
+  (emacs-lisp-mode-hook . rainbow-delimiters-mode)
+  (clojure-mode-hook . rainbow-delimiters-mode)
+  (cider-repl-mode-hook . rainbow-delimiters-mode)
   (python-mode-hook . rainbow-delimiters-mode))
 
 ;;;* clojure
@@ -200,7 +236,7 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 (use-package cider
   :config
-  (define-key cider-repl-mode-map (kbd "C-n") #'cider-repl-next-input) 
+  (define-key cider-repl-mode-map (kbd "C-n") #'cider-repl-next-input)
   (define-key cider-repl-mode-map (kbd "C-p") #'cider-repl-previous-input))
 
 ;;;* Add M-x kill-process (to kill the current buffer's process).
@@ -216,105 +252,57 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 
 
-;;;* evil
-(use-package 
-  evil 
-  :config (evil-mode))
-
-;; I hate emacs-state, remove it
-(with-eval-after-load 'evil
-  (define-key evil-motion-state-map (kbd "C-z") nil))
-
-;; suspend-frame is also stupid
-(define-key global-map (kbd "C-z") nil)
-(define-key global-map (kbd "C-x C-z") nil)
-
-(use-package evil-surround
-  :ensure t
-  :config
-  (global-evil-surround-mode 1))
-
-(use-package 
-  evil-org 
-  :after org 
-  :config (add-hook 'org-mode-hook 'evil-org-mode) 
-  (add-hook 'evil-org-mode-hook (lambda () 
-                                  (evil-org-set-key-theme))) 
-  (require 'evil-org-agenda) 
-  (evil-org-agenda-set-keys))
-
-(with-eval-after-load 'evil-maps
-  (define-key evil-motion-state-map (kbd "C-d") nil)
-  (define-key evil-normal-state-map (kbd "C-n") nil)
-  (define-key evil-normal-state-map (kbd "C-p") nil)
-  (define-key evil-insert-state-map (kbd "C-n") nil)
-  (define-key evil-insert-state-map (kbd "C-p") nil))
 
 ;;;* magit
-(use-package 
-  magit)
+(use-package
+    magit)
 
-(use-package 
-  evil-magit 
+(use-package
+    evil-magit
   :after magit)
 ;;;* c and c++
-(use-package 
-  clang-format+ 
-  :config (add-hook 'c-mode-common-hook #'clang-format+-mode))
 
-(use-package 
-  irony 
-  :after clang-format 
-  :init (add-hook 'c++-mode-hook 'irony-mode) 
-  (add-hook 'c-mode-hook 'irony-mode) 
-  (add-hook 'objc-mode-hook 'irony-mode) 
-  :config
-  ;; replace the `completion-at-point' and `complete-symbol' bindings in
-  ;; irony-mode's buffers by irony-mode's function
-  (defun my-irony-mode-hook () 
-    (define-key irony-mode-map [remap completion-at-point] 'irony-completion-at-point-async) 
-    (define-key irony-mode-map [remap complete-symbol] 'irony-completion-at-point-async)) 
-  (add-hook 'irony-mode-hook 'my-irony-mode-hook) 
-  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
 ;;;* company
-(use-package 
-  company 
-  :defer t 
-  :init (add-hook 'after-init-hook 'global-company-mode) 
-  :config (use-package 
-	    company-irony 
-	    :defer t) 
+(use-package
+    company
+  :defer t
+  :init (add-hook 'after-init-hook 'global-company-mode)
+  :config (use-package
+              company-irony
+            :defer t)
   (setq company-idle-delay 0.0
         company-minimum-prefix-length 1
         company-tooltip-limit 20
         company-dabbrev-downcase nil
-        company-backends '((company-irony company-gtags))) 
-  (define-key company-active-map (kbd "M-n") nil) 
-  (define-key company-active-map (kbd "M-p") nil) 
-  (define-key company-active-map (kbd "C-n") #'company-select-next) 
-  (define-key company-active-map (kbd "C-p") #'company-select-previous) 
+        company-backends '((company-irony company-gtags)))
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-n") #'company-select-next)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous)
   :bind ("C-;" . company-complete-common))
 
-(use-package 
-  company-quickhelp 
-  :init (add-hook 'company-mode-hook 'company-quickhelp-mode) 
+(use-package
+    company-quickhelp
+  :init (add-hook 'company-mode-hook 'company-quickhelp-mode)
   :config (setq company-quickhelp-delay 0.0))
 
 
 ;;;* lsp-mode
-(use-package 
-  lsp-mode 
-  :init (setq lsp-keymap-prefix "C-l") 
-  :hook ((python-mode . lsp)) 
+(use-package
+    lsp-mode
+  :init (setq lsp-keymap-prefix "C-l")
+  :hook ((python-mode . lsp)
+         (c++-mode-hook . lsp))
   :commands lsp)
 
-(use-package 
-  lsp-ui 
+(require 'lsp-clients)
+(use-package
+    lsp-ui
   :commands lsp-ui-mode)
 
-(use-package 
-  company-lsp 
+(use-package
+    company-lsp
   :commands company-lsp
   :config
   (push 'company-lsp company-backends))
@@ -328,39 +316,56 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   :config
   (require 'dap-python))
 
-(use-package 
-  lsp-ivy 
-  :commands lsp-ivy-workspace-symbol 
+(use-package
+    lsp-ivy
+  :commands lsp-ivy-workspace-symbol
   :config
-  (setq lsp-ivy-show-symbol-kind t) 
-  (setq lsp-ivy-filter-symbol-kind '(0 2 13)) 
+  (setq lsp-ivy-show-symbol-kind t)
+  (setq lsp-ivy-filter-symbol-kind '(0 2 13))
   (setq lsp-python-ms-python-executable-cmd "/home/orausch/.local/opt/miniconda3/envs/onnx/bin/python"))
 
 ;;;* python
-(use-package 
-  yapfify 
+(use-package
+    yapfify
   :after python)
 
 (use-package python-black
   :after python)
 
-(use-package 
-  conda 
+(use-package
+    conda
   :commands conda-env-activate
   :config
   (setq conda-anaconda-home "/home/orausch/.local/opt/miniconda3/base/")
   (setq conda-env-home-directory "/home/orausch/.local/opt/miniconda3/")
-  (conda-env-initialize-interactive-shells)
-  (conda-env-activate "onnx"))
+  (conda-env-initialize-interactive-shells))
 
-(setq python-shell-interpreter "ipython" python-shell-interpreter-args "-i --simple-prompt")
+(add-hook 'inferior-python-mode-hook
+          (lambda ()
+            (setq
+             indent-tabs-mode nil
+             tab-width 4)))
+
+
+(defun my-send-current-line ()
+  (interactive)
+  (python-shell-send-string (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+
+(defun my-maybe-activate ()
+  (interactive)
+  (unless (and  (boundp 'conda-env-current-name) conda-env-current-name)
+    (conda-env-activate)))
+
+(advice-add 'python-mode :before #'my-maybe-activate)
+
+(setq python-shell-interpreter "ipython")
 (setenv "PYTHONPATH" "/home/orausch/sources/dace/")
 
 (defun my-python-top-level-def ()
   (interactive)
   (move-beginning-of-line nil)
   (while (not (equal (string (char-after (point)))
-                  "d"))
+                     "d"))
     (python-nav-backward-defun)
     (move-beginning-of-line nil)))
 
@@ -386,11 +391,11 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 (setenv "DACE_optimizer_interface" "")
 
 
-(use-package 
-  lsp-python-ms 
-  :hook (python-mode . (lambda () 
-			 (require 'lsp-python-ms) 
-			 (lsp))))
+(use-package
+    lsp-python-ms
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-python-ms)
+                         (lsp))))
 
 
 ;;;* treemacs
@@ -421,29 +426,29 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
               (neotree-find file-name)))
       (message "Could not find git project root."))))
 
-(use-package 
-  treemacs)
+(use-package
+    treemacs)
 
-(use-package 
-  treemacs-projectile)
+(use-package
+    treemacs-projectile)
 
-(use-package 
-  treemacs-evil)
+(use-package
+    treemacs-evil)
 
-(use-package 
-  lsp-treemacs 
+(use-package
+    lsp-treemacs
   :commands lsp-treemacs-errors-list)
 
 
 ;;;* comint mode
 ;; I think this was to make c-p and c-n work?
-(add-hook 'comint-mode-hook (lambda () 
-			      (local-set-key [14] 
-					     (quote comint-next-input)) 
-			      (local-set-key [16] 
-					     (quote comint-previous-input)) 
-			      (local-set-key [18] 
-					     (quote comint-history-isearch-backward))))
+(add-hook 'comint-mode-hook (lambda ()
+                              (local-set-key [14]
+                                             (quote comint-next-input))
+                              (local-set-key [16]
+                                             (quote comint-previous-input))
+                              (local-set-key [18]
+                                             (quote comint-history-isearch-backward))))
 
 
 
@@ -481,14 +486,13 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
  '(cua-normal-cursor-color "#596e76")
  '(cua-overwrite-cursor-color "#a67c00")
  '(cua-read-only-cursor-color "#778c00")
- '(custom-enabled-themes (quote (tango-plus)))
  '(custom-safe-themes
    (quote
-    ("2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" "d0e57771a8b61d0166fb2dde379772c6fcaf35d17f68a7f5b9a148357a6219ac" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "777a3a89c0b7436e37f6fa8f350cbbff80bcc1255f0c16ab7c1e82041b06fccd" "a339f231e63aab2a17740e5b3965469e8c0b85eccdfb1f9dbd58a30bdad8562b" "d71aabbbd692b54b6263bfe016607f93553ea214bc1435d17de98894a5c3a086" "a83f05e5e2f2538376ea2bfdf9e3cd8b7f7593b16299238c1134c1529503fa88" "bc836bf29eab22d7e5b4c142d201bcce351806b7c1f94955ccafab8ce5b20208" "fa3bdd59ea708164e7821574822ab82a3c51e262d419df941f26d64d015c90ee" "cb96a06ed8f47b07c014e8637bd0fd0e6c555364171504680ac41930cfe5e11e" "f9cae16fd084c64bf0a9de797ef9caedc9ff4d463dd0288c30a3f89ecf36ca7e" "51956e440cec75ba7e4cff6c79f4f8c884a50b220e78e5e05145386f5b381f7b" "c83c095dd01cde64b631fb0fe5980587deec3834dc55144a6e78ff91ebc80b19" "730a87ed3dc2bf318f3ea3626ce21fb054cd3a1471dcd59c81a4071df02cb601" "7c4cfa4eb784539d6e09ecc118428cd8125d6aa3053d8e8413f31a7293d43169" "6231254e74298a1cf8a5fee7ca64352943de4b495e615c449e9bb27e2ccae709" "0ad7f1c71fd0289f7549f0454c9b12005eddf9b76b7ead32a24d9cb1d16cbcbd" "3e3a1caddeee4a73789ff10ba90b8394f4cd3f3788892577d7ded188e05d78f4" "93ed23c504b202cf96ee591138b0012c295338f38046a1f3c14522d4a64d7308" "9b01a258b57067426cc3c8155330b0381ae0d8dd41d5345b5eddac69f40d409b" "6bacece4cf10ea7dd5eae5bfc1019888f0cb62059ff905f37b33eec145a6a430" "7d708f0168f54b90fc91692811263c995bebb9f68b8b7525d0e2200da9bc903c" "615123f602c56139c8170c153208406bf467804785007cdc11ba73d18c3a248b" "1d50bd38eed63d8de5fcfce37c4bb2f660a02d3dff9cbfd807a309db671ff1af" "d5f8099d98174116cba9912fe2a0c3196a7cd405d12fa6b9375c55fc510988b5" "285efd6352377e0e3b68c71ab12c43d2b72072f64d436584f9159a58c4ff545a" "e074be1c799b509f52870ee596a5977b519f6d269455b84ed998666cf6fc802a" "be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "845103fcb9b091b0958171653a4413ccfad35552bc39697d448941bcbe5a660d" default)))
+    ("d0e57771a8b61d0166fb2dde379772c6fcaf35d17f68a7f5b9a148357a6219ac" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" default)))
  '(dap-auto-show-output nil)
  '(dap-ui-controls-mode t nil (dap-ui))
  '(dired-sidebar-should-follow-file t)
- '(fci-rule-color "#37474F")
+ '(fci-rule-color "#37474F" t)
  '(fill-column 100)
  '(gdb-show-main t)
  '(highlight-changes-colors (quote ("#c42475" "#5e65b6")))
@@ -547,7 +551,7 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 %i%?")
      ("L" "Protocol Link" entry
       (file+headline "~/org/inbox.org" "Inbox")
-      "* TODO %? [[%:link][%:description]] 
+      "* TODO %? [[%:link][%:description]]
 Captured On: %U"))))
  '(org-clock-out-when-done (quote ("DONE" "WAITING")))
  '(org-fontify-whole-heading-line t)
@@ -626,7 +630,7 @@ Captured On: %U"))))
   :prefix my-leader)
 
 (my-leader-def
-  :states '(normal emacs)
+  :states '(normal emacs motion)
 
   ;; projectile
   "p" '(:ignore t :which-key "projects")
@@ -683,7 +687,7 @@ Captured On: %U"))))
 (my-leader-def
   :keymaps 'lsp-mode-map
   :states 'normal
-  
+
   "l" '(:ignore t :which-key "lsp")
   "l l" '(lsp-find-definition :which-key "definition")
   "l g" '(lsp-find-references :which-key "references")
@@ -723,6 +727,11 @@ Captured On: %U"))))
   "k" '(:ignore t :which-key "format code")
   "k y" '(yapfify-region-or-buffer :which-key "yapf")
 
+  "i" '(:ignore t :which-key "interactive")
+  "i b" '(python-shell-send-buffer :which-key "send buffer")
+  "i r" '(python-shell-send-region :which-key "send region")
+  "i l" '(my-send-current-line :which-key "send line")
+
   "t" '(:ignore t :which-key "tests")
   "t b" '(python-pytest-file :which-key "buffer")
   "t f" '(python-pytest-function-dwim :which-key "function")
@@ -759,9 +768,9 @@ Captured On: %U"))))
 
 
 ;;;* Disable Speed hacks
-(add-hook 'emacs-startup-hook (lambda () 
-				(setq gc-cons-threshold 16777216 gc-cons-percentage 0.1
-				      file-name-handler-alist last-file-name-handler-alist)))
+(add-hook 'emacs-startup-hook (lambda ()
+                                (setq gc-cons-threshold 16777216 gc-cons-percentage 0.1
+                                      file-name-handler-alist last-file-name-handler-alist)))
 (server-start)
 ;;;* make outline mode work
 ;; Local Variables:
