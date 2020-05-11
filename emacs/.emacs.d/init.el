@@ -27,6 +27,11 @@
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
+;;;* benchmark-init
+;;(use-package benchark-init
+;;  :config
+;;  ;; To disable collection of benchmark data after init is done.
+;;  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 ;;;* evil
 (use-package
   evil
@@ -83,6 +88,8 @@
 (use-package
   markdown-mode)
 
+(use-package rg)
+
 ;; (use-package
 ;;  gruvbox-theme)
 ;;;* dashboard
@@ -107,12 +114,6 @@
   ivy
   :config (setq projectile-completion-system 'ivy)
   (ivy-mode 1))
-
-;;;* benchmark-init
-;; (use-package benchark-init
-;;   :config
-;;   ;; To disable collection of benchmark data after init is done.
-;;   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 ;;;* org
 
@@ -474,6 +475,7 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
         ("https://drewdevault.com/feed.xml" blog)
         ("https://danluu.com/atom.xml" blog)
         ("http://fabiensanglard.net/rss.xml" blog)
+        ("https://lwn.net/headlines/rss" blog)
         ("https://reddit-top-rss.herokuapp.com/?subreddit=space&averagePostsPerDay=5&view=rss" reddit)
         ("https://reddit-top-rss.herokuapp.com/?subreddit=linux&averagePostsPerDay=5&view=rss" reddit)
         ("https://reddit-top-rss.herokuapp.com/?subreddit=programming&averagePostsPerDay=10&view=rss" reddit)
@@ -567,13 +569,14 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
       "* TODO %? [[%:link][%:description]]
 Captured On: %U"))))
  '(org-clock-out-when-done (quote ("DONE" "WAITING")))
+ '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(org-fontify-whole-heading-line t)
  '(org-roam-directory "~/org/")
  '(org-roam-graph-exclude-matcher (quote ("journal" "_tag")))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
  '(package-selected-packages
    (quote
-    (jupyter-repl jupyter emacs-jupyter elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
+    (benchark-init rg jupyter-repl jupyter emacs-jupyter elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
  '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
  '(pos-tip-background-color "#f4eedb")
  '(pos-tip-foreground-color "#5d737a")
@@ -626,6 +629,8 @@ Captured On: %U"))))
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Ubuntu Mono" :foundry "DAMA" :slant normal :weight normal :height 143 :width normal))))
+ '(jupyter-repl-input-prompt ((t (:foreground "dark green"))))
+ '(jupyter-repl-output-prompt ((t (:foreground "red4"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "dark orange"))))
  '(rainbow-delimiters-depth-4-face ((t (:foreground "green4"))))
@@ -651,7 +656,8 @@ Captured On: %U"))))
   "p s" '(projectile-save-project-buffers :which-key "save buffers")
   "p k" '(projectile-kill-buffers :which-key "kill buffers")
   "p p" '(projectile-switch-project :which-key "open project")
-  "p r" '(projectile-ripgrep :which-key "ripgrep")
+
+  "r" '(rg-menu :which-key "ripgrep")
 
   ;; highlighting
   "h" '(:ignore t :which-key "highlighting")
@@ -741,9 +747,13 @@ Captured On: %U"))))
   "k y" '(yapfify-region-or-buffer :which-key "yapf")
 
   "i" '(:ignore t :which-key "interactive")
-  "i b" '(python-shell-send-buffer :which-key "send buffer")
-  "i r" '(python-shell-send-region :which-key "send region")
-  "i l" '(my-send-current-line :which-key "send line")
+  "i i" '(jupyter-inspect-at-point :which-key "jupyter inspect at point")
+  "i j" '(jupyter-run-repl :which-key "start jupyter repl")
+  "i b" '(jupyter-eval-buffer :which-key "send buffer")
+  "i s" '(jupyter-repl-scratch-buffer :which-key "open scratch buffer")
+  "i RET" '(jupyter-eval-line-or-region :which-key "send region or line (C-c C-c)")
+  "i k" '(jupyter-repl-interrupt-kernel :which-key "interrupt kernel")
+  "i r" '(jupyter-repl-restart-kernel :which-key "restart kernel")
 
   "t" '(:ignore t :which-key "tests")
   "t b" '(python-pytest-file :which-key "buffer")
@@ -778,7 +788,6 @@ Captured On: %U"))))
 ;; Also in visual mode
 (define-key evil-visual-state-map "j" 'evil-next-visual-line)
 (define-key evil-visual-state-map "k" 'evil-previous-visual-line)
-
 
 ;;;* Disable Speed hacks
 (add-hook 'emacs-startup-hook (lambda ()
