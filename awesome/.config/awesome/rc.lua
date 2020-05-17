@@ -21,6 +21,7 @@ local debian = require("debian.menu")
 local has_fdo, freedesktop = pcall(require, "freedesktop")
 
 
+
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
 if awesome.startup_errors then
@@ -47,14 +48,14 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/orausch/.config/awesome/default/theme.lua")
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
----beautiful.font = "Ubuntu Mono Regular 15"
-beautiful.font = "Terminus (TTF) Bold 15"
+beautiful.font = "Roboto Medium 15"
+--beautiful.font = "Terminus (TTF) Bold 12"
 beautiful.useless_gap = 0
 beautiful.maximized_hide_border = true
 gears.wallpaper.set(beautiful.bg_normal)
 
 -- This is used later as the default terminal and editor to run.
-terminal = "mate-terminal"
+terminal = "xterm"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -172,12 +173,32 @@ screen.connect_signal("property::geometry", set_wallpaper)
 
 --
 local white = beautiful.fg_normal
-local back = beautiful.bg_normal
+local back = beautiful.taglist_bg_occupied
+local full_back = beautiful.bg_normal
 local orange = "#ffa500"
 local red = "#ff0000"
 
 local markup = lain.util.markup
-local separator = markup.color("#777777", back, " | ")
+local separator = wibox.widget {
+    markup = markup.color(beautiful.taglist_fg_occupied, full_back, ' | '),
+    align = 'center',
+    valign = 'center',
+    widget = wibox.widget.textbox
+}
+
+function add_background(widget)
+    return wibox.container.margin(
+        wibox.container.background(
+            wibox.container.margin(widget, 4, 4, 4, 4),
+            beautiful.taglist_bg_occupied,
+            beautiful.taglist_shape
+        ),
+        4, 4, 4, 4
+    )
+
+end
+
+markup.color("#777777", back, " | ")
 local mpris, mpris_timer = awful.widget.watch(
     { awful.util.shell, "-c", "playerctl status; playerctl metadata" },
     2,
@@ -253,26 +274,49 @@ mpris:connect_signal(
     end
 )
 
-local cpu = lain.widget.cpu {
-    settings = function()
-	markup_string = "CPU: "
-	fg_color = white
-	if cpu_now.usage > 90 then
-	    fg_color = red
-	elseif cpu_now.usage > 60 then
-	    fg_color = orange
-	end
-	widget:set_markup(
-	    "CPU: " 
-		.. markup.color(fg_color, back, cpu_now.usage .. "%") 
-		.. separator
-	)
-    end
+--local cpu = lain.widget.cpu {
+--    settings = function()
+--	markup_string = "CPU: "
+--	fg_color = white
+--	if cpu_now.usage > 90 then
+--	    fg_color = red
+--	elseif cpu_now.usage > 60 then
+--	    fg_color = orange
+--	end
+--	widget:set_markup(
+--	    "CPU: " 
+--		.. markup.color(fg_color, back, cpu_now.usage .. "%") 
+--		.. separator
+--	)
+--    end
+--}
+
+
+local cpu_widget = require("awesome-wm-widgets.cpu-widget.cpu-widget")
+
+
+--local cpu = wibox.widget {
+--        cpu_widget({
+--                step_width = 3,
+--                width = 50
+--        }),
+--        wibox.widget.textbox("test"),
+--        layout = wibox.layout.align.horizonal
+--    }
+
+local cpu = add_background(wibox.widget {
+    wibox.widget.textbox("CPU: "),
+    cpu_widget({
+            step_width = 3,
+            width = 50
+    }),
+    layout = wibox.layout.align.horizontal
 }
---
+)
+
 local summary = nil
 function show_tooltip()
-    local font = 'Terminus 10'
+    local font = 'Terminus (TTF) 12'
     local text_color = '#FFFFFF'
     local fd = io.popen(os.getenv("HOME") .. "/.config/awesome/mem.sh summary")
     local str = fd:read("*all")
@@ -303,13 +347,14 @@ local mem = lain.widget.mem {
 	    end
 	    widget:set_markup(
 		"MEM: " 
-		    .. markup.color(fg_color, back, mem_now.used .. "MB")
-		    .. separator)
+		    .. markup.color(fg_color, back, mem_now.used .. "MB"))
 
 	    widget:connect_signal("mouse::enter", show_tooltip)
 	    widget:connect_signal("mouse::leave", hide_tooltip)
 	end
 }
+
+local mem = add_background(mem.widget)
 --
 --local volume = lain.widget.pulse {
 --    settings =
@@ -323,7 +368,8 @@ local mem = lain.widget.mem {
 --}
 --
 --
-textclock = wibox.widget.textclock("%A %d %B %H:%M ")
+local textclock = wibox.widget.textclock("%A %d %B %H:%M")
+local textclock = add_background(textclock)
 local cal = lain.widget.cal {
     attach_to = { textclock},
     icons="",
@@ -345,11 +391,11 @@ local bat = lain.widget.bat {
 		"BAT: " ..
 		    markup.color(fg_color, back, bat_now.perc .. "% ") ..
 		    string.sub(bat_now.status, 1, 1)..
-		    "(" .. bat_now.time .. ")"..
-		    separator
+		    "(" .. bat_now.time .. ")"
 	    )
 	end
 }
+local bat = add_background(bat.widget)
 
 smallest_screen = nil
 smallest_screen_size = 1e300
@@ -380,10 +426,11 @@ awful.screen.connect_for_each_screen(
 	    awful.tag({"1", "2", "3", "4", "5", "6", "7", "8", "9"}, s, awful.layout.layouts[2])
 	end
 
-	s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons)
+	s.mytaglist = wibox.container.margin(
+            awful.widget.taglist(s, function(t) return t.selected or #t:clients() > 0 end, taglist_buttons), 0, 0, 3, 3)
 
 	s.mylayoutbox = awful.widget.layoutbox(s)
-	s.mywibox = awful.wibar({ position = "top", screen = s, height=28 })
+	s.mywibox = awful.wibar({ position = "top", screen = s, height= 32 })
 	s.mylayoutbox = awful.widget.layoutbox(s)
 
 	-- Add widgets to the wibox
@@ -397,9 +444,9 @@ awful.screen.connect_for_each_screen(
 		nil,
 		{
 		    layout = wibox.layout.fixed.horizontal,
-		    cpu.widget,
+		    cpu,
 		    --mem.widget,
-		    bat.widget,
+		    bat,
 		    -- net.widget,
 		    textclock,
 		    --			wibox.widget.systray(),
@@ -431,7 +478,7 @@ mail_tag = awful.tag.add(
 )
 
 music_tag = awful.tag.add(
-    "♫",
+    "♪",
     {
         screen = smallest_screen,
         layout = smallest_screen_layout
@@ -452,11 +499,16 @@ largest_screen.mywibox:setup (
 	    layout = wibox.layout.fixed.horizontal,
 	    --current_task,
 	    --vpn_name,
-	    cpu.widget,
-	    mem.widget,
-	    bat.widget,
+	    cpu,
+            separator,
+	    mem,
+            separator,
+	    bat,
+            separator,
 	    textclock,
-	    wibox.widget.systray(),
+            separator,
+	    wibox.container.margin(wibox.widget.systray(), 0, 0, 4, 4),
+            separator,
 	    largest_screen.mylayoutbox,
 	},
     }

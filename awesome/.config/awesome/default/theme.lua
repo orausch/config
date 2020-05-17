@@ -7,11 +7,12 @@ local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
 
 local gfs = require("gears.filesystem")
+local gears = require("gears")
 local themes_path = gfs.get_themes_dir()
 
 local theme = {}
 
-theme.font          = "sans 8"
+--theme.font          = "sans 12"
 
 theme.bg_normal     = "#222222"
 theme.bg_focus      = "#20eafc"
@@ -19,7 +20,7 @@ theme.bg_urgent     = "#ff0000"
 theme.bg_minimize   = "#444444"
 theme.bg_systray    = theme.bg_normal
 
-theme.fg_normal     = "#ffffff"
+theme.fg_normal     = "#fff"
 theme.fg_focus      = "#000000"
 theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#ffffff"
@@ -29,6 +30,17 @@ theme.border_width  = 3
 theme.border_normal = "#222222"
 theme.border_focus  = theme.bg_focus
 theme.border_marked = "#91231c"
+
+theme.taglist_spacing = 4
+theme.taglist_shape = function(cr, width, height)
+    gears.shape.rounded_rect(cr, width, height, 2)
+end
+
+theme.taglist_bg_occupied = "#545454"
+theme.taglist_fg_occupied = "#bbb"
+
+-- theme.taglist_shape_border_color = "#fff"
+-- theme.taglist_shape_border_width = 1
 
 -- There are other variable sets
 -- overriding the default one when
@@ -44,13 +56,14 @@ theme.border_marked = "#91231c"
 --theme.taglist_bg_focus = "#ff0000"
 
 -- Generate taglist squares:
-local taglist_square_size = dpi(4)
-theme.taglist_squares_sel = theme_assets.taglist_squares_sel(
-    taglist_square_size, theme.fg_normal
-)
-theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
-    taglist_square_size, theme.fg_normal
-)
+--local taglist_square_size = dpi(10)
+
+--theme.taglist_squares_sel = theme_assets.taglist_squares_sel(
+--    taglist_square_size, theme.fg_normal
+--)
+--theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
+--    taglist_square_size, theme.fg_normal
+--)
 
 -- Variables set for theming notifications:
 -- notification_font

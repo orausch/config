@@ -51,6 +51,7 @@
   :config
   (global-evil-surround-mode 1))
 
+(require 'org-tempo)
 (use-package
   evil-org
   :after org
@@ -177,6 +178,11 @@
 
 
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+
+(use-package adaptive-wrap
+  :hook
+  (org-mode . adaptive-wrap-prefix-mode))
+
 ;;;* lilypond in org
 (defun org-babel-lilypond-get-header-args (mode)
   "Default arguments to use when evaluating a lilypond source block.
@@ -464,7 +470,9 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
                               (local-set-key [18]
                                              (quote comint-history-isearch-backward))))
 
-
+(add-hook 'shell-mode-hook
+      (lambda ()
+        (face-remap-set-base 'comint-highlight-prompt :inherit nil)))
 
 
 
@@ -549,6 +557,7 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
    (quote
     ((emacs-lisp . t)
      (python . t)
+     (C . t)
      (ditaa . t)
      (lilypond . t))))
  '(org-capture-templates
@@ -576,7 +585,7 @@ Captured On: %U"))))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
  '(package-selected-packages
    (quote
-    (benchark-init rg jupyter-repl jupyter emacs-jupyter elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
+    (adaptive-wrap benchark-init rg jupyter-repl jupyter emacs-jupyter elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
  '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
  '(pos-tip-background-color "#f4eedb")
  '(pos-tip-foreground-color "#5d737a")
