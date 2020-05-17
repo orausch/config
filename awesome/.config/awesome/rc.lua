@@ -198,7 +198,6 @@ function add_background(widget)
 
 end
 
-markup.color("#777777", back, " | ")
 local mpris, mpris_timer = awful.widget.watch(
     { awful.util.shell, "-c", "playerctl status; playerctl metadata" },
     2,
@@ -215,7 +214,7 @@ local mpris, mpris_timer = awful.widget.watch(
 	title = stdout:match("title%s+([^\n]*)") or ""
 	artist = stdout:match("artist%s+([^\n]*)") or ""
 	-- customize here
-	widget:set_markup((markup.color("#7777FF", back, state) .. artist .. " - " .. title) or "")
+	widget:set_markup((markup.color("#7777FF", full_back, state) .. artist .. " - " .. title) or "")
     end
 )
 
