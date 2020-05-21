@@ -29,4 +29,12 @@ Install https://github.com/acrisci/playerctl/releases
 
 # awesomewm
 clone `lain` into `.config/awesome/`.
+clone `awesome-wm-widgets` into `.config/awesome/`.
 Tested version: `33c0e0c2360a04fcc6f51bccb0ad2a7a9e9c07b3`
+
+# thunderbird
+Various useful plugins:
+- Lightning (calendar)
+- No Message Pane Sorting by Mouse
+- Provider for Google Calendar
+- Search Results Sort by Date Not Relevance

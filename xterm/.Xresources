@@ -1,6 +1,6 @@
-xterm*faceName: DejaVu Sans Mono Book
-xterm*faceSize: 11
-xterm*savelines: 2048
+XTerm.vt100.faceName: Iosevka Fixed:size=13
+Xterm.vt100.renderFont: false
+xterm*savelines: 10000
 
 *.foreground:  #fffaf4
 *.background:  #0e1019
