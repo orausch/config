@@ -119,6 +119,57 @@
 
 ;;;* org
 
+
+;; RICING ORG MODE
+(setq org-hide-emphasis-markers t)
+
+;; replace '-' with bullet points
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(let* ((variable-tuple
+        (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+              ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+              ((x-list-fonts "Verdana")         '(:font "Verdana"))
+              ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+              (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+       (base-font-color     (face-foreground 'default nil 'default))
+       (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+
+  (custom-theme-set-faces
+   'user
+   `(org-level-8 ((t (,@headline ,@variable-tuple))))
+   `(org-level-7 ((t (,@headline ,@variable-tuple))))
+   `(org-level-6 ((t (,@headline ,@variable-tuple))))
+   `(org-level-5 ((t (,@headline ,@variable-tuple))))
+   `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+   `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
+   `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+   `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
+   `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
+
+(custom-theme-set-faces
+ 'user
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-info ((t (:foreground "dark orange"))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+ '(org-link ((t (:foreground "royal blue" :underline t))))
+ '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-property-value ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+ '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+
+
+(add-hook 'org-mode-hook 'variable-pitch-mode)
+
+
+
+;; OTHER (MAINLY FUNCTIONAL) STUFF
 (require 'org)
 (add-hook 'org-capture-mode-hook #'org-align-all-tags)
 (add-hook 'org-mode-hook 'turn-on-visual-line-mode)
@@ -202,6 +253,14 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 ;;;* org-roam
 
+(use-package deft
+  :after org
+  :custom
+  (deft-recursive t)
+  (deft-use-filter-string-for-filename t)
+  (deft-default-extension "org")
+  (deft-directory "~/org"))
+
 (use-package org-roam
   :hook
   (after-init . org-roam-mode)
@@ -217,8 +276,12 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
            :head "#+TITLE: Journal %<%Y-%m-%d>"))))
 (require 'org-roam-protocol)
 
+(use-package org-roam-server)
+
 ;; not sure if this is required anymore
 (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
+
+
 ;;;* cleverparens
 (use-package smartparens)
 (require 'smartparens-config)
@@ -581,12 +644,13 @@ Captured On: %U"))))
  '(org-clock-out-when-done (quote ("DONE" "WAITING")))
  '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(org-fontify-whole-heading-line t)
+ '(org-roam-buffer-no-delete-other-windows t)
  '(org-roam-directory "~/org/")
- '(org-roam-graph-exclude-matcher (quote ("journal" "_tag")))
+ '(org-roam-graph-exclude-matcher (quote ("journal")))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
  '(package-selected-packages
    (quote
-    (adaptive-wrap benchark-init rg jupyter-repl jupyter emacs-jupyter elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
+    (deft org-roam-server adaptive-wrap benchark-init rg jupyter-repl jupyter emacs-jupyter elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
  '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
  '(pos-tip-background-color "#f4eedb")
  '(pos-tip-foreground-color "#5d737a")
@@ -641,6 +705,27 @@ Captured On: %U"))))
  '(default ((t (:family "Iosevka Fixed" :foundry "BE5N" :slant normal :weight normal :height 128 :width normal))))
  '(jupyter-repl-input-prompt ((t (:foreground "dark green"))))
  '(jupyter-repl-output-prompt ((t (:foreground "red4"))))
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-info ((t (:foreground "dark orange"))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-title ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 2.0 :underline nil))))
+ '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+ '(org-level-1 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 1.75))))
+ '(org-level-2 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 1.5))))
+ '(org-level-3 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 1.25))))
+ '(org-level-4 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 1.1))))
+ '(org-level-5 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif"))))
+ '(org-level-6 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif"))))
+ '(org-level-7 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif"))))
+ '(org-level-8 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif"))))
+ '(org-link ((t (:foreground "royal blue" :underline t))))
+ '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-property-value ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+ '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "dark orange"))))
  '(rainbow-delimiters-depth-4-face ((t (:foreground "green4"))))
@@ -701,7 +786,8 @@ Captured On: %U"))))
   "n" '(:ignore t :which-key "roam")
   "n l" '(org-roam :which-key "sidebar")
   "n f" '(org-roam-find-file :which-key "find file")
-  "n g" '(org-roam-graph :which-key "graph")
+  "n s" '(org-roam-server-mode :which-key "start server")
+  "n d" '(deft :which-key "deft (search)")
 
   ;; others
   "g" 'magit-status
