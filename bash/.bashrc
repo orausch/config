@@ -136,6 +136,6 @@ unset __conda_setup
 # <<< conda initialize <<<
 export PYTHONPATH=$PYTHONPATH:/home/orausch/sources/dace
 export MKLROOT=/home/orausch/.local/opt/miniconda3/envs/onnx/
+export ORT_ROOT=/home/orausch/sources/onnxruntime
 
 export APRON=/home/orausch/sources/rse-project/apron
-export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64

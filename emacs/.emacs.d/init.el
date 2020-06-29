@@ -12,6 +12,16 @@
 (setq compilation-window-height 20)
 (setq inhibit-compacting-font-caches t)
 
+;;;* Modeline
+
+;; show full buffer path in modeline
+(with-eval-after-load 'subr-x
+  (setq-default mode-line-buffer-identification
+                '(:eval (format-mode-line (propertized-buffer-identification (or (when-let* ((buffer-file-truename buffer-file-truename)
+                                                                                             (prj (cdr-safe (project-current)))
+                                                                                             (prj-parent (file-name-directory (directory-file-name (expand-file-name prj)))))
+                                                                                   (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename)))
+                                                                                 "%b"))))))
 ;;;* misc emacs stuff
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3") ;; bugfix; remove in emacs 26.3+
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup")) backup-by-copying t version-control t
@@ -50,6 +60,10 @@
   :ensure t
   :config
   (global-evil-surround-mode 1))
+
+(use-package evil-commentary)
+
+(add-hook 'prog-mode-hook 'evil-commentary-mode)
 
 (require 'org-tempo)
 (use-package
@@ -383,7 +397,8 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
          (python-mode . dap-ui-mode)
          (python-mode . dap-tooltip-mode))
   :bind (:map dap-mode-map
-              (("<f5>" . dap-next)))
+              (("<f8>" . dap-next)
+               ("<f9>" . dap-continue)))
   :config
   (require 'dap-python))
 
@@ -482,48 +497,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 
 
-;;;* treemacs
-(use-package neotree
-  :config
-  (add-hook 'neotree-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
-              (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-quick-look)
-              (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
-              (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
-              (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
-              (define-key evil-normal-state-local-map (kbd "n") 'neotree-next-line)
-              (define-key evil-normal-state-local-map (kbd "p") 'neotree-previous-line)
-              (define-key evil-normal-state-local-map (kbd "A") 'neotree-stretch-toggle)
-              (define-key evil-normal-state-local-map (kbd "H") 'neotree-hidden-file-toggle))))
-
-(defun neotree-project-dir ()
-  "Open NeoTree using the git root."
-  (interactive)
-  (let ((project-dir (projectile-project-root))
-        (file-name (buffer-file-name)))
-    (neotree-toggle)
-    (if project-dir
-        (if (neo-global--window-exists-p)
-            (progn
-              (neotree-dir project-dir)
-              (neotree-find file-name)))
-      (message "Could not find git project root."))))
-
-(use-package
-  treemacs)
-
-(use-package
-  treemacs-projectile)
-
-(use-package
-  treemacs-evil)
-
-(use-package
-  lsp-treemacs
-  :commands lsp-treemacs-errors-list)
-
-
 ;;;* comint mode
 ;; I think this was to make c-p and c-n work?
 (add-hook 'comint-mode-hook (lambda ()
@@ -577,7 +550,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
    (quote
     ("d0e57771a8b61d0166fb2dde379772c6fcaf35d17f68a7f5b9a148357a6219ac" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" default)))
  '(dap-auto-show-output nil)
- '(dap-ui-controls-mode t nil (dap-ui))
  '(dired-sidebar-should-follow-file t)
  '(fci-rule-color "#37474F" t)
  '(fill-column 100)
@@ -650,7 +622,7 @@ Captured On: %U"))))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
  '(package-selected-packages
    (quote
-    (deft org-roam-server adaptive-wrap benchark-init rg jupyter-repl jupyter emacs-jupyter elfeed tango-plus-theme idle-highlight-mode auctex solarized-theme gruvbox-theme neotree general which-key lsp-python-ms evil-cleverparens cider treemacs-projectile dashboard python-black python-pytest org-roam posframe dap-mode lsp-ivy elisp-format org htmlize yaml-mode use-package treemacs-evil ripgrep realgud rainbow-delimiters pyvenv protobuf-mode projectile org-journal magit-popup lua-mode lsp-ui lsp-treemacs highlight-indentation ghub flycheck find-file-in-project evil-surround evil-magit evil-leader evil-commentary evil-collection dired-subtree counsel conda company-quickhelp company-lsp company-irony clang-format+ bind-map benchmark-init all-the-icons-ivy all-the-icons-dired)))
+    (dap-mode yapfify which-key use-package treemacs ripgrep rg rainbow-delimiters python-pytest python-black protobuf-mode posframe org-roam-server neotree lua-mode lsp-ui lsp-python-ms lsp-ivy jupyter general evil-surround evil-org evil-magit evil-commentary evil-cleverparens emacsql-sqlite elfeed deft dashboard conda company-quickhelp company-lsp company-irony cider bui adaptive-wrap)))
  '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
  '(pos-tip-background-color "#f4eedb")
  '(pos-tip-foreground-color "#5d737a")
@@ -725,6 +697,7 @@ Captured On: %U"))))
  '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
  '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
  '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+ '(org-todo ((t (:background "light salmon" :foreground "grey20" :weight bold))))
  '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "dark orange"))))
