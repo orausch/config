@@ -1,6 +1,7 @@
-XTerm.vt100.faceName: Iosevka Fixed:size=13
+XTerm.vt100.faceName: Iosevka NF:size=13
 Xterm.vt100.renderFont: false
-xterm*savelines: 10000
+XTerm.vt100.savelines: 10000
+XTerm.vt100.metaSendsEscape: true
 
 *.foreground:  #fffaf4
 *.background:  #0e1019
@@ -42,3 +43,9 @@ xterm*savelines: 10000
 *.colorBD:     #9e9c9a
 !*.colorIT:
 !*.colorUL:
+!
+xterm*VT100.Translations: #override \
+      Shift <KeyPress> Insert: insert-selection(CLIPBOARD) \n\
+      Ctrl Shift <Key>V:    insert-selection(CLIPBOARD) \n\
+      Ctrl Shift <Key>C:    copy-selection(CLIPBOARD) \n\
+      Ctrl <Btn1Up>: exec-formatted("xdg-open '%t'", PRIMARY)

@@ -17,9 +17,6 @@ require("awful.hotkeys_popup.keys")
 
 naughty.config.defaults['icon_size'] = 64
 -- Load Debian menu entries
-local debian = require("debian.menu")
-local has_fdo, freedesktop = pcall(require, "freedesktop")
-
 
 
 -- Check if awesome encountered an error during startup and fell back to
@@ -50,14 +47,14 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/orausch/.config/awesome/default/theme.lua")
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
-beautiful.font = "Roboto Medium 15"
+beautiful.font = "Roboto Mono Bold 13"
 --beautiful.font = "Terminus (TTF) Bold 12"
 beautiful.useless_gap = 0
 beautiful.maximized_hide_border = true
 gears.wallpaper.set(beautiful.bg_normal)
 
 -- This is used later as the default terminal and editor to run.
-terminal = "mate-terminal"
+terminal = "xterm"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -88,24 +85,6 @@ myawesomemenu = {
 local menu_awesome = { "awesome", myawesomemenu, beautiful.awesome_icon }
 local menu_terminal = { "open terminal", terminal }
 
-if has_fdo then
-    mymainmenu = freedesktop.menu.build({
-            before = { menu_awesome },
-            after =  { menu_terminal }
-    })
-else
-    mymainmenu = awful.menu({
-            items = {
-                menu_awesome,
-                { "Debian", debian.menu.Debian_menu.Debian },
-                menu_terminal,
-            }
-    })
-end
-
-
-mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
-                                     menu = mymainmenu })
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
@@ -431,7 +410,7 @@ else
 end
 
 zoom_tag = awful.tag.add(
-    "📞",
+    "Z",
     {
         screen = smallest_screen,
         layout = smallest_screen_layout
@@ -488,7 +467,6 @@ largest_screen.mywibox:setup (
 
 -- {{{ Mouse bindings
 root.buttons(gears.table.join(
-                 awful.button({ }, 3, function () mymainmenu:toggle() end),
                  awful.button({ }, 4, awful.tag.viewnext),
                  awful.button({ }, 5, awful.tag.viewprev)
 ))
@@ -559,6 +537,8 @@ globalkeys = awful.util.table.join(
         {description = "lock screen", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
         {description = "reload awesome", group = "awesome"}),
+    awful.key({ modkey, "Control" }, "e", awesome.quit,
+        {description = "quit awesome", group = "awesome"}),
 
     awful.key({ modkey,"Shift"    }, "l",     function () awful.tag.incmwfact( 0.05)          end,
         {description = "increase master width factor", group = "layout"}),
@@ -590,7 +570,7 @@ globalkeys = awful.util.table.join(
         {description = "restore minimized", group = "client"}),
 
     -- Prompt
-    awful.key({ modkey },            "s",     function () awful.spawn("j4-dmenu-desktop --dmenu \'rofi -dmenu -i -p \"run\"'", false) end,
+    awful.key({ modkey },            "s",     function () awful.spawn("rofi -show drun", false) end,
         {description = "run prompt", group = "launcher"}),
     awful.key({ modkey },            "d",     function () awful.spawn(
                 "pass-rofi", false) end,
@@ -801,7 +781,7 @@ awful.rules.rules = {
                  }, properties = { titlebars_enabled = false }
     },
 
-    { rule = { class = "thunderbird" },
+    { rule = { class = "Thunderbird" },
       properties = { tag = mail_tag } },
 
     { rule = { class = "zoom" },
@@ -902,20 +882,17 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 autorun = true
 autorunApps =
     {
-        "mate-settings-daemon",
-        "xrdb ~/.Xresources",
         "xset r rate 200 35",
         "setxkbmap -option caps:escape -option altwin:swap_lalt_lwin -layout 'us(altgr-intl)'",
         "nm-applet",
         "blueman-applet",
-        "mate-volume-control-status-icon",
         "thunderbird",
-        "compton",
+        "picom --fade-in-step=1 --fade-out-step=1 --fade-delta=0",
+        "xss-lock -- i3lock -n -f -c dddddd",
         -- "emacsclient -c -a \"emacs\"",
         -- "xscreensaver",
         --"pnmixer",
         --"/home/oliver/.config/awesome/autorun.sh",
-        -- "xss-lock -- xscreensaver-command -lock",
     }
 if autorun then
     for app = 1, #autorunApps do
