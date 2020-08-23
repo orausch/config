@@ -23,10 +23,10 @@
                                                                                    (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename)))
                                                                                  "%b"))))))
 ;;;* misc emacs stuff
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3") ;; bugfix; remove in emacs 26.3+
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup")) backup-by-copying t version-control t
       delete-old-versions t kept-new-versions 5 kept-old-versions 5)
 (add-to-list 'exec-path "/home/orausch/.local/bin")
+(add-to-list 'load-path "~/.emacs.d/elisp")
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
@@ -65,7 +65,9 @@
 
 (add-hook 'prog-mode-hook 'evil-commentary-mode)
 
+;; fix <s expansion in org mode
 (require 'org-tempo)
+
 (use-package
   evil-org
   :after org
@@ -83,7 +85,7 @@
   (define-key evil-insert-state-map (kbd "C-p") nil))
 
 ;;;* theme
-(load-file "~/.dotfiles/emacs/.emacs.d/minimal-light-theme.el")
+(require 'minimal-light-theme)
 
 ;;;* simple packages (projectile whichkey lua-mode markdown-mode)
 (use-package
@@ -96,9 +98,6 @@
   :config
   (which-key-mode)
   (which-key-setup-side-window-right))
-
-(use-package
-  lua-mode)
 
 (use-package
   markdown-mode)
@@ -133,53 +132,18 @@
 
 ;;;* org
 
+(require 'org-variable-pitch)
 
 ;; RICING ORG MODE
 (setq org-hide-emphasis-markers t)
 
 ;; replace '-' with bullet points
-(font-lock-add-keywords 'org-mode
-                        '(("^ *\\([-]\\) "
-                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+;;(font-lock-add-keywords 'org-mode
+;;                        '(("^ *\\([-]\\) "
+;;                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-(let* ((variable-tuple
-        (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-              ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-              ((x-list-fonts "Verdana")         '(:font "Verdana"))
-              ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
-              (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-       (base-font-color     (face-foreground 'default nil 'default))
-       (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
-
-  (custom-theme-set-faces
-   'user
-   `(org-level-8 ((t (,@headline ,@variable-tuple))))
-   `(org-level-7 ((t (,@headline ,@variable-tuple))))
-   `(org-level-6 ((t (,@headline ,@variable-tuple))))
-   `(org-level-5 ((t (,@headline ,@variable-tuple))))
-   `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
-   `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
-   `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
-   `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
-   `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
-
-(custom-theme-set-faces
- 'user
- '(org-block ((t (:inherit fixed-pitch))))
- '(org-code ((t (:inherit (shadow fixed-pitch)))))
- '(org-document-info ((t (:foreground "dark orange"))))
- '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
- '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
- '(org-link ((t (:foreground "royal blue" :underline t))))
- '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-property-value ((t (:inherit fixed-pitch))) t)
- '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
- '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
- '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
-
-
-(add-hook 'org-mode-hook 'variable-pitch-mode)
+(require 'org-variable-pitch)
+(add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
 
 
 
@@ -230,7 +194,7 @@
 (defun insert-screenshot-at-point ()
   "Make a screenshot, save it in the img folder and insert a link to it."
   (interactive)
-  (shell-command-to-string "scrot -s -o /tmp/screen.png")
+  (shell-command-to-string "maim -s /tmp/screen.png")
   (let ((screenshot-name (my-get-image-name)))
     (shell-command-to-string (concat "mv /tmp/screen.png "
                                      screenshot-name))
@@ -381,27 +345,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
          (c++-mode-hook . lsp))
   :commands lsp)
 
-(require 'lsp-clients)
-(use-package
-  lsp-ui
-  :commands lsp-ui-mode)
-
-(use-package
-  company-lsp
-  :commands company-lsp
-  :config
-  (push 'company-lsp company-backends))
-
-(use-package dap-mode
-  :hook ((python-mode . dap-mode)
-         (python-mode . dap-ui-mode)
-         (python-mode . dap-tooltip-mode))
-  :bind (:map dap-mode-map
-              (("<f8>" . dap-next)
-               ("<f9>" . dap-continue)))
-  :config
-  (require 'dap-python))
-
 (use-package
   lsp-ivy
   :commands lsp-ivy-workspace-symbol
@@ -409,6 +352,31 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   (setq lsp-ivy-show-symbol-kind t)
   (setq lsp-ivy-filter-symbol-kind '(0 2 13))
   (setq lsp-python-ms-python-executable-cmd "/home/orausch/.local/opt/miniconda3/envs/onnx/bin/python"))
+
+(use-package
+  lsp-ui
+  :commands lsp-ui-mode
+  :after lsp-mode
+  :init (setq lsp-ui-doc-enable nil)
+  :custom
+  (lsp-ui-doc-border "black")
+  (lsp-ui-doc-header t)
+  (lsp-ui-doc-include-signature t)
+  (lsp-ui-doc-position 'top))
+
+(use-package lsp-treemacs
+  :commands lsp-treemacs-error-list)
+
+
+(use-package dap-mode
+  :hook ((python-mode . dap-mode)
+         (python-mode . dap-ui-mode)
+         (python-mode . dap-tooltip-mode))
+  :bind (:map dap-mode-map
+              (("<f8>" . dap-next)
+               ("<f9>" . dap-continue))))
+;;(use-package dap-python)
+
 
 ;;;* python
 (use-package
@@ -420,11 +388,10 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 (use-package
   conda
-  :load-path "~/sources/conda.el"
   :commands conda-env-activate
   :config
-  (setq conda-anaconda-home "/home/orausch/.local/opt/miniconda3/")
-  (setq conda-env-home-directory "/home/orausch/.local/opt/miniconda3/")
+  (setq conda-anaconda-home "/opt/anaconda")
+  (setq conda-env-home-directory "/home/orausch/.conda")
   (conda-env-initialize-interactive-shells))
 
 (add-hook 'inferior-python-mode-hook
@@ -456,12 +423,12 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
     (python-nav-backward-defun)
     (move-beginning-of-line nil)))
 
-(use-package python-pytest
-  :config
-  (defun python-pytest--current-defun ()
-    (save-excursion
-      (my-python-top-level-def)
-      (python-info-current-defun))))
+;;(use-package python-pytest
+;;  :config
+;;  (defun python-pytest--current-defun ()
+;;    (save-excursion
+;;      (my-python-top-level-def)
+;;      (python-info-current-defun))))
 
 (defun my-pytest-file-debug ()
   (interactive)
@@ -521,152 +488,57 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
         ("https://danluu.com/atom.xml" blog)
         ("http://fabiensanglard.net/rss.xml" blog)
         ("https://lwn.net/headlines/rss" blog)
-        ("https://reddit-top-rss.herokuapp.com/?subreddit=space&averagePostsPerDay=5&view=rss" reddit)
-        ("https://reddit-top-rss.herokuapp.com/?subreddit=linux&averagePostsPerDay=5&view=rss" reddit)
-        ("https://reddit-top-rss.herokuapp.com/?subreddit=programming&averagePostsPerDay=10&view=rss" reddit)
-        ("https://reddit-top-rss.herokuapp.com/?subreddit=MachineLearning&averagePostsPerDay=5&view=rss" reddit)
-        ("https://reddit-top-rss.herokuapp.com/?subreddit=math&averagePostsPerDay=5&view=rss" reddit)
-        ("https://reddit-top-rss.herokuapp.com/?subreddit=Formula1&averagePostsPerDay=5&view=rss" reddit)
-        ("https://reddit-top-rss.herokuapp.com/?subreddit=emacs&averagePostsPerDay=1&view=rss" reddit)))
+        ("http://www.regressionist.com/rss" blog)))
 ;;;* Customize
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(add-hook (quote after-init-hook) t)
+ '(add-hook 'after-init-hook t)
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
- '(ansi-color-names-vector
-   ["#1e1e1e" "#D16969" "#579C4C" "#D7BA7D" "#339CDB" "#C586C0" "#85DDFF" "#d4d4d4"])
  '(clang-format-style "google")
  '(column-number-mode t)
- '(compilation-message-face (quote default))
- '(cua-global-mark-cursor-color "#11948b")
- '(cua-normal-cursor-color "#596e76")
- '(cua-overwrite-cursor-color "#a67c00")
- '(cua-read-only-cursor-color "#778c00")
- '(custom-safe-themes
-   (quote
-    ("d0e57771a8b61d0166fb2dde379772c6fcaf35d17f68a7f5b9a148357a6219ac" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" default)))
- '(dap-auto-show-output nil)
- '(dired-sidebar-should-follow-file t)
+ '(compilation-message-face 'default)
+ '(custom-enabled-themes '(leuven))
  '(fci-rule-color "#37474F" t)
  '(fill-column 100)
- '(gdb-show-main t)
- '(highlight-changes-colors (quote ("#c42475" "#5e65b6")))
- '(highlight-symbol-colors
-   (quote
-    ("#ec90da49b1e9" "#ccb4e1bdd0ac" "#fb9eca14b38f" "#d89bd3eadcf9" "#de29dee7b293" "#f675cca1ae79" "#d05fdab7e079")))
- '(highlight-symbol-foreground-color "#5d737a")
- '(highlight-tail-colors
-   (quote
-    (("#f4eedb" . 0)
-     ("#a8b84b" . 20)
-     ("#66c1b3" . 30)
-     ("#6fa5e7" . 50)
-     ("#d6a549" . 60)
-     ("#ed6e3e" . 70)
-     ("#f46495" . 85)
-     ("#f4eedb" . 100))))
- '(hl-bg-colors
-   (quote
-    ("#d6a549" "#ed6e3e" "#ff6243" "#f46495" "#837bdf" "#6fa5e7" "#66c1b3" "#a8b84b")))
- '(hl-fg-colors
-   (quote
-    ("#fffce9" "#fffce9" "#fffce9" "#fffce9" "#fffce9" "#fffce9" "#fffce9" "#fffce9")))
- '(hl-paren-colors (quote ("#11948b" "#a67c00" "#007ec4" "#5e65b6" "#778c00")))
  '(indent-tabs-mode nil)
  '(initial-buffer-choice t)
- '(jdee-db-active-breakpoint-face-colors (cons "#171F24" "#237AD3"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#171F24" "#579C4C"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#171F24" "#777778"))
- '(lsp-ui-doc-border "#5d737a")
  '(lua-indent-level 4)
- '(neo-autorefresh t)
- '(nrepl-message-colors
-   (quote
-    ("#cc1f24" "#bb3e06" "#a67c00" "#4f6600" "#a8b84b" "#005797" "#11948b" "#c42475" "#5e65b6")))
- '(objed-cursor-color "#D16969")
  '(org-adapt-indentation nil)
  '(org-babel-load-languages
-   (quote
-    ((emacs-lisp . t)
+   '((emacs-lisp . t)
      (python . t)
      (C . t)
      (ditaa . t)
-     (lilypond . t))))
+     (lilypond . t)))
  '(org-capture-templates
-   (quote
-    (("i" "Inbox" entry
+   '(("i" "Inbox" entry
       (file "~/org/inbox.org")
       "* TODO")
-     ("m" "Meeting Notes- Bachelor's Thesis" entry
-      (function org-journal-find-location)
-      "* Meeting %(format-time-string org-journal-time-format) :meeting:dace:
+     ("m" "Meeting Notes- Bachelor's Thesis" entry #'org-journal-find-location "* Meeting %(format-time-string org-journal-time-format) :meeting:dace:
 %i%?")
-     ("j" "Journal entry" entry
-      (function org-journal-find-location)
-      "*  %(format-time-string org-journal-time-format)%^{Title} :%(projectile-project-name):
+     ("j" "Journal entry" entry #'org-journal-find-location "*  %(format-time-string org-journal-time-format)%^{Title} :%(projectile-project-name):
 %i%?")
      ("L" "Protocol Link" entry
       (file+headline "~/org/inbox.org" "Inbox")
       "* TODO %? [[%:link][%:description]]
-Captured On: %U"))))
- '(org-clock-out-when-done (quote ("DONE" "WAITING")))
- '(org-export-backends (quote (ascii html icalendar latex md odt)))
+Captured On: %U")))
+ '(org-clock-out-when-done '("DONE" "WAITING"))
+ '(org-export-backends '(ascii html icalendar latex md odt))
  '(org-fontify-whole-heading-line t)
  '(org-roam-buffer-no-delete-other-windows t)
  '(org-roam-directory "~/org/")
- '(org-roam-graph-exclude-matcher (quote ("journal")))
+ '(org-roam-graph-exclude-matcher '("journal"))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
- '(package-selected-packages
-   (quote
-    (dap-mode yapfify which-key use-package treemacs ripgrep rg rainbow-delimiters python-pytest python-black protobuf-mode posframe org-roam-server neotree lua-mode lsp-ui lsp-python-ms lsp-ivy jupyter general evil-surround evil-org evil-magit evil-commentary evil-cleverparens emacsql-sqlite elfeed deft dashboard conda company-quickhelp company-lsp company-irony cider bui adaptive-wrap)))
- '(pdf-view-midnight-colors (cons "#d4d4d4" "#1e1e1e"))
- '(pos-tip-background-color "#f4eedb")
- '(pos-tip-foreground-color "#5d737a")
  '(ripgrep-arguments
-   (quote
-    ("--type-not css" "--type-not html" "-g '!*.sdfg'" "-g '!*.ipynb'" "-g '!TAGS'" "--type-not js")))
- '(rustic-ansi-faces
-   ["#1e1e1e" "#D16969" "#579C4C" "#D7BA7D" "#339CDB" "#C586C0" "#85DDFF" "#d4d4d4"])
- '(safe-local-variable-values (quote ((eval outline-hide-sublevels 4))))
+   '("--type-not css" "--type-not html" "-g '!*.sdfg'" "-g '!*.ipynb'" "-g '!TAGS'" "--type-not js"))
+ '(safe-local-variable-values '((eval outline-hide-sublevels 4)))
  '(show-paren-mode t)
- '(smartrep-mode-line-active-bg (solarized-color-blend "#778c00" "#f4eedb" 0.2))
- '(term-default-bg-color "#fffce9")
- '(term-default-fg-color "#596e76")
  '(tool-bar-mode nil)
- '(vc-annotate-background "#1e1e1e")
- '(vc-annotate-background-mode nil)
- '(vc-annotate-color-map
-   (list
-    (cons 20 "#579C4C")
-    (cons 40 "#81a65c")
-    (cons 60 "#acb06c")
-    (cons 80 "#D7BA7D")
-    (cons 100 "#d8ab79")
-    (cons 120 "#d99c76")
-    (cons 140 "#DB8E73")
-    (cons 160 "#d38b8c")
-    (cons 180 "#cc88a6")
-    (cons 200 "#C586C0")
-    (cons 220 "#c97ca3")
-    (cons 240 "#cd7286")
-    (cons 260 "#D16969")
-    (cons 280 "#ba6c6c")
-    (cons 300 "#a37070")
-    (cons 320 "#8d7374")
-    (cons 340 "#37474F")
-    (cons 360 "#37474F")))
- '(vc-annotate-very-old-color nil)
- '(weechat-color-list
-   (quote
-    (unspecified "#fffce9" "#f4eedb" "#990001" "#cc1f24" "#4f6600" "#778c00" "#785700" "#a67c00" "#005797" "#007ec4" "#93004d" "#c42475" "#006d68" "#11948b" "#596e76" "#88999b")))
- '(xterm-color-names
-   ["#f4eedb" "#cc1f24" "#778c00" "#a67c00" "#007ec4" "#c42475" "#11948b" "#002b37"])
- '(xterm-color-names-bright
-   ["#fffce9" "#bb3e06" "#98a6a6" "#88999b" "#596e76" "#5e65b6" "#5d737a" "#00212b"]))
+ '(vc-annotate-background-mode nil))
 
 
 (custom-set-faces
@@ -677,28 +549,6 @@ Captured On: %U"))))
  '(default ((t (:family "Iosevka Fixed" :foundry "BE5N" :slant normal :weight normal :height 128 :width normal))))
  '(jupyter-repl-input-prompt ((t (:foreground "dark green"))))
  '(jupyter-repl-output-prompt ((t (:foreground "red4"))))
- '(org-block ((t (:inherit fixed-pitch))))
- '(org-code ((t (:inherit (shadow fixed-pitch)))))
- '(org-document-info ((t (:foreground "dark orange"))))
- '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
- '(org-document-title ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 2.0 :underline nil))))
- '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
- '(org-level-1 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 1.75))))
- '(org-level-2 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 1.5))))
- '(org-level-3 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 1.25))))
- '(org-level-4 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif" :height 1.1))))
- '(org-level-5 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif"))))
- '(org-level-6 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif"))))
- '(org-level-7 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif"))))
- '(org-level-8 ((t (:inherit default :weight bold :foreground "grey20" :family "Sans Serif"))))
- '(org-link ((t (:foreground "royal blue" :underline t))))
- '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-property-value ((t (:inherit fixed-pitch))) t)
- '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
- '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
- '(org-todo ((t (:background "light salmon" :foreground "grey20" :weight bold))))
- '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "dark orange"))))
  '(rainbow-delimiters-depth-4-face ((t (:foreground "green4"))))
@@ -737,7 +587,7 @@ Captured On: %U"))))
   "f f" 'find-file
   "f i" `(,(lambda ()
              (interactive)
-             (find-file "~/.dotfiles/emacs/.emacs.d/init.el")) :which-key "init.el")
+             (find-file "~/sources/config/emacs/.emacs.d/init.el")) :which-key "init.el")
   "f t" 'org-roam-dailies-today
 
   ;; org stuff
@@ -778,7 +628,7 @@ Captured On: %U"))))
 
   "l" '(:ignore t :which-key "lsp")
   "l l" '(lsp-find-definition :which-key "definition")
-  "l g" '(lsp-find-references :which-key "references")
+  "l g" '(lsp-peek-find-references :which-key "references")
   "l r" '(lsp-rename :which-key "rename")
   "l s" '(lsp-ivy-workspace-symbol :which-key "find symbol"))
 

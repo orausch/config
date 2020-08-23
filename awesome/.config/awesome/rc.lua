@@ -65,6 +65,11 @@ editor_cmd = terminal .. " -e " .. editor
 -- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
 
+-- disable snapping in floating mode
+awful.mouse.snap.edge_enabled = false
+awful.mouse.snap.client_enabled = false
+awful.mouse.drag_to_tag.enabled = false
+
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
     awful.layout.suit.tile.right,
@@ -888,7 +893,6 @@ autorunApps =
         "blueman-applet",
         "thunderbird",
         "picom --fade-in-step=1 --fade-out-step=1 --fade-delta=0",
-        "xss-lock -- i3lock -n -f -c dddddd",
         -- "emacsclient -c -a \"emacs\"",
         -- "xscreensaver",
         --"pnmixer",
