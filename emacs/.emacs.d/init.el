@@ -1,16 +1,16 @@
 ;;;* Startup Speed Hacks
-(setq frame-inhibit-implied-resize t)
-(defvar last-file-name-handler-alist file-name-handler-alist)
-(setq gc-cons-threshold 100000000)
-(setq compilation-finish-functions (lambda (buf str)
-                                     (if (null (string-match ".*exited abnormally.*" str))
-                                         ;;no errors, make the compilation window go away in a few seconds
-                                         (progn (run-at-time "1 sec" nil 'delete-windows-on
-                                                             (get-buffer-create "*compilation*"))
-                                                (message "No Compilation Errors!")))))
-(setq compilation-scroll-output t)
-(setq compilation-window-height 20)
-(setq inhibit-compacting-font-caches t)
+;;(setq frame-inhibit-implied-resize t)
+;;(defvar last-file-name-handler-alist file-name-handler-alist)
+;;(setq gc-cons-threshold 100000000)
+;;(setq compilation-finish-functions (lambda (buf str)
+;;                                     (if (null (string-match ".*exited abnormally.*" str))
+;;                                         ;;no errors, make the compilation window go away in a few seconds
+;;                                         (progn (run-at-time "1 sec" nil 'delete-windows-on
+;;                                                             (get-buffer-create "*compilation*"))
+;;                                                (message "No Compilation Errors!")))))
+;;(setq compilation-scroll-output t)
+;;(setq compilation-window-height 20)
+;;(setq inhibit-compacting-font-caches t)
 
 ;;;* Modeline
 
@@ -65,9 +65,6 @@
 
 (add-hook 'prog-mode-hook 'evil-commentary-mode)
 
-;; fix <s expansion in org mode
-(require 'org-tempo)
-
 (use-package
   evil-org
   :after org
@@ -107,23 +104,6 @@
 
 ;; (use-package
 ;;  gruvbox-theme)
-;;;* dashboard
-(use-package dashboard
-  :ensure t
-  :config
-  (setq dashboard-items '((recents  . 5)
-                          (projects . 5)))
-  (setq dashboard-org-agenda-categories '("Tasks" "Appointments"))
-  (setq dashboard-startup-banner 'logo)
-  (dashboard-setup-startup-hook))
-
-;;;* artist-mode
-(defun artist-mode-toggle-emacs-state ()
-  (if artist-mode
-      (evil-emacs-state)
-    (evil-exit-emacs-state)))
-
-                                        ;(add-hook 'artist-mode-hook #'artist-mode-toggle-emacs-
 ;;;* ivy
 (use-package
   ivy
@@ -161,6 +141,9 @@
 (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
 (add-to-list 'org-agenda-files "~/org/journal/")
+
+;; fix <s expansion in org mode
+(require 'org-tempo)
 
 ;; fix
 ;;(defun my-refile ()
@@ -213,22 +196,6 @@
   :hook
   (org-mode . adaptive-wrap-prefix-mode))
 
-;;;* lilypond in org
-(defun org-babel-lilypond-get-header-args (mode)
-  "Default arguments to use when evaluating a lilypond source block.
-These depend upon whether we are in Arrange mode i.e. MODE is t."
-  (cond (mode
-         '((:tangle . "yes")
-           (:noweb . "yes")
-           (:results . "silent")
-           (:cache . "yes")
-           (:prologue . "\\paper{indent=0\\mm\nline-width=170\\mm\noddFooterMarkup=##f\noddHeaderMarkup=##f\nbookTitleMarkup=##f\nscoreTitleMarkup=##f}")
-           (:comments . "yes")))
-        (t
-         '((:results . "file")
-           (:prologue . "\\paper{indent=0\\mm\nline-width=170\\mm\noddFooterMarkup=##f\noddHeaderMarkup=##f\nbookTitleMarkup=##f\nscoreTitleMarkup=##f}")
-           (:exports . "results")))))
-
 ;;;* org-roam
 
 (use-package deft
@@ -268,26 +235,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   ((emacs-lisp-mode . evil-cleverparens-mode)
    (evil-cleverparens-mode . smartparens-mode)))
 
-;;;* rainbow-delimiters
-(use-package
-  rainbow-delimiters
-  :hook
-  (emacs-lisp-mode-hook . rainbow-delimiters-mode)
-  (clojure-mode-hook . rainbow-delimiters-mode)
-  (cider-repl-mode-hook . rainbow-delimiters-mode)
-  (python-mode-hook . rainbow-delimiters-mode))
-
-;;;* clojure
-(use-package clojure-mode
-  :hook
-  ((clojure-mode . evil-cleverparens-mode)
-   (clojurescript-mode . evil-cleverparens-mode)))
-
-(use-package cider
-  :config
-  (define-key cider-repl-mode-map (kbd "C-n") #'cider-repl-next-input)
-  (define-key cider-repl-mode-map (kbd "C-p") #'cider-repl-previous-input))
-
 ;;;* Add M-x kill-process (to kill the current buffer's process).
 (put 'kill-process 'interactive-form
      '(interactive
@@ -309,74 +256,10 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 (use-package
   evil-magit
   :after magit)
-;;;* c and c++
-
-
-;;;* company
-(use-package
-  company
-  :defer t
-  :init (add-hook 'after-init-hook 'global-company-mode)
-  :config (use-package
-            company-irony
-            :defer t)
-  (setq company-idle-delay 0.0
-        company-minimum-prefix-length 1
-        company-tooltip-limit 20
-        company-dabbrev-downcase nil
-        company-backends '((company-irony company-gtags)))
-  (define-key company-active-map (kbd "M-n") nil)
-  (define-key company-active-map (kbd "M-p") nil)
-  (define-key company-active-map (kbd "C-n") #'company-select-next)
-  (define-key company-active-map (kbd "C-p") #'company-select-previous)
-  :bind ("C-;" . company-complete-common))
+;;;* ocaml
 
 (use-package
-  company-quickhelp
-  :init (add-hook 'company-mode-hook 'company-quickhelp-mode)
-  :config (setq company-quickhelp-delay 0.0))
-
-
-;;;* lsp-mode
-(use-package
-  lsp-mode
-  :init (setq lsp-keymap-prefix "C-l")
-  :hook ((python-mode . lsp)
-         (c++-mode-hook . lsp))
-  :commands lsp)
-
-(use-package
-  lsp-ivy
-  :commands lsp-ivy-workspace-symbol
-  :config
-  (setq lsp-ivy-show-symbol-kind t)
-  (setq lsp-ivy-filter-symbol-kind '(0 2 13))
-  (setq lsp-python-ms-python-executable-cmd "/home/orausch/.local/opt/miniconda3/envs/onnx/bin/python"))
-
-(use-package
-  lsp-ui
-  :commands lsp-ui-mode
-  :after lsp-mode
-  :init (setq lsp-ui-doc-enable nil)
-  :custom
-  (lsp-ui-doc-border "black")
-  (lsp-ui-doc-header t)
-  (lsp-ui-doc-include-signature t)
-  (lsp-ui-doc-position 'top))
-
-(use-package lsp-treemacs
-  :commands lsp-treemacs-error-list)
-
-
-(use-package dap-mode
-  :hook ((python-mode . dap-mode)
-         (python-mode . dap-ui-mode)
-         (python-mode . dap-tooltip-mode))
-  :bind (:map dap-mode-map
-              (("<f8>" . dap-next)
-               ("<f9>" . dap-continue))))
-;;(use-package dap-python)
-
+  tuareg)
 
 ;;;* python
 (use-package
@@ -385,14 +268,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 (use-package python-black
   :after python)
-
-(use-package
-  conda
-  :commands conda-env-activate
-  :config
-  (setq conda-anaconda-home "/opt/anaconda")
-  (setq conda-env-home-directory "/home/orausch/.conda")
-  (conda-env-initialize-interactive-shells))
 
 (add-hook 'inferior-python-mode-hook
           (lambda ()
@@ -404,65 +279,6 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 (defun my-send-current-line ()
   (interactive)
   (python-shell-send-string (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-
-(defun my-maybe-activate ()
-  (interactive)
-  (unless (and  (boundp 'conda-env-current-name) conda-env-current-name)
-    (conda-env-activate)))
-
-(advice-add 'python-mode :before #'my-maybe-activate)
-
-(setq python-shell-interpreter "ipython")
-(setenv "PYTHONPATH" "/home/orausch/sources/dace/")
-
-(defun my-python-top-level-def ()
-  (interactive)
-  (move-beginning-of-line nil)
-  (while (not (equal (string (char-after (point)))
-                     "d"))
-    (python-nav-backward-defun)
-    (move-beginning-of-line nil)))
-
-;;(use-package python-pytest
-;;  :config
-;;  (defun python-pytest--current-defun ()
-;;    (save-excursion
-;;      (my-python-top-level-def)
-;;      (python-info-current-defun))))
-
-(defun my-pytest-file-debug ()
-  (interactive)
-  (python-pytest-file (buffer-file-name) '("--pdb")))
-
-(defun my-pytest-function-debug ()
-  (interactive)
-  (python-pytest-function-dwim
-   (buffer-file-name)
-   (python-pytest--current-defun)
-   '("--pdb")))
-
-
-(setenv "DACE_optimizer_interface" "")
-
-
-(use-package
-  lsp-python-ms
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-python-ms)
-                         (lsp))))
-
-(use-package jupyter)
-
-;; no idea why this works
-;; see https://emacs.stackexchange.com/questions/44880/use-package-bind-not-working-as-expected
-(use-package jupyter-repl
-  :ensure nil
-  :bind
-  (:map jupyter-repl-mode-map
-        (("C-p" . jupyter-repl-history-previous)
-         ("C-n" . jupyter-repl-history-next))))
-
-
 
 ;;;* comint mode
 ;; I think this was to make c-p and c-n work?
@@ -480,28 +296,19 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 
 
-;;;* elfeed
-(use-package elfeed)
-(setq elfeed-feeds
-      '(("https://xkcd.com/atom.xml" comic)
-        ("https://drewdevault.com/feed.xml" blog)
-        ("https://danluu.com/atom.xml" blog)
-        ("http://fabiensanglard.net/rss.xml" blog)
-        ("https://lwn.net/headlines/rss" blog)
-        ("http://www.regressionist.com/rss" blog)))
 ;;;* Customize
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(add-hook 'after-init-hook t)
+ '(add-hook (quote after-init-hook) t)
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
  '(clang-format-style "google")
  '(column-number-mode t)
- '(compilation-message-face 'default)
- '(custom-enabled-themes '(leuven))
+ '(compilation-message-face (quote default))
+ '(custom-enabled-themes (quote (leuven)))
  '(fci-rule-color "#37474F" t)
  '(fill-column 100)
  '(indent-tabs-mode nil)
@@ -509,52 +316,46 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
  '(lua-indent-level 4)
  '(org-adapt-indentation nil)
  '(org-babel-load-languages
-   '((emacs-lisp . t)
+   (quote
+    ((emacs-lisp . t)
      (python . t)
      (C . t)
      (ditaa . t)
-     (lilypond . t)))
+     (lilypond . t))))
  '(org-capture-templates
-   '(("i" "Inbox" entry
+   (quote
+    (("i" "Inbox" entry
       (file "~/org/inbox.org")
       "* TODO")
-     ("m" "Meeting Notes- Bachelor's Thesis" entry #'org-journal-find-location "* Meeting %(format-time-string org-journal-time-format) :meeting:dace:
+     ("m" "Meeting Notes- Bachelor's Thesis" entry
+      (function org-journal-find-location)
+      "* Meeting %(format-time-string org-journal-time-format) :meeting:dace:
 %i%?")
-     ("j" "Journal entry" entry #'org-journal-find-location "*  %(format-time-string org-journal-time-format)%^{Title} :%(projectile-project-name):
+     ("j" "Journal entry" entry
+      (function org-journal-find-location)
+      "*  %(format-time-string org-journal-time-format)%^{Title} :%(projectile-project-name):
 %i%?")
      ("L" "Protocol Link" entry
       (file+headline "~/org/inbox.org" "Inbox")
       "* TODO %? [[%:link][%:description]]
-Captured On: %U")))
- '(org-clock-out-when-done '("DONE" "WAITING"))
- '(org-export-backends '(ascii html icalendar latex md odt))
+Captured On: %U"))))
+ '(org-clock-out-when-done (quote ("DONE" "WAITING")))
+ '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(org-fontify-whole-heading-line t)
  '(org-roam-buffer-no-delete-other-windows t)
  '(org-roam-directory "~/org/")
- '(org-roam-graph-exclude-matcher '("journal"))
+ '(org-roam-graph-exclude-matcher (quote ("journal")))
  '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
+ '(package-selected-packages
+   (quote
+    (tuareg yapfify which-key use-package rg python-black protobuf-mode projectile org-roam-server markdown-mode ivy general evil-surround evil-org evil-magit evil-commentary evil-cleverparens deft adaptive-wrap)))
  '(ripgrep-arguments
-   '("--type-not css" "--type-not html" "-g '!*.sdfg'" "-g '!*.ipynb'" "-g '!TAGS'" "--type-not js"))
- '(safe-local-variable-values '((eval outline-hide-sublevels 4)))
+   (quote
+    ("--type-not css" "--type-not html" "-g '!*.sdfg'" "-g '!*.ipynb'" "-g '!TAGS'" "--type-not js")))
+ '(safe-local-variable-values (quote ((eval outline-hide-sublevels 4))))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(vc-annotate-background-mode nil))
-
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Iosevka Fixed" :foundry "BE5N" :slant normal :weight normal :height 128 :width normal))))
- '(jupyter-repl-input-prompt ((t (:foreground "dark green"))))
- '(jupyter-repl-output-prompt ((t (:foreground "red4"))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "dark orange"))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "green4"))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "dark violet"))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "saddle brown")))))
-
 
 ;;;* keymaps
 (defconst my-leader "SPC")
@@ -708,14 +509,17 @@ Captured On: %U")))
 (define-key evil-visual-state-map "j" 'evil-next-visual-line)
 (define-key evil-visual-state-map "k" 'evil-previous-visual-line)
 
-;;;* Disable Speed hacks
-(add-hook 'emacs-startup-hook (lambda ()
-                                (setq gc-cons-threshold 16777216 gc-cons-percentage 0.1
-                                      file-name-handler-alist last-file-name-handler-alist)))
-(server-start)
-;;;* make outline mode work
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 ;; Local Variables:
 ;; outline-regexp: ";;;\\*+\\|\\`"
 ;; eval: (outline-minor-mode 1)
 ;; eval: (outline-hide-sublevels 4)
 ;; End:
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line

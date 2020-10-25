@@ -8,24 +8,24 @@ local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
 -- Notification library
-local naughty = require("naughty")
+--local naughty = require("naughty")
 local menubar = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup")
 -- Enable hotkeys help widget for VIM and other apps
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
 
-naughty.config.defaults['icon_size'] = 64
+--naughty.config.defaults['icon_size'] = 64
 -- Load Debian menu entries
 
 
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
-if awesome.startup_errors then
-    naughty.notify({ preset = naughty.config.presets.critical,
-                     title = "Oops, there were errors during startup!",
-                     text = awesome.startup_errors })
-end
+--if awesome.startup_errors then
+--    naughty.notify({ preset = naughty.config.presets.critical,
+--                     title = "Oops, there were errors during startup!",
+--                     text = awesome.startup_errors })
+--end
 
 -- Handle runtime errors after startup
 do
@@ -37,9 +37,9 @@ do
             if in_error then return end
             in_error = true
 
-            naughty.notify({ preset = naughty.config.presets.critical,
-                             title = "Oops, an error happened!",
-                             text = tostring(err) })
+            --naughty.notify({ preset = naughty.config.presets.critical,
+            --                 title = "Oops, an error happened!",
+            --                 text = tostring(err) })
             in_error = false
     end)
 end
@@ -54,7 +54,7 @@ beautiful.maximized_hide_border = true
 gears.wallpaper.set(beautiful.bg_normal)
 
 -- This is used later as the default terminal and editor to run.
-terminal = "xterm"
+terminal = "xfce4-terminal"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -153,204 +153,204 @@ local function set_wallpaper(s)
 end
 
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
-screen.connect_signal("property::geometry", set_wallpaper)
+--screen.connect_signal("property::geometry", set_wallpaper)
 
 -- WIDGETS --
 
 --
-local white = beautiful.fg_normal
-local back = beautiful.taglist_bg_occupied
-local full_back = beautiful.bg_normal
-local orange = "#ffa500"
-local red = "#ff0000"
-
-local markup = lain.util.markup
-local separator = wibox.widget {
-    markup = markup.color(beautiful.taglist_fg_occupied, full_back, ' | '),
-    align = 'center',
-    valign = 'center',
-    widget = wibox.widget.textbox
-}
-
-function add_background(widget)
-    return wibox.container.margin(
-        wibox.container.background(
-            wibox.container.margin(widget, 4, 4, 4, 4),
-            beautiful.taglist_bg_occupied,
-            beautiful.taglist_shape
-        ),
-        4, 4, 4, 4
-    )
-
-end
-
-local mpris, mpris_timer = awful.widget.watch(
-    { awful.util.shell, "-c", "playerctl status; playerctl metadata" },
-    2,
-    function(widget, stdout)
-        state = string.match(stdout, "Playing") or
-            string.match(stdout, "Paused")  or ""
-
-        if state == "Playing" then
-            state = " PLAYING: "
-        elseif state == "Paused" then
-            state = " PAUSED: "
-        end
-        state = state
-        title = stdout:match("title%s+([^\n]*)") or ""
-        artist = stdout:match("artist%s+([^\n]*)") or ""
-        -- customize here
-        widget:set_markup((markup.color("#7777FF", full_back, state) .. artist .. " - " .. title) or "")
-    end
-)
-
-function trim1(s)
-    return (s:gsub("^%s*(.-)%s*$", "%1"))
-end
+--local white = beautiful.fg_normal
+--local back = beautiful.taglist_bg_occupied
+--local full_back = beautiful.bg_normal
+--local orange = "#ffa500"
+--local red = "#ff0000"
 --
---local current_task = awful.widget.watch(
---    { awful.util.shell, "-c", "emacsclient -e \" (if (and (boundp 'org-clock-current-task) org-clock-current-task) (substring-no-properties (org-clock-get-clock-string)))\" | tr -d \"\\\"\" | awk '{$1=$1};1'" },
---    10,
+--local markup = lain.util.markup
+--local separator = wibox.widget {
+--    markup = markup.color(beautiful.taglist_fg_occupied, full_back, ' | '),
+--    align = 'center',
+--    valign = 'center',
+--    widget = wibox.widget.textbox
+--}
+--
+--function add_background(widget)
+--    return wibox.container.margin(
+--        wibox.container.background(
+--            wibox.container.margin(widget, 4, 4, 4, 4),
+--            beautiful.taglist_bg_occupied,
+--            beautiful.taglist_shape
+--        ),
+--        4, 4, 4, 4
+--    )
+--
+--end
+--
+--local mpris, mpris_timer = awful.widget.watch(
+--    { awful.util.shell, "-c", "playerctl status; playerctl metadata" },
+--    2,
 --    function(widget, stdout)
---	stdout = trim1(stdout)
---	if stdout == "nil" then
---	    stdout = markup.color("#777777", back, "none")
---	end
---	-- customize here
---	widget:set_markup("TASK: " .. trim1(stdout) .. separator)
+--        state = string.match(stdout, "Playing") or
+--            string.match(stdout, "Paused")  or ""
+--
+--        if state == "Playing" then
+--            state = " PLAYING: "
+--        elseif state == "Paused" then
+--            state = " PAUSED: "
+--        end
+--        state = state
+--        title = stdout:match("title%s+([^\n]*)") or ""
+--        artist = stdout:match("artist%s+([^\n]*)") or ""
+--        -- customize here
+--        widget:set_markup((markup.color("#7777FF", full_back, state) .. artist .. " - " .. title) or "")
 --    end
 --)
 --
---local vpn_name = awful.widget.watch(
---    { awful.util.shell, "-c", "nmcli connection show --active" },
---    10,
---    function(widget, stdout)
---	vpnname = markup.color("#777777", back, "none")
---	if string.match(stdout, "full") then
---	    vpnname = "moat-full"
---	elseif string.match(stdout, "moat") then
---	    vpnname = markup.color(back, "#4D9DE0","moat")
---	elseif string.match(stdout, "oracle") then
---	    vpnname = markup.color( back , "#D1350F","oracle")
---	end
---	-- customize here
---	widget:set_markup("VPN: " .. vpnname .. separator)
+--function trim1(s)
+--    return (s:gsub("^%s*(.-)%s*$", "%1"))
+--end
+----
+----local current_task = awful.widget.watch(
+----    { awful.util.shell, "-c", "emacsclient -e \" (if (and (boundp 'org-clock-current-task) org-clock-current-task) (substring-no-properties (org-clock-get-clock-string)))\" | tr -d \"\\\"\" | awk '{$1=$1};1'" },
+----    10,
+----    function(widget, stdout)
+----	stdout = trim1(stdout)
+----	if stdout == "nil" then
+----	    stdout = markup.color("#777777", back, "none")
+----	end
+----	-- customize here
+----	widget:set_markup("TASK: " .. trim1(stdout) .. separator)
+----    end
+----)
+----
+----local vpn_name = awful.widget.watch(
+----    { awful.util.shell, "-c", "nmcli connection show --active" },
+----    10,
+----    function(widget, stdout)
+----	vpnname = markup.color("#777777", back, "none")
+----	if string.match(stdout, "full") then
+----	    vpnname = "moat-full"
+----	elseif string.match(stdout, "moat") then
+----	    vpnname = markup.color(back, "#4D9DE0","moat")
+----	elseif string.match(stdout, "oracle") then
+----	    vpnname = markup.color( back , "#D1350F","oracle")
+----	end
+----	-- customize here
+----	widget:set_markup("VPN: " .. vpnname .. separator)
+----    end
+----)
+--mpris:connect_signal(
+--    "button::press",
+--    function(_,_,_,button)
+--        if (button == 2) then
+--            awful.spawn.with_line_callback(
+--                "playerctl previous",
+--                { exit = function() mpris_timer:emit_signal("timeout") end}
+--            )
+--        elseif (button == 3) then
+--            awful.spawn.with_line_callback(
+--                "playerctl next",
+--                { exit = function() mpris_timer:emit_signal("timeout") end}
+--            )
+--        elseif (button == 1) then
+--            awful.spawn.with_line_callback(
+--                "playerctl play-pause",
+--                { exit = function() mpris_timer:emit_signal("timeout") end}
+--            )
+--        end
 --    end
 --)
-mpris:connect_signal(
-    "button::press",
-    function(_,_,_,button)
-        if (button == 2) then
-            awful.spawn.with_line_callback(
-                "playerctl previous",
-                { exit = function() mpris_timer:emit_signal("timeout") end}
-            )
-        elseif (button == 3) then
-            awful.spawn.with_line_callback(
-                "playerctl next",
-                { exit = function() mpris_timer:emit_signal("timeout") end}
-            )
-        elseif (button == 1) then
-            awful.spawn.with_line_callback(
-                "playerctl play-pause",
-                { exit = function() mpris_timer:emit_signal("timeout") end}
-            )
-        end
-    end
-)
-
-local cpu_widget = require("awesome-wm-widgets.cpu-widget.cpu-widget")
-
-
---local cpu = wibox.widget {
---        cpu_widget({
---                step_width = 3,
---                width = 50
---        }),
---        wibox.widget.textbox("test"),
---        layout = wibox.layout.align.horizonal
---    }
-
-local cpu = add_background(wibox.widget {
-                               wibox.widget.textbox("CPU: "),
-                               cpu_widget({
-                                       step_width = 3,
-                                       width = 50
-                               }),
-                               layout = wibox.layout.align.horizontal
-                                        }
-)
-
-local summary = nil
-function show_tooltip()
-    local font = 'Terminus (TTF) 12'
-    local text_color = '#FFFFFF'
-    local fd = io.popen(os.getenv("HOME") .. "/.config/awesome/mem.sh summary")
-    local str = fd:read("*all")
-    local content = string.format('<span font="%s" foreground="%s">%s</span>', font, text_color, str)
-    summary = naughty.notify({
-            --        title = "Memory Usage",
-            text = content,
-            timeout = 0,
-            hover_timeout = 0.5,
-            width = 60*8
-    })
-end
-
-function hide_tooltip()
-    if summary ~= nil then
-        naughty.destroy(summary)
-    end
-end
-
-local mem = lain.widget.mem {
-    settings =
-        function()
-            fg_color = white
-            if mem_now.used > 50000 then
-                fg_color = orange
-            elseif mem_now.used > 10000 then
-                fg_color = red
-            end
-            widget:set_markup(
-                "MEM: "
-                    .. markup.color(fg_color, back, mem_now.used .. "MB"))
-
-            widget:connect_signal("mouse::enter", show_tooltip)
-            widget:connect_signal("mouse::leave", hide_tooltip)
-        end
-}
-
-local mem = add_background(mem.widget)
-
-local textclock = wibox.widget.textclock("%A %d %B %H:%M")
-local textclock = add_background(textclock)
-local cal = lain.widget.cal {
-    attach_to = { textclock},
-    icons="",
-}
-
-local bat = lain.widget.bat {
-    battery = "BAT0",
-    timeout  = 10,
-    settings =
-        function()
-            fg_color = white
-            if bat_now.perc < 40 then
-                fg_color = orange
-            elseif bat_now.perc < 15 then
-                fg_color = red
-            end
-
-            widget:set_markup(
-                "BAT: " ..
-                    markup.color(fg_color, back, bat_now.perc .. "% ") ..
-                    string.sub(bat_now.status, 1, 1)..
-                    "(" .. bat_now.time .. ")"
-            )
-        end
-}
-local bat = add_background(bat.widget)
+--
+--local cpu_widget = require("awesome-wm-widgets.cpu-widget.cpu-widget")
+--
+--
+----local cpu = wibox.widget {
+----        cpu_widget({
+----                step_width = 3,
+----                width = 50
+----        }),
+----        wibox.widget.textbox("test"),
+----        layout = wibox.layout.align.horizonal
+----    }
+--
+--local cpu = add_background(wibox.widget {
+--                               wibox.widget.textbox("CPU: "),
+--                               cpu_widget({
+--                                       step_width = 3,
+--                                       width = 50
+--                               }),
+--                               layout = wibox.layout.align.horizontal
+--                                        }
+--)
+--
+--local summary = nil
+--function show_tooltip()
+--    local font = 'Terminus (TTF) 12'
+--    local text_color = '#FFFFFF'
+--    local fd = io.popen(os.getenv("HOME") .. "/.config/awesome/mem.sh summary")
+--    local str = fd:read("*all")
+--    local content = string.format('<span font="%s" foreground="%s">%s</span>', font, text_color, str)
+--    summary = naughty.notify({
+--            --        title = "Memory Usage",
+--            text = content,
+--            timeout = 0,
+--            hover_timeout = 0.5,
+--            width = 60*8
+--    })
+--end
+--
+--function hide_tooltip()
+--    if summary ~= nil then
+--        naughty.destroy(summary)
+--    end
+--end
+--
+--local mem = lain.widget.mem {
+--    settings =
+--        function()
+--            fg_color = white
+--            if mem_now.used > 50000 then
+--                fg_color = orange
+--            elseif mem_now.used > 10000 then
+--                fg_color = red
+--            end
+--            widget:set_markup(
+--                "MEM: "
+--                    .. markup.color(fg_color, back, mem_now.used .. "MB"))
+--
+--            widget:connect_signal("mouse::enter", show_tooltip)
+--            widget:connect_signal("mouse::leave", hide_tooltip)
+--        end
+--}
+--
+--local mem = add_background(mem.widget)
+--
+--local textclock = wibox.widget.textclock("%A %d %B %H:%M")
+--local textclock = add_background(textclock)
+--local cal = lain.widget.cal {
+--    attach_to = { textclock},
+--    icons="",
+--}
+--
+--local bat = lain.widget.bat {
+--    battery = "BAT0",
+--    timeout  = 10,
+--    settings =
+--        function()
+--            fg_color = white
+--            if bat_now.perc < 40 then
+--                fg_color = orange
+--            elseif bat_now.perc < 15 then
+--                fg_color = red
+--            end
+--
+--            widget:set_markup(
+--                "BAT: " ..
+--                    markup.color(fg_color, back, bat_now.perc .. "% ") ..
+--                    string.sub(bat_now.status, 1, 1)..
+--                    "(" .. bat_now.time .. ")"
+--            )
+--        end
+--}
+--local bat = add_background(bat.widget)
 
 smallest_screen = nil
 smallest_screen_size = 1e300
@@ -397,13 +397,14 @@ awful.screen.connect_for_each_screen(
                     s.mytaglist,
                 },
                 nil,
-                {
-                    layout = wibox.layout.fixed.horizontal,
-                    cpu,
-                    bat,
-                    textclock,
-                    s.mylayoutbox,
-                },
+		nil,
+                --{
+                --    layout = wibox.layout.fixed.horizontal,
+                --    cpu,
+                --    bat,
+                --    textclock,
+                --    s.mylayoutbox,
+                --},
             }
         )
     end
@@ -444,25 +445,26 @@ largest_screen.mywibox:setup (
         {
             layout = wibox.layout.fixed.horizontal,
             largest_screen.mytaglist,
-            mpris,
+        --    mpris,
         },
         nil,
-        {
-            layout = wibox.layout.fixed.horizontal,
-            --current_task,
-            --vpn_name,
-            cpu,
-            separator,
-            mem,
-            separator,
-            bat,
-            separator,
-            textclock,
-            separator,
-            wibox.container.margin(wibox.widget.systray(), 0, 0, 4, 4),
-            separator,
-            largest_screen.mylayoutbox,
-        },
+	nil,
+        --{
+        --    layout = wibox.layout.fixed.horizontal,
+        --    --current_task,
+        --    --vpn_name,
+        --    --cpu,
+        --    --separator,
+        --    --mem,
+        --    separator,
+        --    bat,
+        --    separator,
+        --    textclock,
+        --    separator,
+        --    wibox.container.margin(wibox.widget.systray(), 0, 0, 4, 4),
+        --    separator,
+        --    largest_screen.mylayoutbox,
+        --},
     }
 )
 
@@ -572,17 +574,7 @@ globalkeys = awful.util.table.join(
             end
         end,
 
-        {description = "restore minimized", group = "client"}),
-
-    -- Prompt
-    awful.key({ modkey },            "s",     function () awful.spawn("rofi -show drun", false) end,
-        {description = "run prompt", group = "launcher"}),
-    awful.key({ modkey },            "d",     function () awful.spawn(
-                "pass-rofi", false) end,
-        {description = "run prompt", group = "launcher"}),
-    awful.key({ modkey },            "v",     function () awful.spawn(
-                "gvim", false) end,
-        {description = "gvim", group = "launcher"})
+        {description = "restore minimized", group = "client"})
 )
 
 clientkeys = gears.table.join(
@@ -749,6 +741,15 @@ awful.rules.rules = {
                      placement = awful.placement.no_overlap+awful.placement.no_offscreen
       }
     },
+    { rule = { class = "Wrapper-2.0" },
+      properties = { width = 500, height = 500} },
+    { rule_any = { class = {
+	    "Xfce4-panel",
+	    "Wrapper-2.0",
+	    "albert"
+    }
+    },
+      properties = { border_width = 0, floating = true  } },
 
     -- Floating clients.
     { rule_any = {
@@ -889,14 +890,6 @@ autorunApps =
     {
         "xset r rate 200 35",
         "setxkbmap -option caps:escape -option altwin:swap_lalt_lwin -layout 'us(altgr-intl)'",
-        "nm-applet",
-        "blueman-applet",
-        "thunderbird",
-        "picom --fade-in-step=1 --fade-out-step=1 --fade-delta=0",
-        -- "emacsclient -c -a \"emacs\"",
-        -- "xscreensaver",
-        --"pnmixer",
-        --"/home/oliver/.config/awesome/autorun.sh",
     }
 if autorun then
     for app = 1, #autorunApps do
