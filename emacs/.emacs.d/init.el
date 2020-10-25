@@ -12,6 +12,7 @@
 (setq compilation-window-height 20)
 (setq inhibit-compacting-font-caches t)
 
+
 ;;;* Modeline
 
 ;; show full buffer path in modeline
@@ -30,6 +31,18 @@
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
+;; Hide startup screen when command line args are passed
+(defun my-inhibit-startup-screen-file ()
+  "Startup screen inhibitor for `command-line-functions`.
+Inhibits startup screen on the first unrecognised option which
+names an existing file."
+  (ignore
+   (setq inhibit-startup-screen
+         (file-exists-p
+          (expand-file-name argi command-line-default-directory)))))
+
+(add-hook 'command-line-functions #'my-inhibit-startup-screen-file)
+
 ;;;* use-package
 (package-initialize)
 (require 'package)
@@ -42,6 +55,12 @@
 ;;  :config
 ;;  ;; To disable collection of benchmark data after init is done.
 ;;  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+;;;* ocaml
+;; allow jumping back with merlin-locate
+(add-hook 'merlin-mode-hook (lambda ()
+			      (evil-add-command-properties #'merlin-locate :jump t)))
+
+
 ;;;* evil
 (use-package
   evil
@@ -87,6 +106,7 @@
 ;;;* theme
 (require 'minimal-light-theme)
 
+
 ;;;* simple packages (projectile whichkey lua-mode markdown-mode)
 (use-package
   projectile
@@ -102,7 +122,10 @@
 (use-package
   markdown-mode)
 
-(use-package rg)
+(use-package rg
+  :custom
+  (ripgrep-arguments
+   '("--type-not css" "--type-not html" "-g '!*.sdfg'" "-g '!*.ipynb'" "-g '!TAGS'" "--type-not js")))
 (use-package protobuf-mode)
 
 ;; (use-package
@@ -209,6 +232,30 @@
 
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
+(setq
+ org-adapt-indentation nil
+ org-babel-load-languages
+ '((emacs-lisp . t)
+   (python . t)
+   (C . t)
+   (ditaa . t)
+   (lilypond . t))
+ org-capture-templates
+ '(("i" "Inbox" entry
+    (file "~/org/inbox.org")
+    "* TODO")
+   ("m" "Meeting Notes- Bachelor's Thesis" entry #'org-journal-find-location "* Meeting %(format-time-string org-journal-time-format) :meeting:dace:
+%i%?")
+   ("j" "Journal entry" entry #'org-journal-find-location "*  %(format-time-string org-journal-time-format)%^{Title} :%(projectile-project-name):
+%i%?")
+   ("L" "Protocol Link" entry
+    (file+headline "~/org/inbox.org" "Inbox")
+    "* TODO %? [[%:link][%:description]]
+Captured On: %U"))
+ org-clock-out-when-done '("DONE" "WAITING")
+ org-export-backends '(ascii html icalendar latex md odt)
+ org-fontify-whole-heading-line t)
+
 (use-package adaptive-wrap
   :hook
   (org-mode . adaptive-wrap-prefix-mode))
@@ -244,6 +291,10 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   (after-init . org-roam-mode)
   :custom
   (org-roam-directory "~/org/")
+  (org-roam-buffer-no-delete-other-windows t)
+  (org-roam-directory "~/org/")
+  (org-roam-graph-exclude-matcher '("journal"))
+  (org-roam-graph-viewer "~/.local/opt/firefox/firefox")
   :config
   ;; stolen from org-roam-dailies.el
   (setq org-roam-dailies-capture-templates
@@ -254,7 +305,8 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
            :head "#+TITLE: Journal %<%Y-%m-%d>"))))
 (require 'org-roam-protocol)
 
-(use-package org-roam-server)
+;; was broken at the time
+;;(use-package org-roam-server)
 
 ;; not sure if this is required anymore
 (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
@@ -338,12 +390,18 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 
 ;;;* lsp-mode
+
 (use-package
   lsp-mode
   :init (setq lsp-keymap-prefix "C-l")
-  :hook ((python-mode . lsp)
-         (c++-mode-hook . lsp))
+  ;; :hook ((python-mode . lsp)
+  ;;        (c++-mode-hook . lsp))
   :commands lsp)
+
+(add-hook 'lsp-mode-hook
+	  (lambda ()
+	    (add-to-list 'lsp-file-watch-ignored "[/\\\\]\\venv$")
+            (add-to-list 'lsp-file-watch-ignored "[/\\\\]\\.dacecache$")))
 
 (use-package
   lsp-ivy
@@ -362,19 +420,20 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   (lsp-ui-doc-border "black")
   (lsp-ui-doc-header t)
   (lsp-ui-doc-include-signature t)
+
   (lsp-ui-doc-position 'top))
 
 (use-package lsp-treemacs
   :commands lsp-treemacs-error-list)
 
 
-(use-package dap-mode
-  :hook ((python-mode . dap-mode)
-         (python-mode . dap-ui-mode)
-         (python-mode . dap-tooltip-mode))
-  :bind (:map dap-mode-map
-              (("<f8>" . dap-next)
-               ("<f9>" . dap-continue))))
+;; (use-package dap-mode
+;;   :hook ((python-mode . dap-mode)
+;;          (python-mode . dap-ui-mode)
+;;          (python-mode . dap-tooltip-mode))
+;;   :bind (:map dap-mode-map
+;;               (("<f8>" . dap-next)
+;;                ("<f9>" . dap-continue))))
 ;;(use-package dap-python)
 
 
@@ -385,6 +444,17 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 (use-package python-black
   :after python)
+
+(use-package
+  anaconda-mode
+  :hook
+  ((python-mode . anaconda-mode)
+   (python-mode . anaconda-eldoc-mode)))
+(use-package
+  company-anaconda)
+
+(eval-after-load "company"
+  '(add-to-list 'company-backends 'company-anaconda))
 
 (use-package
   conda
@@ -410,7 +480,8 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
   (unless (and  (boundp 'conda-env-current-name) conda-env-current-name)
     (conda-env-activate)))
 
-(advice-add 'python-mode :before #'my-maybe-activate)
+;; prompt for conda environment before opening a file
+;;(advice-add 'python-mode :before #'my-maybe-activate)
 
 (setq python-shell-interpreter "ipython")
 (setenv "PYTHONPATH" "/home/orausch/sources/dace/")
@@ -444,12 +515,11 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
 
 (setenv "DACE_optimizer_interface" "")
 
-
-(use-package
-  lsp-python-ms
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-python-ms)
-                         (lsp))))
+;; (use-package
+;;   lsp-python-ms
+;;   :hook (python-mode . (lambda ()
+;;                          (require 'lsp-python-ms)
+;;                          (lsp))))
 
 (use-package jupyter)
 
@@ -502,39 +572,14 @@ These depend upon whether we are in Arrange mode i.e. MODE is t."
  '(column-number-mode t)
  '(compilation-message-face 'default)
  '(custom-enabled-themes '(leuven))
+ '(custom-safe-themes
+   '("ad4dad5819db4ba67e85b249b281b649dfd3e37ab38b30d778bb4f3f031ed47e" default))
  '(fci-rule-color "#37474F" t)
  '(fill-column 100)
  '(indent-tabs-mode nil)
- '(initial-buffer-choice t)
  '(lua-indent-level 4)
- '(org-adapt-indentation nil)
- '(org-babel-load-languages
-   '((emacs-lisp . t)
-     (python . t)
-     (C . t)
-     (ditaa . t)
-     (lilypond . t)))
- '(org-capture-templates
-   '(("i" "Inbox" entry
-      (file "~/org/inbox.org")
-      "* TODO")
-     ("m" "Meeting Notes- Bachelor's Thesis" entry #'org-journal-find-location "* Meeting %(format-time-string org-journal-time-format) :meeting:dace:
-%i%?")
-     ("j" "Journal entry" entry #'org-journal-find-location "*  %(format-time-string org-journal-time-format)%^{Title} :%(projectile-project-name):
-%i%?")
-     ("L" "Protocol Link" entry
-      (file+headline "~/org/inbox.org" "Inbox")
-      "* TODO %? [[%:link][%:description]]
-Captured On: %U")))
- '(org-clock-out-when-done '("DONE" "WAITING"))
- '(org-export-backends '(ascii html icalendar latex md odt))
- '(org-fontify-whole-heading-line t)
- '(org-roam-buffer-no-delete-other-windows t)
- '(org-roam-directory "~/org/")
- '(org-roam-graph-exclude-matcher '("journal"))
- '(org-roam-graph-viewer "~/.local/opt/firefox/firefox")
- '(ripgrep-arguments
-   '("--type-not css" "--type-not html" "-g '!*.sdfg'" "-g '!*.ipynb'" "-g '!TAGS'" "--type-not js"))
+ '(package-selected-packages
+   '(company-anaconda anaconda-mode lsp-pyright yapfify which-key use-package rg rainbow-delimiters python-pytest python-black protobuf-mode org-roam-server magit-popup lua-mode lsp-ui lsp-ivy jupyter general evil-surround evil-org evil-magit evil-commentary evil-cleverparens elfeed deft dashboard dap-mode conda company-quickhelp company-lsp company-irony cider adaptive-wrap))
  '(safe-local-variable-values '((eval outline-hide-sublevels 4)))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
@@ -594,6 +639,9 @@ Captured On: %U")))
   "a" 'org-agenda
   "c" 'org-capture
 
+  ;; show error at point
+  "e" 'display-local-help
+
   "q" '(quit-window :which-key"quit window")
 
   "p" '(:ignore t :which-key "org links")
@@ -621,6 +669,19 @@ Captured On: %U")))
   :states 'normal
   ;; for use in init.el
   "o" 'org-cycle)
+
+(my-leader-def
+  :keymaps 'tuareg-mode-map
+  :states 'normal
+
+  "l" '(:ignore t :which-key "ocaml")
+  "l l" '(merlin-locate :which-key "definition")
+  "l t" '(merlin-type-enclosing :which-key "type")
+  "l d" '(merlin-document :which-key "document")
+
+  "i" '(:ignore t :which-key "interactive")
+  "i b" '(tuareg-eval-buffer :which-key "send buffer")
+  "i RET" '(tuareg-eval-phrase :which-key "send phrase"))
 
 (my-leader-def
   :keymaps 'lsp-mode-map
@@ -719,3 +780,6 @@ Captured On: %U")))
 ;; eval: (outline-minor-mode 1)
 ;; eval: (outline-hide-sublevels 4)
 ;; End:
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
