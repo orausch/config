@@ -14,6 +14,7 @@ require('packer').startup(function()
   use 'neovim/nvim-lspconfig'
   use 'hrsh7th/nvim-compe'
   use 'dkarter/bullets.vim'
+  use { 'TimUntersberger/neogit', requires = 'nvim-lua/plenary.nvim' }
 end)
 
 -- markdown folding
