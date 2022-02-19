@@ -1,3 +1,6 @@
 [submodule "awesome/.config/awesome/lain"]
 	path = awesome/.config/awesome/lain
 	url = https://github.com/lcpz/lain
+[submodule "tmux-yank"]
+	path = tmux-yank
+	url = https://github.com/tmux-plugins/tmux-yank

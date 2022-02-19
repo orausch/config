@@ -1,4 +1,3 @@
-
 local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim'
@@ -9,33 +8,55 @@ require('packer').startup(function()
   use 'joshdick/onedark.vim'         -- Theme inspired by Atom
 
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}} }
-  use 'camspiers/snap'
+
+  use "folke/which-key.nvim" -- which key setup
 
   use 'neovim/nvim-lspconfig'
-  use 'hrsh7th/nvim-compe'
   use 'dkarter/bullets.vim'
   use { 'TimUntersberger/neogit', requires = 'nvim-lua/plenary.nvim' }
+
+  use 'ms-jpq/coq_nvim'
+  use 'ms-jpq/coq.artifacts'
+  use 'psf/black'
 end)
 
 -- markdown folding
 vim.g.markdown_folding = 1
 
 
-local snap = require'snap'
-
-snap.maps {
-  {"<Leader>f", snap.config.file {producer = "ripgrep.file"}},
-  {"<Leader><space>", snap.config.file {producer = "vim.buffer"}},
-  {"<leader>s",
-  function ()
-	  snap.run {
-		  producer = snap.get'producer.ripgrep.vimgrep',
-		  select = snap.get'select.vimgrep'.select,
-		  multiselect = snap.get'select.vimgrep'.multiselect,
-		  views = {snap.get'preview.vimgrep'}}
-	  end
-  }
+local wk = require("which-key")
+local actions = require('telescope.actions')
+require('telescope').setup{
+  defaults = {
+    mappings = {
+      n = {
+        ["q"] = actions.close
+      },
+    },
+  },
 }
+local tele_builtins = require('telescope.builtin')
+wk.register({
+  f = {
+    name = "file",
+    f = { "<cmd>Telescope find_files<cr>", "Find File" },
+  },
+  b = { function() tele_builtins.buffers{ ignore_current_buffer = true } end, "Find Buffer" },
+  l = {
+    name = "lsp",
+    r = { "<cmd>Telescope lsp_references<cr>", "Document References" },
+    s = { "<cmd>Telescope lsp_document_symbols<cr>", "Document Symbols" },
+    w = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Workspace Symbols" },
+    a = { "<cmd>Telescope lsp_code_actions<cr>", "Code actions" },
+    n = { "<cmd>lua vim.lsp.buf.rename()<cr>", "Rename symbol" },
+  },
+  p = {
+    name = "formatting",
+    b = {"<cmd>Black<cr>", "Run black"},
+  },
+  g = { "<cmd>Neogit<cr>", "Neogit" }
+}, { prefix = "<leader>" })
+
 
 --Add leader shortcuts
 -- vim.api.nvim_set_keymap('n', '<leader>f', [[<cmd>lua require('telescope.builtin').find_files()<cr>]], { noremap = true, silent = true})
@@ -46,7 +67,7 @@ snap.maps {
 -- vim.api.nvim_set_keymap('n', '<leader>s', [[<cmd>lua require('telescope.builtin').grep_string()<cr>]], { noremap = true, silent = true})
 -- vim.api.nvim_set_keymap('n', '<leader>s', [[<cmd>lua require('telescope.builtin').live_grep()<cr>]], { noremap = true, silent = true})
 -- vim.api.nvim_set_keymap('n', '<leader>ls', [[<cmd>lua require('telescope.builtin').lsp_workspace_symbols()<cr>]], { noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<leader>la', [[<cmd>lua require('telescope.builtin').lsp_code_actions()<cr>]], { noremap = true, silent = true})
+-- vim.api.nvim_set_keymap('n', '<leader>la', [[<cmd>lua require('telescope.builtin').lsp_code_actions()<cr>]], { noremap = true, silent = true})
 -- -- vim.api.nvim_set_keymap('n', '<leader>o', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<cr>]], { noremap = true, silent = true})
 -- vim.api.nvim_set_keymap('n', '<leader>gc', [[<cmd>lua require('telescope.builtin').git_commits()<cr>]], { noremap = true, silent = true})
 -- vim.api.nvim_set_keymap('n', '<leader>gb', [[<cmd>lua require('telescope.builtin').git_branches()<cr>]], { noremap = true, silent = true})
@@ -64,10 +85,10 @@ local on_attach = function(_client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'i', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
@@ -81,29 +102,10 @@ end
 -- clangd switch header
 vim.api.nvim_set_keymap('n', '<leader>h', [[<cmd>:ClangdSwitchSourceHeader<cr>]], { noremap = true, silent = true})
 
-require'lspconfig'.clangd.setup{ on_attach=on_attach }
-require'lspconfig'.pyright.setup{ on_attach=on_attach }
+local lspconfig = require('lspconfig')
 
--- Set completeopt to have a better completion experience
-vim.o.completeopt="menuone,noinsert"
-
--- Compe setup
-require'compe'.setup {
-  enabled = true;
-  autocomplete = true;
-  debug = false;
-  min_length = 1;
-  preselect = 'enable';
-  throttle_time = 80;
-  source_timeout = 200;
-  incomplete_delay = 400;
-  max_abbr_width = 100;
-  max_kind_width = 100;
-  max_menu_width = 100;
-  documentation = true;
-
-  source = {
-    path = true;
-    nvim_lsp = true;
-  };
-}
+lspconfig.pyright.setup{ on_attach=on_attach }
+lspconfig.clangd.setup{ on_attach=on_attach }
+lspconfig.tsserver.setup{ on_attach=on_attach }
+lspconfig.tailwindcss.setup{ on_attach=on_attach }
+lspconfig.hls.setup{ on_attach=on_attach }
