@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Keyboard Settings
+Exec=sh -c "xset r rate 200 35 && setxkbmap -option caps:escape -option altwin:swap_lalt_lwin -layout 'us(altgr-intl)'"
+Terminal=false
+Type=Application
+StartupNotify=false
+X-GNOME-Autostart-enabled=true
