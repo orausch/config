@@ -18,6 +18,7 @@ require('packer').startup(function()
   use 'ms-jpq/coq_nvim'
   use 'ms-jpq/coq.artifacts'
   use 'psf/black'
+  use 'editorconfig/editorconfig-vim'
 end)
 
 -- markdown folding
