@@ -1,0 +1,84 @@
+// Place your key bindings in this file to override the defaultsauto[]
+[
+    {
+        "key": "ctrl+b",
+        "command": "-extension.vim_ctrl+b",
+        "when": "editorTextFocus && vim.active && vim.use<C-b> && !inDebugRepl && vim.mode != 'Insert'"
+    },
+    {
+        "key": "ctrl+shift+s",
+        "command": "-workbench.action.files.saveAs"
+    },
+    {
+        "key": "ctrl+shift+s",
+        "command": "-workbench.action.files.saveLocalFile",
+        "when": "remoteFileDialogVisible"
+    },
+    {
+        "key": "ctrl+shift+s",
+        "command": "workbench.action.toggleSidebarVisibility"
+    },
+    {
+        "key": "ctrl+b",
+        "command": "-workbench.action.toggleSidebarVisibility"
+    },
+    {
+        "key": "ctrl+b",
+        "command": "extension.vim_ctrl+w",
+        "when": "editorTextFocus && vim.active && vim.use<C-w> && !inDebugRepl"
+    },
+    {
+        "key": "ctrl+w",
+        "command": "-extension.vim_ctrl+w",
+        "when": "editorTextFocus && vim.active && vim.use<C-w> && !inDebugRepl"
+    },
+     // j/k to move between split terminals, h to move back to the editor
+    {
+        "key": "ctrl+b j",
+        "command": "workbench.action.terminal.focusNext",
+        "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus"
+    },
+    {
+        "key": "ctrl+b k",
+        "command": "workbench.action.terminal.focusPrevious",
+        "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus"
+    },
+    {
+        "key": "ctrl+b h",
+        "command": "workbench.action.focusActiveEditorGroup",
+        "when": "terminalFocus"
+    },
+
+    // j/k to move between "open editors", the explorer tree, and outline;
+    // l to move back to the editor
+    {
+        "key": "ctrl+b k",
+        "command": "workbench.files.action.focusOpenEditorsView",
+        "when": "filesExplorerFocus"
+    },
+    {
+        "key": "ctrl+b j",
+        "command": "workbench.files.action.focusFilesExplorer",
+        "when": "openEditorsFocus"
+    },
+    {
+        "key": "ctrl+b l",
+        "command": "workbench.action.focusActiveEditorGroup",
+        "when": "explorerViewletFocus"
+    },
+    {
+        "key": "ctrl+b j",
+        "command": "outline.focus",
+        "when": "filesExplorerFocus"
+    },
+    {
+        "key": "ctrl+b k",
+        "command": "workbench.files.action.focusFilesExplorer",
+        "when": "outlineFocused"
+    },
+    {
+        "key": "ctrl+b l",
+        "command": "workbench.action.focusActiveEditorGroup",
+        "when": "outlineFocused"
+    }
+]

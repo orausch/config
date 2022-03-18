@@ -1,0 +1,18 @@
+{
+    "workbench.colorTheme": "Default Light+",
+    "keyboard.dispatch": "keyCode",
+    "editor.minimap.enabled": false,
+    "terminal.integrated.commandsToSkipShell": [
+        "-workbench.action.quickOpen"
+    ],
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "workbench.iconTheme": "sdfgicon",
+    "editor.inlineSuggest.enabled": true,
+    "window.zoomLevel": 2
+}
