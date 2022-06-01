@@ -14,5 +14,15 @@
     },
     "workbench.iconTheme": "sdfgicon",
     "editor.inlineSuggest.enabled": true,
-    "window.zoomLevel": 2
+    "github.copilot.enable": {
+        "*": true,
+        "yaml": true,
+        "plaintext": true,
+        "markdown": false
+    },
+    "C_Cpp.intelliSenseEngine": "Disabled",
+    "[cpp]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
+    "haskell.manageHLS": "GHCup"
 }
