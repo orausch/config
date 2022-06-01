@@ -16,3 +16,4 @@ set number
 
 set hidden
 color onedark
+tnoremap <Esc> <C-\><C-n>

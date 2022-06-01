@@ -107,7 +107,10 @@ require('lualine').setup {
 
 -- TESTING
 -- vim.api.nvim_command("let test#strategy = dispatch")
-vim.api.nvim_set_var('test#strategy', 'vimux')
+--vim.api.nvim_set_var('test#strategy', 'vimux')
+
+vim.api.nvim_set_var('test#python#pyunit#file_pattern', 'a^')
+
 
 
 wk.register({

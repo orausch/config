@@ -2,7 +2,7 @@
 set -eux -o pipefail
 
 
-wget https://github.com/neovim/neovim/releases/download/v0.6.1/nvim-linux64.tar.gz
+wget https://github.com/neovim/neovim/releases/download/v0.7.0/nvim-linux64.tar.gz
 mkdir -p ~/.local/share
 tar -xzf nvim-linux64.tar.gz --directory ~/.local/share
 mkdir -p ~/.local/bin
