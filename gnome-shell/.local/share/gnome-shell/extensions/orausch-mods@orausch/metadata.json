@@ -1,0 +1,9 @@
+{
+  "name": "Orausch Mods",
+  "description": "Orausch Mods",
+  "uuid": "orausch-mods@orausch",
+  "shell-version": [
+    "41",
+    "42"
+  ]
+}
