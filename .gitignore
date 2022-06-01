@@ -1,0 +1,5 @@
+vscode/.config/Code/User/History
+vscode/.config/Code/User/globalStorage
+vscode/.config/Code/User/workspaceStorage
+nvim/.config/nvim/plugin/packer_compiled.lua
+
