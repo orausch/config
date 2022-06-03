@@ -1,3 +1,5 @@
+let g:python3_host_prog = expand('/home/orausch/.config/nvim/venv/bin/python')
+
 set colorcolumn=120
 set nowrap
 filetype plugin indent on
