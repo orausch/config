@@ -2,7 +2,12 @@ function activate_venv {
 	if [ -d venv ]; then
 		source venv/bin/activate
 	elif [ -f pyproject.toml ]; then
-		source $(poetry env info --path)/bin/activate
+    POETRY_ENV=$(poetry env info --path)
+    if [ -z $POETRY_ENV ]; then
+      echo "Poetry environment is not installed yet!"
+    else
+      source "$POETRY_ENV/bin/activate"
+    fi
 	elif [ -d node_modules ]; then 
 		export PATH="$(pwd)/node_modules/.bin:$PATH"
 	else
@@ -17,4 +22,3 @@ fi
 
 export HISTSIZE=10000
 export HISTFILESIZE=20000
-
