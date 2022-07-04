@@ -28,6 +28,8 @@ require('packer').startup(function()
   }
   use 'vim-test/vim-test'
   use 'preservim/vimux'
+
+  use 'github/copilot.vim'
 end)
 
 -- markdown folding
@@ -57,7 +59,7 @@ wk.register({
     f = { tele_builtin.find_files, "Find File" },
     g = { tele_builtin.live_grep, "Live Grep" },
   },
-  b = { function() tele_builtin.buffers{ ignore_current_buffer = true } end, "Find Buffer" },
+  b = { function() tele_builtin.buffers{ ignore_current_buffer = true, sort_mru = true } end, "Find Buffer" },
   p = {
     name = "formatting",
     b = {"<cmd>Black<cr>", "Run black"},
