@@ -26,6 +26,7 @@ require('packer').startup(function()
     'nvim-lualine/lualine.nvim',
     requires = { 'kyazdani42/nvim-web-devicons', opt = true }
   }
+  use 'mg979/vim-visual-multi'
   use 'vim-test/vim-test'
   use 'preservim/vimux'
 
@@ -71,8 +72,9 @@ wk.register({
 -- returns an object with .lspconfig and .on_attach exposed
 local lspconfig = require("lsp")
 
--- PYTHON
+-- LANGUAGES
 require("python")
+require("latex")
 
 -- STATUSLINE
 require('lualine').setup {

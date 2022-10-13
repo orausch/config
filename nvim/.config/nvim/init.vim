@@ -1,4 +1,5 @@
-let g:python3_host_prog = expand('/home/orausch/.config/nvim/venv/bin/python')
+let g:python3_host_prog = expand('~/.config/nvim/venv/bin/python')
+let g:copilot_node_command = '/opt/homebrew/opt/node@16/bin/node'
 
 set colorcolumn=120
 set nowrap
@@ -11,7 +12,6 @@ autocmd Filetype lua setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd Filetype html setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 
 let g:coq_settings = { 'auto_start': 'shut-up' }
-let g:copilot_node_command = '/home/orausch/.config/nvim/node_env/bin/node'
 
 lua require("packer_bootstrap")
 lua require("plugin")

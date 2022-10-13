@@ -1,6 +1,5 @@
 {
     "workbench.colorTheme": "Default Light+",
-    "keyboard.dispatch": "keyCode",
     "editor.minimap.enabled": false,
     "terminal.integrated.commandsToSkipShell": [
         "-workbench.action.quickOpen"

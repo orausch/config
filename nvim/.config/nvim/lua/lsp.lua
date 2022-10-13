@@ -63,5 +63,6 @@ lspconfig.clangd.setup{ on_attach=on_attach }
 lspconfig.tsserver.setup{ on_attach=on_attach }
 lspconfig.tailwindcss.setup{ on_attach=on_attach }
 lspconfig.hls.setup{ on_attach=on_attach }
+lspconfig.texlab.setup{ on_attach=on_attach }
 
 return {lspconfig = lspconfig, on_attach = on_attach}
