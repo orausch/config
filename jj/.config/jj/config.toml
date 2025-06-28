@@ -1,0 +1,58 @@
+"$schema" = "https://jj-vcs.github.io/jj/latest/config-schema.json"
+
+[revset-aliases]
+'stack()' = 'reachable((fork_point(trunk() | @))..@, fork_point(trunk() | @)..)'
+
+[revsets]
+log = 'stack()'
+
+
+[user]
+name = "Oliver Rausch"
+email = "Oliverrausch99@gmail.com"
+
+[ui]
+editor = "/usr/bin/vim"
+diff-formatter = ["difft", "--color=always", "$left", "$right"]
+
+[aliases]
+pre-commit = [
+    "util",
+    "exec",
+    "--",
+    "bash",
+    "-c",
+    "jj diff -r @ --name-only --no-pager | xargs pre-commit run --files",
+]
+stack = ["log", "-r", "reachable((fork_point(trunk() | @))..@, fork_point(trunk() | @)..)"]
+
+merge-trunk = ["util", "exec", "--", "bash", "-c", """
+#!/usr/bin/env bash
+set -euo pipefail
+REMOTE_NAME=$(jj config get 'revset-aliases."trunk()"' | python -c 'import sys; [l] = sys.stdin.readlines(); l.strip(); b, r = l.split("@"); print(b + "/" + r, end="")')
+jj new @ "trunk()" -m "Merge remote-tracking branch '$REMOTE_NAME'"
+""", ""]
+
+new-trunk = ["new", "trunk()"]
+curr-branch = ["log", "-r", "latest(bookmarks() & fork_point(trunk() | @)::@)", "-T",
+"bookmarks", "--no-graph"]
+
+
+my-branches = ["log", "-r", """
+@ | ancestors(trunk()..(visible_heads() & mine() & author_date(after:"7 days ago")), 2)
+"""]
+
+gdiff = ["diff", "--git"]
+
+[fix.tools]
+rustfmt = { command = ["rustfmt"], patterns = ["glob:**/*.rs"] }
+ruff = { command = ["ruff", "format", "-"], patterns = ["glob:**/*.py"] }
+ruff-fix = { command = ["ruff", "check", "--quiet", "--fix", "--stdin-filename=$path"], patterns = ["glob:**/*.py"] }
+
+[signing]
+behavior = "own"
+backend = "ssh"
+key = "~/.ssh/github_signing_key.pub"
+
+[git]
+push-bookmark-prefix = "orausch/jj/"
