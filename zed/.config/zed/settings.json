@@ -200,6 +200,7 @@
   ],
   "context_servers": {
     "antmcp": {
+      "source": "custom",
       "command": {
         "path": "/opt/homebrew/Caskroom/miniforge/base/envs/py311/bin/python",
         "args": ["-m", "antmcp", "--no-warnings", "stdio"]
