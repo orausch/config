@@ -1,0 +1,215 @@
+{
+  "features": { "edit_prediction_provider": "copilot" },
+  "edit_predictions": {
+    "disabled_globs": [".env"]
+  },
+  "terminal": {
+    "dock": "right"
+  },
+  "preferred_line_length": 80,
+  "tabs": {
+    "file_icons": true
+  },
+  "toolbar": {
+    "breadcrumbs": true,
+    "quick_actions": false
+  },
+  "tab_bar": {
+    "show": false,
+    "show_nav_history_buttons": false
+  },
+  "cursor_blink": false,
+  "theme": "One Light (High Contrast)",
+  "vim": {
+    "use_system_clipboard": "never"
+  },
+  "vim_mode": true,
+  "ui_font_size": 12,
+  "buffer_ont_size": 10,
+  "experimental.theme_overrides": {
+    "editor.background": "#fff",
+    "syntax": {},
+    "editor.foreground": "#000",
+    "terminal.background": "#fff",
+    "terminal.foreground": "#000"
+  },
+  "autosave": "on_window_change",
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": true
+  },
+  "language_models": {
+    "anthropic": {
+      "version": "1",
+      "low_speed_timeout_in_seconds": 60,
+      "available_models": [
+        {
+          "name": "claude-sonnet-4-20250514",
+          "max_tokens": 200000,
+          "max_output_tokens": 64000,
+          "cache_configuration": {
+            "max_cache_anchors": 4,
+            "should_speculate": true,
+            "min_total_token": 2048
+          },
+          "display_name": "Claude Sonnet 4"
+        },
+        {
+          "name": "claude-opus-4-20250514",
+          "max_tokens": 200000,
+          "max_output_tokens": 32000,
+          "cache_configuration": {
+            "max_cache_anchors": 4,
+            "should_speculate": true,
+            "min_total_token": 2048
+          },
+          "display_name": "Claude Opus 4"
+        },
+        {
+          "name": "claude-3-7-sonnet-latest",
+          "max_tokens": 200000,
+          "tool_override": "claude-3-5-sonnet-20240620"
+        },
+        {
+          "name": "claude-3-5-sonnet-20240620-fast-edit",
+          "max_tokens": 200000,
+          "max_output_tokens": 8192,
+          "cache_configuration": {
+            "max_cache_anchors": 4,
+            "should_speculate": true,
+            "min_total_token": 2048
+          },
+          "display_name": "Claude Sonnet 3.5 (Rewrite Mode)"
+        },
+        {
+          "name": "claude-3-5-sonnet-20241022",
+          "max_tokens": 200000,
+          "max_output_tokens": 8192,
+          "cache_configuration": {
+            "max_cache_anchors": 4,
+            "should_speculate": true,
+            "min_total_token": 2048
+          },
+          "display_name": "Claude Sonnet 3.5 (Firefly)"
+        }
+      ],
+      "speculate": true
+    }
+  },
+  "agent": {
+    "always_allow_tool_actions": true,
+    "inline_assistant_model": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514"
+    },
+    "default_model": {
+      "provider": "anthropic",
+      "model": "claude-opus-4-20250514"
+    },
+    "version": "2",
+    "inline_alternatives": [
+      {
+        "provider": "anthropic",
+        "model": "claude-3-5-sonnet-20241022"
+      }
+    ]
+  },
+  "languages": {
+    "Python": {
+      "language_servers": ["pyright", "python-refactoring"],
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "bash",
+          "arguments": [
+            "-c",
+            "/Users/oliver/.local/bin/ruff check --fix-only --force-exclude --ignore F401 --exit-zero --stdin-filename {buffer_path} | ruff format --force-exclude --stdin-filename {buffer_path}"
+          ]
+        }
+      }
+    },
+    "YAML": {
+      "format_on_save": "off"
+    },
+    "JSON": {
+      "enable_language_server": false,
+      "language_servers": ["!json-language-server"]
+    }
+  },
+  "lsp": {
+    "pyright": {
+      "settings": {
+        "python.analysis.logLevel": "Trace"
+      }
+    },
+    "rust-analyzer": {
+      "initialization_options": {
+        "cargo": {
+          "extraArgs": ["--all-features"]
+        },
+        "rust": {
+          "analyzerTargetDir": true
+        }
+      }
+    }
+  },
+  "jupyter": {
+    "enabled": true,
+    "kernels": {
+      "python": "myenv"
+    }
+  },
+  "auto_install_extensions": {
+    "html": true,
+    "python-refactoring": true
+  },
+  "enable_experimental_live_diffs": true,
+  "languages.Python.language_servers": [
+    "pyright",
+    "python-refactoring",
+    "!pylsp",
+    "ruff"
+  ],
+  "ssh_connections": [
+    {
+      "host": "localhost ",
+      "username": "root",
+      "port": 2222,
+      "projects": [],
+      "nickname": "rustxla",
+      "upload_binary_over_ssh": true
+    },
+    {
+      "host": "localhost",
+      "username": "root",
+      "port": 2222,
+      "projects": [
+        {
+          "paths": ["/xla/rustxla"]
+        }
+      ]
+    },
+    {
+      "host": "or",
+      "projects": [
+        {
+          "paths": ["~/code"]
+        }
+      ]
+    }
+  ],
+  "context_servers": {
+    "antmcp": {
+      "command": {
+        "path": "/opt/homebrew/Caskroom/miniforge/base/envs/py311/bin/python",
+        "args": ["-m", "antmcp", "--no-warnings", "stdio"]
+      },
+      "settings": {}
+    }
+  },
+  "dap": {
+    "CodeLLDB": {
+      "binary": "/Users/oliver/code/codelldb-bin/CodeLLDB_v1.11.5/extension/adapter/codelldb"
+    }
+  }
+}

@@ -1,0 +1,95 @@
+[
+  {
+    "context": "Editor",
+    "bindings": {
+      "ctrl-=": "editor::ShowCompletions",
+      "cmd-.": ["workspace::SendKeystrokes", "escape l b e l ctrl-="]
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-shift-s": "workspace::ToggleLeftDock",
+      "cmd-shift-d": "workspace::ToggleRightDock",
+      "ctrl-b s": "pane::SplitDown",
+      "ctrl-b v": "pane::SplitRight",
+      "ctrl-b h": ["workspace::ActivatePaneInDirection", "Left"],
+      "ctrl-b l": ["workspace::ActivatePaneInDirection", "Right"],
+      "ctrl-b k": ["workspace::ActivatePaneInDirection", "Up"],
+      "ctrl-b j": ["workspace::ActivatePaneInDirection", "Down"],
+      "ctrl-b d": "workspace::ToggleCenteredLayout"
+    }
+  },
+  {
+    "context": "VimControl && Pane > !Terminal ",
+    "bindings": {
+      "ctrl-n": "search::SelectNextMatch",
+      "ctrl-p": "search::SelectPrevMatch"
+    }
+  },
+  {
+    "context": "ProjectSearchBar > Editor",
+    "bindings": {
+      "ctrl-n": "search::SelectNextMatch",
+      "ctrl-p": "search::SelectPrevMatch"
+    }
+  },
+  // Couldn't get this to work
+  // {
+  //   "context": "ProjectSearchBar && VimControl && !VimWaiting && !menu",
+  //   "bindings": {
+  //     "ctrl+R": "search::ToggleRegex"
+  //   }
+  // },
+
+  {
+    "context": "TabSwitcher",
+    "bindings": {
+      "x": "tab_switcher::CloseSelectedItem"
+    }
+  },
+  {
+    "context": "Editor && VimControl && !menu",
+    // put key-bindings here if you want them to work in normal & visual mode
+    "bindings": {
+      "space r r": ["task::Spawn", { "task_name": "repl run" }],
+      "space r i": ["task::Spawn", { "task_name": "repl import" }],
+      "space enter": "editor::OpenExcerpts",
+      "space b": "tab_switcher::ToggleAll",
+      "space v": "editor::OpenExcerptsSplit",
+      "space g s": "git::ToggleStaged",
+      "space g n": "editor::GoToHunk",
+      "space g p": "editor::GoToPreviousHunk",
+      "space g x": "git::Restore",
+      // Sidebar
+      "space s t": "terminal_panel::ToggleFocus",
+      "space s g": "git_panel::ToggleFocus",
+      "space s a": "agent::ToggleFocus",
+      "space s f": "project_panel::ToggleFocus",
+      // AI
+      "ctrl-q": "editor::SelectEnclosingSymbol",
+      "space a s": "assistant::QuoteSelection",
+      "space a i": "assistant::InlineAssist",
+      // project stuff
+      "space p s": "project_symbols::Toggle",
+      "space p n": "editor::GoToDiagnostic",
+      "space p p": "editor::GoToPreviousDiagnostic",
+      "space p o": "diagnostics::Deploy",
+      // copy dedent
+      "space c": ["task::Spawn", { "task_name": "copy and dedent" }],
+      // navigation
+      "ctrl-b h": ["workspace::ActivatePaneInDirection", "Left"],
+      "ctrl-b l": ["workspace::ActivatePaneInDirection", "Right"],
+      "ctrl-b k": ["workspace::ActivatePaneInDirection", "Up"],
+      "ctrl-b j": ["workspace::ActivatePaneInDirection", "Down"],
+      "ctrl-n": "search::SelectNextMatch",
+      "ctrl-p": "search::SelectPreviousMatch",
+      "space a d": [
+        "assistant::InlineAssist",
+        {
+          "prompt": "Write a compact docstring. Use Python 3.9+ style typing; i.e. prefer `list[int]` to `List[int]`, `str | None` to `Optional[str]`, etc."
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "label": "repl import",
+    "command": "/opt/homebrew/Caskroom/miniforge/base/envs/py311/bin/repl execute_import $ZED_FILE $ZED_SYMBOL",
+    "shell": { "program": "sh" },
+    "reveal": "never",
+    "hide": "always"
+  },
+  {
+    "label": "repl run",
+    "command": "printenv ZED_SELECTED_TEXT | /opt/homebrew/Caskroom/miniforge/base/envs/py311/bin/repl execute",
+    "shell": { "program": "sh" },
+    "reveal": "never",
+    "hide": "always"
+  },
+  {
+    "label": "copy and dedent",
+    "command": "/usr/bin/python3 -c \"import sys, textwrap, subprocess; dedented = textwrap.dedent(sys.argv[1]); subprocess.run(['pbcopy'], input=dedented.encode('utf-8'), check=True)\" '$ZED_SELECTED_TEXT'",
+    "shell": { "program": "sh" },
+    "reveal": "never",
+    "hide": "always"
+  }
+]
